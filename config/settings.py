@@ -28,10 +28,10 @@ SECRET_KEY = 'django-insecure-(^+(@g@7h0txq^^jus4b@+jop04@js*_%b6jaw1uk=q9@x6i=o
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['empty-sheep-stand.loca.lt']
 
 
-AUTH_USER_MODEL = 'app.User'
+AUTH_USER_MODEL = 'patient.User'
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # Application definition
