@@ -21,7 +21,7 @@ pip install -r requirements.txt
 ```
 8. غير اسم الملف .env.example الى .env فقط
 9. جوا الملف الدلوقتي اسمه .env بتغير بيانات الdatabase لبيانات الdatabase الخاصة بيك
-10. جدرب اعمل run للمشروع لو اشتغل يبقى كل حاجا تمام
+10. جرب اعمل run للمشروع لو اشتغل يبقى كل حاجا تمام
 ```
 python manage.py runserver
 ```
