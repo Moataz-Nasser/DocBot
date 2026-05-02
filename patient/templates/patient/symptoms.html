@@ -1,0 +1,64 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}Manage Symptoms - DOCBOT{% endblock %}
+{% block page_title %}Manage Symptoms for Appointment{% endblock %}
+
+{% block content %}
+<div class="content-card" style="max-width: 800px; margin: 0 auto;">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div>
+            <h5 class="m-0">Symptoms</h5>
+            <div class="text-muted" style="font-size:13px;">Appt. Date: {{ appointment.slot.slot_date }}</div>
+        </div>
+        <a href="{% url 'patient_appointment_detail' appointment.id %}" class="btn-outline-custom py-1">Back to Appt</a>
+    </div>
+
+    <!-- Add Symptom Form -->
+    <div class="bg-light p-3 rounded mb-4 border">
+        <h6 class="mb-3 text-primary">Add a Symptom</h6>
+        <form method="post" class="row g-3 align-items-end">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add">
+            <div class="col-md-6">
+                <label class="form-label">Symptom Description</label>
+                <input type="text" name="symptom_name" class="form-control" placeholder="e.g. Headache, Fever" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Severity</label>
+                <select name="severity" class="form-select">
+                    <option value="">Select...</option>
+                    <option value="Mild">Mild</option>
+                    <option value="Moderate">Moderate</option>
+                    <option value="Severe">Severe</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100" style="background:#4f46e5;border:none;">Add</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Symptom List -->
+    <h6 class="mb-3">Reported Symptoms</h6>
+    {% if symptoms %}
+    <ul class="list-group list-group-flush">
+        {% for s in symptoms %}
+        <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+            <div>
+                <div class="fw-bold">{{ s.symptom_name }}</div>
+                {% if s.severity %}<div class="text-muted" style="font-size:12px;">Severity: {{ s.severity }}</div>{% endif %}
+            </div>
+            <form method="post" style="margin:0;">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="symptom_id" value="{{ s.id }}">
+                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Remove symptom?');"><i class="bi bi-trash"></i></button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-muted text-center py-4">No symptoms added yet. Describe what you're feeling to help your doctor.</p>
+    {% endif %}
+</div>
+{% endblock %}

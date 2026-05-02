@@ -1,0 +1,65 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}Manage Appointment - DOCBOT{% endblock %}
+{% block page_title %}Manage Appointment{% endblock %}
+
+{% block sidebar_nav %}
+<li><a href="{% url 'assistant_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'assistant_doctor_profile' %}"><i class="bi bi-person"></i> Doctor Profile</a></li>
+<li><a href="{% url 'assistant_schedules' %}"><i class="bi bi-calendar3"></i> Schedules</a></li>
+<li><a href="{% url 'assistant_appointments' %}" class="active"><i class="bi bi-calendar-check"></i> Appointments</a></li>
+{% endblock %}
+
+{% block content %}
+<div class="content-card" style="max-width: 600px; margin: 0 auto;">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <h5 class="m-0">Appointment Details</h5>
+        <span class="badge-status 
+            {% if appointment.status == 'Booked' %}badge-booked
+            {% elif appointment.status == 'In progress' %}badge-inprogress
+            {% elif appointment.status == 'Completed' %}badge-completed
+            {% elif appointment.status == 'Canceled' %}badge-canceled
+            {% else %}badge-noshow{% endif %} fs-6 px-3 py-2">
+            {{ appointment.status }}
+        </span>
+    </div>
+
+    <div class="mb-4">
+        <label class="text-muted fw-bold" style="font-size:12px;text-transform:uppercase;">Patient Name</label>
+        <div class="fs-5 fw-bold text-dark">{{ appointment.patient.get_full_name }}</div>
+        {% if appointment.patient.phone %}
+        <div class="text-muted"><i class="bi bi-telephone me-1"></i>{{ appointment.patient.phone }}</div>
+        {% endif %}
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-sm-6">
+            <label class="text-muted fw-bold" style="font-size:12px;text-transform:uppercase;">Date & Time</label>
+            <div class="fw-bold">{{ appointment.slot.slot_date|date:"l, M d, Y" }}</div>
+            <div>{{ appointment.slot.start_time|time:"g:i A" }}</div>
+        </div>
+        <div class="col-sm-6">
+            <label class="text-muted fw-bold" style="font-size:12px;text-transform:uppercase;">Location</label>
+            <div class="fw-bold">{{ appointment.doctor_address.full_address }}</div>
+            {% if appointment.doctor_address.floor %}<div>Floor: {{ appointment.doctor_address.floor }}</div>{% endif %}
+        </div>
+        <div class="col-sm-6">
+            <label class="text-muted fw-bold" style="font-size:12px;text-transform:uppercase;">Type</label>
+            <div class="fw-bold">{% if appointment.is_follow_up %}Follow-up Visit{% else %}Initial Consultation{% endif %}</div>
+        </div>
+    </div>
+
+    {% if appointment.status == 'Booked' %}
+    <div class="mt-4 pt-4 border-top text-center">
+        <form method="post" action="{% url 'assistant_cancel_appointment' appointment.id %}" onsubmit="return confirm('Are you sure you want to cancel this appointment? The patient will be notified.');">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger px-4 py-2"><i class="bi bi-x-circle me-1"></i> Cancel Appointment</button>
+        </form>
+    </div>
+    {% endif %}
+    
+    <div class="mt-4 pt-3 border-top text-end">
+        <a href="{% url 'assistant_appointments' %}" class="btn-outline-custom">Back to List</a>
+    </div>
+</div>
+{% endblock %}

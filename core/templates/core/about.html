@@ -1,0 +1,81 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}About - DOCBOT{% endblock %}
+
+{% block extra_css %}
+<style>
+.services-section {
+    padding: 100px 0;
+    background-color: #ffffff;
+    text-align: center;
+}
+.services-header h2 {
+    font-size: 40px;
+    font-weight: 700;
+    color: #0b1220;
+    margin-bottom: 15px;
+}
+.services-header p {
+    color: #64748b;
+    max-width: 600px;
+    margin: 0 auto 60px;
+    line-height: 1.6;
+}
+.services-home { padding: 80px 0; background-color: #fbfcfe; }
+.home-service-card {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 20px;
+    padding: 20px 20px; text-align: center; transition: all 0.3s ease;
+    height: 100%; width: 100%; display: flex; flex-direction: column;
+    justify-content: space-between;
+}
+.home-service-card:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0,0,0,0.05); border-color: #4f46e5; }
+.service-icon { font-size: 32px; color: #4f46e5; margin-bottom: 25px; transition: 0.3s; }
+.home-service-card h4 { font-size: 30px; font-weight: 700; color: #2d3748; margin-bottom: 15px; }
+.home-service-card p { font-size: 18px; color: #4a5568; line-height: 1.6; margin-bottom: 50px; }
+.values-title{ font-size: 30px; font-weight: 700; margin-bottom: 10px; color: #2d3748; }
+.values-subtitle{ font-size: 18px; color: #64748b; margin-bottom: 25px; }
+.principle{ display:flex; gap:15px; margin-bottom:20px; text-align:left; transition:0.3s; }
+.principle i{ font-size:30px; color:#4f46e5; margin-top:5px; }
+.principle h6{ font-weight:600; margin-bottom:5px; font-size:18px; }
+.principle p{ font-size:18px; color:#64748b; margin:0; }
+.principle:hover{ transform:translateX(5px); }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="services-section">
+    <div class="container">
+        <div class="services-header">
+            <h2>About DocBot</h2>
+            <p>Revolutionizing healthcare through AI-powered consultation and making quality medical care accessible to everyone</p>
+        </div>
+    <div class="row g-4">
+      <div class="col-lg-8 mx-auto">
+        <div class="home-service-card">
+          <div class="service-icon"><i class="bi bi-shield-fill-check"></i></div>
+          <h4>Our Mission</h4>
+          <p>To provide comprehensive smart healthcare that starts with AI symptom analysis and ends with continuous follow-up, ensuring an error-free patient journey.</p>
+        </div>
+      </div>
+      <div class="col-lg-8 mx-auto">
+        <div class="home-service-card">
+          <div class="service-icon"><i class="bi bi-people"></i></div>
+          <h4>Our Vision</h4>
+          <p>To lead the digital transformation in healthcare, starting from Upper Egypt to the world, as the most accurate AI-driven preliminary diagnosis platform</p>
+        </div>
+      </div>
+      <div class="col-lg-8 mx-auto">
+        <div class="home-service-card values-card">
+          <h4 class="values-title">Our Values</h4>
+          <p class="values-subtitle">The principles that guide everything we do</p>
+          <div class="principle"><i class="bi bi-heart-pulse-fill"></i><div><h6>Patient First</h6><p>Every decision we make prioritizes patient wellbeing, safety, and satisfaction.</p></div></div>
+          <div class="principle"><i class="bi bi-lightbulb-fill"></i><div><h6>Innovation</h6><p>Continuously advancing healthcare through cutting-edge AI and technology.</p></div></div>
+          <div class="principle"><i class="bi bi-shield-lock-fill"></i><div><h6>Trust &amp; Security</h6><p>Maintaining the highest standards of data privacy and medical accuracy.</p></div></div>
+          <div class="principle"><i class="bi bi-globe2"></i><div><h6>Accessibility</h6><p>Making quality healthcare available to everyone, anywhere, anytime.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

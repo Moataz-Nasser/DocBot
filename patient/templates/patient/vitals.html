@@ -1,0 +1,98 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}Vitals Log - DOCBOT{% endblock %}
+{% block page_title %}Vitals Log{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <h5 class="m-0">Vital Measurements</h5>
+        <button class="btn-primary-custom" data-bs-toggle="modal" data-bs-target="#addVitalModal"><i class="bi bi-plus-lg me-1"></i> Add Record</button>
+    </div>
+
+    {% if vitals %}
+    <div class="table-responsive">
+        <table class="table table-clean">
+            <thead>
+                <tr>
+                    <th>Date & Time</th>
+                    <th>Type</th>
+                    <th>Reading</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for v in vitals %}
+                <tr>
+                    <td>
+                        <div>{{ v.date|date:"M d, Y" }}</div>
+                        {% if v.time %}<div class="text-muted" style="font-size:12px;">{{ v.time|time:"g:i A" }}</div>{% endif %}
+                    </td>
+                    <td>{{ v.measurement_type.name }}</td>
+                    <td class="fw-bold">
+                        {{ v.value }}{% if v.value_secondary %}/{{ v.value_secondary }}{% endif %} 
+                        <span class="text-muted fw-normal" style="font-size:12px;">{{ v.measurement_type.unit }}</span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5 text-muted">
+        <i class="bi bi-activity" style="font-size:48px;"></i>
+        <h5 class="mt-3">No vitals logged.</h5>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="addVitalModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Log Vital Measurement</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="post" action="{% url 'vitals_add' %}">
+        {% csrf_token %}
+        <div class="modal-body">
+            <div class="mb-3">
+                <label class="form-label">Measurement Type</label>
+                <select name="measurement_type" class="form-select" required>
+                    <option value="">Select...</option>
+                    {% for t in types %}
+                    <option value="{{ t.id }}">{{ t.name }} ({{ t.unit }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="row g-3 mb-3">
+                <div class="col-6">
+                    <label class="form-label">Value (Primary)</label>
+                    <input type="number" step="0.1" name="value" class="form-control" required placeholder="e.g. 120">
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Value (Secondary)</label>
+                    <input type="number" step="0.1" name="value_secondary" class="form-control" placeholder="e.g. 80 (for BP)">
+                    <div class="form-text" style="font-size:11px;">Optional. e.g., Diastolic BP.</div>
+                </div>
+            </div>
+            <div class="row g-3">
+                <div class="col-6">
+                    <label class="form-label">Date</label>
+                    <input type="date" name="date" class="form-control" required value="{% now 'Y-m-d' %}">
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Time</label>
+                    <input type="time" name="time" class="form-control" value="{% now 'H:i' %}">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary" style="background:#4f46e5;border:none;">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

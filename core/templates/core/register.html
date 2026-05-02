@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up | DOCBOT</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<style>
+body{
+  font-family:'Inter',sans-serif;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: radial-gradient(circle at top,#0f172a,#020617);
+  overflow-y:auto;
+  padding:20px 0;
+}
+
+.glow{
+  position:fixed;
+  width:400px;
+  height:400px;
+  background:#4f46e5;
+  filter:blur(140px);
+  opacity:0.3;
+  border-radius:50%;
+  top:-100px;
+  left:-100px;
+}
+
+.card-register{
+  width:420px;
+  padding:30px;
+  border-radius:20px;
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,0.1);
+  color:white;
+  animation:fadeUp .8s ease;
+  z-index:2;
+}
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.form-input{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:10px;
+  border:none;
+  outline:none;
+  background:rgba(255,255,255,0.1);
+  color:white;
+}
+
+.form-input::placeholder{
+  color: rgba(255,255,255,0.5);
+}
+
+.btn-submit{
+  width:100%;
+  margin-top:15px;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:linear-gradient(135deg,#4f46e5,#6366f1);
+  color:white;
+  font-weight:bold;
+  transition:.3s;
+  cursor:pointer;
+}
+
+.btn-submit:hover{
+  transform:scale(1.05);
+}
+
+.eye{
+  position:absolute;
+  right:12px;
+  top:50%;
+  transform:translateY(-50%);
+  cursor:pointer;
+  color:#a5b4fc;
+}
+
+.strength{
+  height:6px;
+  background:#334155;
+  border-radius:10px;
+  margin-top:8px;
+  overflow:hidden;
+}
+
+.strength div{
+  height:100%;
+  width:0%;
+  transition:.3s;
+}
+
+.msg{
+  font-size:13px;
+  margin-top:5px;
+  color:#f87171;
+}
+
+.back{
+  text-align:center;
+  margin-top:12px;
+}
+
+.back a{
+  color:#a5b4fc;
+  text-decoration:none;
+}
+
+.row-fields{
+  display:flex;
+  gap:10px;
+}
+
+.row-fields > div{
+  flex:1;
+}
+
+.success-msg{
+  color:#34d399;
+  font-size:13px;
+  margin-top:10px;
+  text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="glow"></div>
+
+<div class="card-register">
+<h2 class="text-center">Create Account</h2>
+
+<form method="post" action="{% url 'register' %}">
+  {% csrf_token %}
+
+  <!-- Username -->
+  <input name="username" class="form-input" placeholder="Username (3-14 characters)"
+         value="{{ username|default:'' }}" maxlength="14">
+  {% if errors.username %}<div class="msg">{{ errors.username }}</div>{% endif %}
+
+  <!-- First Name / Last Name -->
+  <div class="row-fields">
+    <div>
+      <input name="first_name" class="form-input" placeholder="First Name"
+             value="{{ first_name|default:'' }}">
+      {% if errors.first_name %}<div class="msg">{{ errors.first_name }}</div>{% endif %}
+    </div>
+    <div>
+      <input name="last_name" class="form-input" placeholder="Last Name"
+             value="{{ last_name|default:'' }}">
+      {% if errors.last_name %}<div class="msg">{{ errors.last_name }}</div>{% endif %}
+    </div>
+  </div>
+
+  <!-- Email -->
+  <input name="email" class="form-input" placeholder="Email"
+         value="{{ email|default:'' }}">
+  {% if errors.email %}<div class="msg">{{ errors.email }}</div>{% endif %}
+
+  <!-- Password -->
+  <div style="position:relative;">
+    <input type="password" name="password" id="pass" class="form-input" placeholder="Password">
+    <i class="bi bi-eye eye" id="eye1" onclick="togglePass('pass','eye1')"></i>
+  </div>
+
+  <!-- Strength -->
+  <div class="strength">
+    <div id="bar"></div>
+  </div>
+
+  <!-- Confirm -->
+  <div style="position:relative;">
+    <input type="password" name="confirm_password" id="confirm" class="form-input" placeholder="Confirm Password">
+    <i class="bi bi-eye eye" id="eye2" onclick="togglePass('confirm','eye2')"></i>
+  </div>
+  {% if errors.password %}<div class="msg">{{ errors.password }}</div>{% endif %}
+  {% if errors.confirm_password %}<div class="msg">{{ errors.confirm_password }}</div>{% endif %}
+
+  <button type="submit" class="btn-submit">Create Account</button>
+</form>
+
+<!-- Login link -->
+<div style="text-align:center; margin-top:12px; font-size:14px;">
+  Already have an account?
+  <a href="{% url 'login' %}" style="color:#a5b4fc; text-decoration:none;">Login</a>
+</div>
+
+<!-- Back -->
+<div class="back">
+  <a href="{% url 'home' %}">&larr; Back to home</a>
+</div>
+</div>
+
+<script>
+function togglePass(id,icon){
+  let input=document.getElementById(id);
+  let i=document.getElementById(icon);
+  if(input.type==="password"){
+    input.type="text";
+    i.classList.replace("bi-eye","bi-eye-slash");
+  }else{
+    input.type="password";
+    i.classList.replace("bi-eye-slash","bi-eye");
+  }
+}
+
+document.getElementById("pass").addEventListener("input",function(){
+  let val=this.value;
+  let bar=document.getElementById("bar");
+  let strength=0;
+  if(val.length>5) strength+=30;
+  if(/[A-Z]/.test(val)) strength+=30;
+  if(/[0-9]/.test(val)) strength+=20;
+  if(/[^A-Za-z0-9]/.test(val)) strength+=20;
+  bar.style.width=strength+"%";
+  if(strength<40) bar.style.background="red";
+  else if(strength<70) bar.style.background="orange";
+  else bar.style.background="limegreen";
+});
+</script>
+
+</body>
+</html>

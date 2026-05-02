@@ -1,0 +1,107 @@
+{% extends "core/base.html" %}
+
+{% block title %}Book Appointment - DOCBOT{% endblock %}
+
+{% block extra_css %}
+<style>
+.booking-section { padding: 120px 0 80px; }
+.card-doc { background: #fff; border-radius: 20px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); margin-bottom: 30px; }
+.slot-btn { display: inline-block; padding: 10px 15px; border: 1px solid #e2e8f0; border-radius: 12px; margin: 5px; cursor: pointer; transition: 0.2s; background: #fff; text-align: center; }
+.slot-btn:hover { border-color: #4f46e5; background: #eef2ff; color: #4f46e5; }
+.slot-btn.selected { background: #4f46e5; color: #fff; border-color: #4f46e5; }
+.slot-btn input[type="radio"] { display: none; }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="booking-section">
+    <div class="container" style="max-width: 900px;">
+        <h2 class="mb-4 text-center">
+            {% if is_followup %}Book Follow-up{% else %}Book Appointment{% endif %}
+        </h2>
+
+        <div class="card-doc d-flex align-items-center gap-4">
+            <div style="width:80px;height:80px;border-radius:50%;background:#4f46e5;color:white;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:bold;">
+                {% if doctor.image %}
+                    <img src="{{ doctor.image }}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
+                {% else %}
+                    {{ doctor.user.first_name|first }}
+                {% endif %}
+            </div>
+            <div>
+                <h4>Dr. {{ doctor.user.get_full_name }}</h4>
+                <div class="text-primary fw-bold">{{ doctor.specialization }}</div>
+                <div class="text-muted">Fee: {% if is_followup %}{{ doctor.follow_up_price|floatformat:0 }}{% else %}{{ doctor.price|floatformat:0 }}{% endif %} EGP</div>
+            </div>
+        </div>
+
+        <div class="card-doc">
+            <h5 class="mb-4">1. Select Clinic Location</h5>
+            <form method="get" id="addressForm">
+                <select name="address" class="form-select" onchange="document.getElementById('addressForm').submit()">
+                    <option value="">Choose a location...</option>
+                    {% for addr in addresses %}
+                        <option value="{{ addr.id }}" {% if selected_address == addr.id|stringformat:"s" %}selected{% endif %}>
+                            {{ addr.full_address }} {% if addr.floor %}(Floor {{ addr.floor }}){% endif %}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+
+        {% if selected_address %}
+        <div class="card-doc">
+            <h5 class="mb-4">2. Select Time Slot</h5>
+            
+            {% if available_slots %}
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="address_id" value="{{ selected_address }}">
+                    
+                    {% regroup available_slots by slot_date as date_slots %}
+                    
+                    <div class="accordion" id="slotsAccordion">
+                        {% for group in date_slots %}
+                        <div class="accordion-item mb-2" style="border-radius:12px; overflow:hidden; border:1px solid #e2e8f0;">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" style="background:#f8fafc; font-weight:600;">
+                                    {{ group.grouper|date:"l, M d, Y" }}
+                                </button>
+                            </h2>
+                            <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" data-bs-parent="#slotsAccordion">
+                                <div class="accordion-body p-3">
+                                    {% for slot in group.list %}
+                                        <label class="slot-btn">
+                                            <input type="radio" name="slot_id" value="{{ slot.id }}" required onclick="selectSlot(this)">
+                                            <div class="fw-bold">{{ slot.start_time|time:"g:i A" }}</div>
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mt-4 text-end">
+                        <button type="submit" class="btn btn-primary btn-lg px-5" id="confirmBtn" disabled style="background:#4f46e5; border:none; border-radius:12px;">Confirm Booking</button>
+                    </div>
+                </form>
+            {% else %}
+                <div class="text-center py-4 text-muted">
+                    No available slots for this location in the upcoming days.
+                </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<script>
+function selectSlot(radio) {
+    document.querySelectorAll('.slot-btn').forEach(btn => btn.classList.remove('selected'));
+    radio.closest('.slot-btn').classList.add('selected');
+    document.getElementById('confirmBtn').disabled = false;
+}
+</script>
+{% endblock %}

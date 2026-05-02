@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.45, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.36, for Linux (x86_64)
 --
 -- Host: localhost    Database: DocBot
 -- ------------------------------------------------------
--- Server version	8.0.45-0ubuntu0.24.04.1
+-- Server version	8.4.8-0ubuntu1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -28,7 +28,6 @@ CREATE TABLE `allergies` (
   `severity` varchar(100) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`patient_id`,`allergy_name`),
   CONSTRAINT `fk_allergies_patient` FOREIGN KEY (`patient_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -40,7 +39,7 @@ CREATE TABLE `allergies` (
 
 LOCK TABLES `allergies` WRITE;
 /*!40000 ALTER TABLE `allergies` DISABLE KEYS */;
-INSERT INTO `allergies` VALUES (1,'Dust','High','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(1,'Pollen','Medium','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(2,'Medicine','High','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(3,'Food','Low','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(4,'Cold','Low','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL);
+INSERT INTO `allergies` VALUES (1,'Dust','High','2026-04-18 12:17:03','2026-04-18 12:17:03'),(1,'Pollen','Medium','2026-04-18 12:17:03','2026-04-18 12:17:03'),(2,'Medicine','High','2026-04-18 12:17:03','2026-04-18 12:17:03'),(3,'Food','Low','2026-04-18 12:17:03','2026-04-18 12:17:03'),(4,'Cold','Low','2026-04-18 12:17:03','2026-04-18 12:17:03');
 /*!40000 ALTER TABLE `allergies` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -58,7 +57,6 @@ CREATE TABLE `appointmentnote` (
   `note` text NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `appointment_id` (`appointment_id`,`id`),
   KEY `fk_note_doctor` (`doctor_id`),
@@ -73,7 +71,7 @@ CREATE TABLE `appointmentnote` (
 
 LOCK TABLES `appointmentnote` WRITE;
 /*!40000 ALTER TABLE `appointmentnote` DISABLE KEYS */;
-INSERT INTO `appointmentnote` VALUES (1,1,2,'Patient stable','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(2,2,2,'Follow up needed','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(3,3,2,'Medication prescribed','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(4,4,4,'Skin condition mild','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(5,5,4,'Appointment canceled','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL);
+INSERT INTO `appointmentnote` VALUES (1,1,2,'Patient stable','2026-04-18 12:17:03','2026-04-18 12:17:03'),(2,2,2,'Follow up needed','2026-04-18 12:17:03','2026-04-18 12:17:03'),(3,3,2,'Medication prescribed','2026-04-18 12:17:03','2026-04-18 12:17:03'),(4,4,4,'Skin condition mild','2026-04-18 12:17:03','2026-04-18 12:17:03'),(5,5,4,'Appointment canceled','2026-04-18 12:17:03','2026-04-18 12:17:03');
 /*!40000 ALTER TABLE `appointmentnote` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -92,13 +90,12 @@ CREATE TABLE `appointmentsymptoms` (
   `severity` varchar(50) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_symptom_appointment` (`appointment_id`),
   KEY `fk_symptom_patient` (`patient_id`),
   CONSTRAINT `fk_symptom_appointment` FOREIGN KEY (`appointment_id`) REFERENCES `doctorappointment` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_symptom_patient` FOREIGN KEY (`patient_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -107,7 +104,7 @@ CREATE TABLE `appointmentsymptoms` (
 
 LOCK TABLES `appointmentsymptoms` WRITE;
 /*!40000 ALTER TABLE `appointmentsymptoms` DISABLE KEYS */;
-INSERT INTO `appointmentsymptoms` VALUES (1,1,1,'Fever','High','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(2,2,3,'Cough','Medium','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(3,3,1,'Headache','Low','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(4,4,3,'Skin rash','Medium','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(5,5,1,'Pain','High','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL);
+INSERT INTO `appointmentsymptoms` VALUES (1,1,1,'Fever','High','2026-04-18 12:17:03','2026-04-18 12:17:03'),(2,2,3,'Cough','Medium','2026-04-18 12:17:03','2026-04-18 12:17:03'),(3,3,1,'Headache','Low','2026-04-18 12:17:03','2026-04-18 12:17:03'),(4,4,3,'Skin rash','Medium','2026-04-18 12:17:03','2026-04-18 12:17:03'),(5,5,1,'Pain','High','2026-04-18 12:17:03','2026-04-18 12:17:03');
 /*!40000 ALTER TABLE `appointmentsymptoms` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -204,7 +201,6 @@ CREATE TABLE `chronicdiseases` (
   `diagnosis_date` date DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`patient_id`,`disease_name`),
   CONSTRAINT `fk_chronic_disease_patient` FOREIGN KEY (`patient_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -216,7 +212,7 @@ CREATE TABLE `chronicdiseases` (
 
 LOCK TABLES `chronicdiseases` WRITE;
 /*!40000 ALTER TABLE `chronicdiseases` DISABLE KEYS */;
-INSERT INTO `chronicdiseases` VALUES (1,'Diabetes','2020-01-01','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(2,'Asthma','2018-01-01','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(3,'Hypertension','2019-01-01','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(4,'Heart Disease','2021-01-01','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(5,'Thyroid','2022-01-01','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL);
+INSERT INTO `chronicdiseases` VALUES (1,'Diabetes','2020-01-01','2026-04-18 12:17:03','2026-04-18 12:17:03'),(2,'Asthma','2018-01-01','2026-04-18 12:17:03','2026-04-18 12:17:03'),(3,'Hypertension','2019-01-01','2026-04-18 12:17:03','2026-04-18 12:17:03'),(4,'Heart Disease','2021-01-01','2026-04-18 12:17:03','2026-04-18 12:17:03'),(5,'Thyroid','2022-01-01','2026-04-18 12:17:03','2026-04-18 12:17:03');
 /*!40000 ALTER TABLE `chronicdiseases` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -233,7 +229,6 @@ CREATE TABLE `currentmedications` (
   `dosage_strength` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`patient_id`,`medication_name`),
   CONSTRAINT `fk_current_med_patient` FOREIGN KEY (`patient_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -245,7 +240,7 @@ CREATE TABLE `currentmedications` (
 
 LOCK TABLES `currentmedications` WRITE;
 /*!40000 ALTER TABLE `currentmedications` DISABLE KEYS */;
-INSERT INTO `currentmedications` VALUES (1,'Aspirin','100mg','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(1,'Panadol','500mg','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(2,'Antibiotic','250mg','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(3,'Vitamin C','1000mg','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(5,'Insulin','10ml','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL);
+INSERT INTO `currentmedications` VALUES (1,'Aspirin','100mg','2026-04-18 12:17:03','2026-04-18 12:17:03'),(1,'Panadol','500mg','2026-04-18 12:17:03','2026-04-18 12:17:03'),(2,'Antibiotic','250mg','2026-04-18 12:17:03','2026-04-18 12:17:03'),(3,'Vitamin C','1000mg','2026-04-18 12:17:03','2026-04-18 12:17:03'),(5,'Insulin','10ml','2026-04-18 12:17:03','2026-04-18 12:17:03');
 /*!40000 ALTER TABLE `currentmedications` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -343,7 +338,7 @@ CREATE TABLE `django_content_type` (
 
 LOCK TABLES `django_content_type` WRITE;
 /*!40000 ALTER TABLE `django_content_type` DISABLE KEYS */;
-INSERT INTO `django_content_type` VALUES (1,'admin','logentry'),(6,'app','allergies'),(7,'app','appointmentnote'),(8,'app','appointmentsymptoms'),(9,'app','chronicdiseases'),(10,'app','currentmedications'),(11,'app','diagnosis'),(12,'app','doctor'),(13,'app','doctoraddress'),(14,'app','doctorappointment'),(15,'app','doctorassistant'),(16,'app','doctorreview'),(17,'app','doctorschedule'),(18,'app','doctortimeslot'),(19,'app','familyhistory'),(20,'app','formersurgeries'),(21,'app','inheritablediseases'),(22,'app','labtests'),(23,'app','measurementtypes'),(24,'app','medicalscans'),(25,'app','medicationreminder'),(26,'app','notification'),(27,'app','patientprofile'),(28,'app','prescribedmedication'),(29,'app','prescription'),(30,'app','remindertimes'),(31,'app','user'),(32,'app','vitalmeasurements'),(2,'auth','group'),(3,'auth','permission'),(4,'contenttypes','contenttype'),(5,'sessions','session');
+INSERT INTO `django_content_type` VALUES (1,'admin','logentry'),(7,'appointment','appointmentnote'),(8,'appointment','appointmentsymptoms'),(14,'appointment','doctorappointment'),(16,'appointment','doctorreview'),(2,'auth','group'),(3,'auth','permission'),(4,'contenttypes','contenttype'),(12,'doctor','doctor'),(13,'doctor','doctoraddress'),(15,'doctor','doctorassistant'),(17,'doctor','doctorschedule'),(18,'doctor','doctortimeslot'),(28,'doctor','prescribedmedication'),(29,'doctor','prescription'),(25,'notification','medicationreminder'),(26,'notification','notification'),(30,'notification','remindertimes'),(6,'patient','allergies'),(9,'patient','chronicdiseases'),(10,'patient','currentmedications'),(11,'patient','diagnosis'),(19,'patient','familyhistory'),(20,'patient','formersurgeries'),(22,'patient','labtests'),(24,'patient','medicalscans'),(27,'patient','patientprofile'),(31,'patient','user'),(32,'patient','vitalmeasurements'),(5,'sessions','session'),(21,'systemadmin','inheritablediseases'),(23,'systemadmin','measurementtypes');
 /*!40000 ALTER TABLE `django_content_type` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -369,7 +364,7 @@ CREATE TABLE `django_migrations` (
 
 LOCK TABLES `django_migrations` WRITE;
 /*!40000 ALTER TABLE `django_migrations` DISABLE KEYS */;
-INSERT INTO `django_migrations` VALUES (1,'contenttypes','0001_initial','2026-04-19 23:37:10.154112'),(2,'contenttypes','0002_remove_content_type_name','2026-04-19 23:37:10.363434'),(3,'auth','0001_initial','2026-04-19 23:37:11.092249'),(4,'auth','0002_alter_permission_name_max_length','2026-04-19 23:37:11.240711'),(5,'auth','0003_alter_user_email_max_length','2026-04-19 23:37:11.252288'),(6,'auth','0004_alter_user_username_opts','2026-04-19 23:37:11.266865'),(7,'auth','0005_alter_user_last_login_null','2026-04-19 23:37:11.281884'),(8,'auth','0006_require_contenttypes_0002','2026-04-19 23:37:11.288010'),(9,'auth','0007_alter_validators_add_error_messages','2026-04-19 23:37:11.304457'),(10,'auth','0008_alter_user_username_max_length','2026-04-19 23:37:11.319918'),(11,'auth','0009_alter_user_last_name_max_length','2026-04-19 23:37:11.332788'),(12,'auth','0010_alter_group_name_max_length','2026-04-19 23:37:11.369634'),(13,'auth','0011_update_proxy_permissions','2026-04-19 23:37:11.386655'),(14,'auth','0012_alter_user_first_name_max_length','2026-04-19 23:37:11.400886'),(15,'app','0001_initial','2026-04-19 23:37:11.477465'),(16,'admin','0001_initial','2026-04-19 23:40:56.582909'),(17,'admin','0002_logentry_remove_auto_add','2026-04-19 23:40:56.605841'),(18,'admin','0003_logentry_add_action_flag_choices','2026-04-19 23:40:56.625062'),(19,'sessions','0001_initial','2026-04-19 23:40:56.749250'),(20,'app','0002_alter_user_id','2026-04-19 23:44:14.744863');
+INSERT INTO `django_migrations` VALUES (1,'contenttypes','0001_initial','2026-04-19 23:37:10.154112'),(2,'contenttypes','0002_remove_content_type_name','2026-04-19 23:37:10.363434'),(3,'auth','0001_initial','2026-04-19 23:37:11.092249'),(4,'auth','0002_alter_permission_name_max_length','2026-04-19 23:37:11.240711'),(5,'auth','0003_alter_user_email_max_length','2026-04-19 23:37:11.252288'),(6,'auth','0004_alter_user_username_opts','2026-04-19 23:37:11.266865'),(7,'auth','0005_alter_user_last_login_null','2026-04-19 23:37:11.281884'),(8,'auth','0006_require_contenttypes_0002','2026-04-19 23:37:11.288010'),(9,'auth','0007_alter_validators_add_error_messages','2026-04-19 23:37:11.304457'),(10,'auth','0008_alter_user_username_max_length','2026-04-19 23:37:11.319918'),(11,'auth','0009_alter_user_last_name_max_length','2026-04-19 23:37:11.332788'),(12,'auth','0010_alter_group_name_max_length','2026-04-19 23:37:11.369634'),(13,'auth','0011_update_proxy_permissions','2026-04-19 23:37:11.386655'),(14,'auth','0012_alter_user_first_name_max_length','2026-04-19 23:37:11.400886'),(16,'admin','0001_initial','2026-04-19 23:40:56.582909'),(17,'admin','0002_logentry_remove_auto_add','2026-04-19 23:40:56.605841'),(18,'admin','0003_logentry_add_action_flag_choices','2026-04-19 23:40:56.625062'),(19,'sessions','0001_initial','2026-04-19 23:40:56.749250');
 /*!40000 ALTER TABLE `django_migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -395,7 +390,7 @@ CREATE TABLE `django_session` (
 
 LOCK TABLES `django_session` WRITE;
 /*!40000 ALTER TABLE `django_session` DISABLE KEYS */;
-INSERT INTO `django_session` VALUES ('asq8rrmldog2kvh2bmvxb1sbfcyp1k66','.eJxVjDsOwjAQBe_iGln-4B8lfc5grb1rHEC2FCcV4u4QKQW0b2bei0XY1hq3QUuckV2YVOz0OybID2o7wTu0W-e5t3WZE98VftDBp470vB7u30GFUb-1KUUISEQFvUZ0rmTjpBTSConFp-A1KdII5mylSsEqT06rZEE7MBDY-wMgRTg0:1wEbvJ:aUW3MeAqUIind3Y5sq1i-aAocEoKTO0KSxvf1oUQATU','2026-05-03 23:51:33.238365');
+INSERT INTO `django_session` VALUES ('50xj3cyqin68g6ailc999asl12v5019u','.eJxVjEEOwiAQRe_C2pBKRxhcuu8ZmoEZpGogKe3KeHdD0oVu_3vvv9VM-5bnvck6L6yu6qJOv1ug-JTSAT-o3KuOtWzrEnRX9EGbnirL63a4fweZWu71aNBjooF8CjikFBOTY-MAyHgE9hHPgBGciLGAEK1JYEYbRCBgUJ8v-vI4Uw:1wFLAy:_6zooXW12aDUmrNPMyjs623R8ZgH6-SOLlQrstkQHpE','2026-05-06 00:10:44.405059'),('5x3mhyrchiev19mhvusvpmwjsvtru14w','.eJxVjEEOwiAQRe_C2pBKRxhcuu8ZmoEZpGogKe3KeHdD0oVu_3vvv9VM-5bnvck6L6yu6qJOv1ug-JTSAT-o3KuOtWzrEnRX9EGbnirL63a4fweZWu71aNBjooF8CjikFBOTY-MAyHgE9hHPgBGciLGAEK1JYEYbRCBgUJ8v-vI4Uw:1wFsvu:0lUt9RoCDGGK34M8_YtpVWtQdByKI9wdpAh6Yq_FCwQ','2026-05-07 12:13:26.992947'),('9wvh2jqt6h8vflm7ka2kdw55j6o9c6e5','.eJxVjL0OAiEQhN-F2hAi_5b2PgNZdhc5NZAcd5Xx3Q3JFdpMMd838xYJ9q2mffCaFhIXYcTpt8uAT24T0APavUvsbVuXLKciDzrkrRO_rof7d1Bh1Lm2Cl3hiCZbWzjrmYweLBUPVMAXHYNX0aE6OwrWBo0ua2ATtIlRfL4XwDiM:1wJ7m2:Pyw4Y_WOolfk-RnSdWGefAjLHlIrEYigfZdAF6k9CN4','2026-05-16 10:40:38.954225'),('ad8etx9xoi7muu31mfjjfg24v2afomrt','.eJxVjEEOwiAQRe_C2pBKRxhcuu8ZmoEZpGogKe3KeHdD0oVu_3vvv9VM-5bnvck6L6yu6qJOv1ug-JTSAT-o3KuOtWzrEnRX9EGbnirL63a4fweZWu71aNBjooF8CjikFBOTY-MAyHgE9hHPgBGciLGAEK1JYEYbRCBgUJ8v-vI4Uw:1wFsVn:Yyo91DO9tNpDp0Or8HYSXcmv_t6Km4RUY1N82jFvIGk','2026-05-07 11:46:27.659901'),('asq8rrmldog2kvh2bmvxb1sbfcyp1k66','.eJxVjDsOwjAQBe_iGln-4B8lfc5grb1rHEC2FCcV4u4QKQW0b2bei0XY1hq3QUuckV2YVOz0OybID2o7wTu0W-e5t3WZE98VftDBp470vB7u30GFUb-1KUUISEQFvUZ0rmTjpBTSConFp-A1KdII5mylSsEqT06rZEE7MBDY-wMgRTg0:1wEbvJ:aUW3MeAqUIind3Y5sq1i-aAocEoKTO0KSxvf1oUQATU','2026-05-03 23:51:33.238365'),('h99vlpyrqaqav8499c3azlq9ujykiojw','.eJxVjDsOwyAQBe9CHSHAfEzK9D4DWth1cBKBZOwqyt2DJRdJOzPvvVmAfcthb7SGBdmVSXb5ZRHSk8oh8AHlXnmqZVuXyI-En7bxqSK9bmf7d5Ch5b4WXgChlFaoQRvjtVao3IB-JO1VinN05GzHVmmppJcOCeLcAxjj4Az7fAGyVTbr:1wFK0V:x6BlIPpvGMTcwzm5b8BQtvfemHgoDv9cpnvGVDZ3Fww','2026-05-05 22:55:51.977864'),('jyh4k5n3ri7sidr10unq8iy26c2uiunl','.eJxVjDsOwyAQBe9CHSHAfEzK9D4DWth1cBKBZOwqyt2DJRdJOzPvvVmAfcthb7SGBdmVSXb5ZRHSk8oh8AHlXnmqZVuXyI-En7bxqSK9bmf7d5Ch5b4WXgChlFaoQRvjtVao3IB-JO1VinN05GzHVmmppJcOCeLcAxjj4Az7fAGyVTbr:1wFJGA:VPbGhGShP4y9DW-s3IfpX3FRFWeM5d-bQ2-BHJx8dUk','2026-05-05 22:07:58.519790'),('qnenpgsrsgsl0ygf9sa6zufwufzg6rak','.eJxVjDsOwyAQBe9CHSHAfEzK9D4DWth1cBKBZOwqyt2DJRdJOzPvvVmAfcthb7SGBdmVSXb5ZRHSk8oh8AHlXnmqZVuXyI-En7bxqSK9bmf7d5Ch5b4WXgChlFaoQRvjtVao3IB-JO1VinN05GzHVmmppJcOCeLcAxjj4Az7fAGyVTbr:1wFLoc:dFUZsrgyzxV5Pwu8ipHiv_lg-8VshGJ7PwC2ILYqn3U','2026-05-06 00:51:42.803248'),('rv7ma1d3j9ifrii71c738j1w1s2s3sth','.eJxVjDsOwyAQBe9CHSHAfEzK9D4DWth1cBKBZOwqyt2DJRdJOzPvvVmAfcthb7SGBdmVSXb5ZRHSk8oh8AHlXnmqZVuXyI-En7bxqSK9bmf7d5Ch5b4WXgChlFaoQRvjtVao3IB-JO1VinN05GzHVmmppJcOCeLcAxjj4Az7fAGyVTbr:1wJ6SN:nEJwdxnDhSI0jcX11cgpq6of3hS28ljG4ZamZ3kKnvg','2026-05-16 09:16:15.654231'),('shrk16d8yq1r6ahm9nhus8qouk0hlkc4','.eJxVjDsOwyAQBe9CHSHAfEzK9D4DWth1cBKBZOwqyt2DJRdJOzPvvVmAfcthb7SGBdmVSXb5ZRHSk8oh8AHlXnmqZVuXyI-En7bxqSK9bmf7d5Ch5b4WXgChlFaoQRvjtVao3IB-JO1VinN05GzHVmmppJcOCeLcAxjj4Az7fAGyVTbr:1wFJUa:j91U0bvMCLXeMI9fWXmPlS4moQx1jKYeA-AxrfpxOCM','2026-05-05 22:22:52.610583'),('zo4oxcy9z9ro0ml5yoxcylyxr1uiheke','.eJxVjEEOwiAQRe_C2pBKRxhcuu8ZmoEZpGogKe3KeHdD0oVu_3vvv9VM-5bnvck6L6yu6qJOv1ug-JTSAT-o3KuOtWzrEnRX9EGbnirL63a4fweZWu71aNBjooF8CjikFBOTY-MAyHgE9hHPgBGciLGAEK1JYEYbRCBgUJ8v-vI4Uw:1wFLQ8:cnnnp-eaU3Q4k-_xvBfWht9HdLd-gcxU8JBmNrvtERc','2026-05-06 00:26:24.417304'),('ztelcamaheid5ugoljb4gidcrkhyavig','.eJxVjDsOwyAQBe9CHSHAfEzK9D4DWth1cBKBZOwqyt2DJRdJOzPvvVmAfcthb7SGBdmVSXb5ZRHSk8oh8AHlXnmqZVuXyI-En7bxqSK9bmf7d5Ch5b4WXgChlFaoQRvjtVao3IB-JO1VinN05GzHVmmppJcOCeLcAxjj4Az7fAGyVTbr:1wFsvM:e9W35y5vVfDgKdBjoBFkaqqW1Q9Pk2LTt9nLToGbWEs','2026-05-07 12:12:52.806790');
 /*!40000 ALTER TABLE `django_session` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -415,6 +410,7 @@ CREATE TABLE `doctor` (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
+  `follow_up_price` float NOT NULL,
   PRIMARY KEY (`user_id`),
   CONSTRAINT `doctor_user_id_382cea53_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
   CONSTRAINT `price_positive` CHECK ((`price` >= 0)),
@@ -428,7 +424,7 @@ CREATE TABLE `doctor` (
 
 LOCK TABLES `doctor` WRITE;
 /*!40000 ALTER TABLE `doctor` DISABLE KEYS */;
-INSERT INTO `doctor` VALUES (2,'Cardiology',10,300,'doc1.jpg','2026-04-18 12:12:43','2026-04-18 12:12:43',NULL),(4,'Dermatology',7,250,'doc2.jpg','2026-04-18 12:12:43','2026-04-18 12:12:43',NULL);
+INSERT INTO `doctor` VALUES (2,'Cardiology',10,300,'doc1.jpg','2026-04-18 12:12:43','2026-04-18 12:12:43',NULL,0),(4,'Dermatology',7,250,'https://res.cloudinary.com/ddvey9irj/image/upload/v1777718451/jstspi5ctfymwvm2prlx.jpg','2026-04-18 12:12:43','2026-05-02 07:40:52',NULL,0);
 /*!40000 ALTER TABLE `doctor` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -448,7 +444,6 @@ CREATE TABLE `doctoraddress` (
   `governorate` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_doctor_address` (`doctor_id`),
   CONSTRAINT `fk_doctor_address` FOREIGN KEY (`doctor_id`) REFERENCES `doctor` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -461,7 +456,7 @@ CREATE TABLE `doctoraddress` (
 
 LOCK TABLES `doctoraddress` WRITE;
 /*!40000 ALTER TABLE `doctoraddress` DISABLE KEYS */;
-INSERT INTO `doctoraddress` VALUES (1,2,'2',10,'Tahrir','Cairo','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(2,2,'3',15,'Nasr','Cairo','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(3,4,'1',5,'Haram','Giza','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(4,4,'4',20,'Dokki','Giza','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(5,2,'5',30,'Maadi','Cairo','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL);
+INSERT INTO `doctoraddress` VALUES (1,2,'2',10,'Tahrir','Cairo','2026-04-18 12:17:03','2026-04-18 12:17:03'),(2,2,'3',15,'Nasr','Cairo','2026-04-18 12:17:03','2026-04-18 12:17:03'),(3,4,'1',5,'Haram','Giza','2026-04-18 12:17:03','2026-04-18 12:17:03'),(4,4,'4',20,'Dokki','Giza','2026-04-18 12:17:03','2026-04-18 12:17:03'),(5,2,'5',30,'Maadi','Cairo','2026-04-18 12:17:03','2026-04-18 12:17:03');
 /*!40000 ALTER TABLE `doctoraddress` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -478,26 +473,27 @@ CREATE TABLE `doctorappointment` (
   `patient_id` int NOT NULL,
   `doctor_id` int NOT NULL,
   `doctor_address_id` int NOT NULL,
-  `status` enum('Booked','In progress','Canceled','Completed') NOT NULL DEFAULT 'Booked',
-  `price` decimal(10,2) NOT NULL,
+  `status` enum('Booked','In progress','Canceled','Completed','No-show') NOT NULL DEFAULT 'Booked',
   `parent_appointment_id` int DEFAULT NULL,
   `is_follow_up` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `deleted_at` timestamp NULL DEFAULT NULL,
+  `canceled_by` int DEFAULT NULL,
+  `follow_up_allowed` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `fk_appointment_slot` (`slot_id`),
   KEY `fk_appointment_patient` (`patient_id`),
   KEY `fk_appointment_doctor` (`doctor_id`),
   KEY `fk_appointment_address` (`doctor_address_id`),
   KEY `fk_parent_appointment` (`parent_appointment_id`),
+  KEY `fk_canceled_by` (`canceled_by`),
   CONSTRAINT `fk_appointment_address` FOREIGN KEY (`doctor_address_id`) REFERENCES `doctoraddress` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_appointment_doctor` FOREIGN KEY (`doctor_id`) REFERENCES `doctor` (`user_id`) ON DELETE CASCADE,
   CONSTRAINT `fk_appointment_patient` FOREIGN KEY (`patient_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_appointment_slot` FOREIGN KEY (`slot_id`) REFERENCES `doctortimeslot` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_parent_appointment` FOREIGN KEY (`parent_appointment_id`) REFERENCES `doctorappointment` (`id`) ON DELETE SET NULL,
-  CONSTRAINT `chk_price` CHECK ((`price` > 0))
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `fk_canceled_by` FOREIGN KEY (`canceled_by`) REFERENCES `user` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_parent_appointment` FOREIGN KEY (`parent_appointment_id`) REFERENCES `doctorappointment` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -506,7 +502,7 @@ CREATE TABLE `doctorappointment` (
 
 LOCK TABLES `doctorappointment` WRITE;
 /*!40000 ALTER TABLE `doctorappointment` DISABLE KEYS */;
-INSERT INTO `doctorappointment` VALUES (1,1,1,2,1,'Booked',300.00,NULL,0,'2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(2,2,3,2,1,'Completed',300.00,NULL,0,'2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(3,3,1,2,2,'In progress',300.00,NULL,0,'2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(4,4,3,4,3,'Booked',250.00,NULL,0,'2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(5,5,1,4,4,'Canceled',250.00,NULL,0,'2026-04-18 12:17:03','2026-04-18 12:17:03',NULL);
+INSERT INTO `doctorappointment` VALUES (1,1,1,2,1,'No-show',NULL,0,'2026-04-18 12:17:03','2026-05-02 07:21:42',NULL,0),(2,2,3,2,1,'Completed',NULL,0,'2026-04-18 12:17:03','2026-04-18 12:17:03',NULL,0),(3,3,1,2,2,'In progress',NULL,0,'2026-04-18 12:17:03','2026-04-18 12:17:03',NULL,0),(4,4,3,4,3,'Completed',NULL,0,'2026-04-18 12:17:03','2026-05-02 07:06:06',NULL,1),(5,5,1,4,4,'Canceled',NULL,0,'2026-04-18 12:17:03','2026-04-18 12:17:03',NULL,0),(6,6,1,2,1,'Booked',NULL,0,'2026-05-02 06:30:01','2026-05-02 06:30:01',NULL,0),(7,13,1,2,1,'Booked',NULL,0,'2026-05-02 07:26:28','2026-05-02 07:26:28',NULL,0);
 /*!40000 ALTER TABLE `doctorappointment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -554,7 +550,6 @@ CREATE TABLE `doctorreview` (
   `comment` text,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_review_doctor` (`doctor_id`),
   KEY `fk_review_patient` (`patient_id`),
@@ -572,7 +567,7 @@ CREATE TABLE `doctorreview` (
 
 LOCK TABLES `doctorreview` WRITE;
 /*!40000 ALTER TABLE `doctorreview` DISABLE KEYS */;
-INSERT INTO `doctorreview` VALUES (1,2,1,1,5,'Excellent','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(2,2,3,2,4,'Good','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(3,4,3,4,5,'Very good','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(4,4,1,5,3,'Average','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(5,2,5,3,4,'Nice','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL);
+INSERT INTO `doctorreview` VALUES (1,2,1,1,5,'Excellent','2026-04-18 12:17:03','2026-04-18 12:17:03'),(2,2,3,2,4,'Good','2026-04-18 12:17:03','2026-04-18 12:17:03'),(3,4,3,4,5,'Very good','2026-04-18 12:17:03','2026-04-18 12:17:03'),(4,4,1,5,3,'Average','2026-04-18 12:17:03','2026-04-18 12:17:03'),(5,2,5,3,4,'Nice','2026-04-18 12:17:03','2026-04-18 12:17:03');
 /*!40000 ALTER TABLE `doctorreview` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -629,11 +624,12 @@ CREATE TABLE `doctortimeslot` (
   `is_booked` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `is_available` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `schedule_id` (`schedule_id`,`slot_date`,`start_time`),
   CONSTRAINT `fk_timeslot_schedule` FOREIGN KEY (`schedule_id`) REFERENCES `doctorschedule` (`id`) ON DELETE CASCADE,
   CONSTRAINT `chk_slot_time` CHECK ((`end_time` > `start_time`))
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=422 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -642,7 +638,7 @@ CREATE TABLE `doctortimeslot` (
 
 LOCK TABLES `doctortimeslot` WRITE;
 /*!40000 ALTER TABLE `doctortimeslot` DISABLE KEYS */;
-INSERT INTO `doctortimeslot` VALUES (1,1,'2026-04-20','10:00:00','10:30:00',0,'2026-04-18 12:17:03','2026-04-18 12:17:03'),(2,1,'2026-04-20','10:30:00','11:00:00',1,'2026-04-18 12:17:03','2026-04-18 12:17:03'),(3,2,'2026-04-21','11:00:00','11:30:00',0,'2026-04-18 12:17:03','2026-04-18 12:17:03'),(4,3,'2026-04-22','09:00:00','09:20:00',0,'2026-04-18 12:17:03','2026-04-18 12:17:03'),(5,4,'2026-04-23','12:00:00','12:30:00',1,'2026-04-18 12:17:03','2026-04-18 12:17:03');
+INSERT INTO `doctortimeslot` VALUES (1,1,'2026-04-20','10:00:00','10:30:00',0,'2026-04-18 12:17:03','2026-04-18 12:17:03',1),(2,1,'2026-04-20','10:30:00','11:00:00',1,'2026-04-18 12:17:03','2026-04-18 12:17:03',1),(3,2,'2026-04-21','11:00:00','11:30:00',0,'2026-04-18 12:17:03','2026-04-18 12:17:03',1),(4,3,'2026-04-22','09:00:00','09:20:00',0,'2026-04-18 12:17:03','2026-04-18 12:17:03',1),(5,4,'2026-04-23','12:00:00','12:30:00',1,'2026-04-18 12:17:03','2026-04-18 12:17:03',1),(6,1,'2026-05-03','10:00:00','10:30:00',1,'2026-05-02 06:09:09','2026-05-02 06:30:01',1),(7,1,'2026-05-03','10:30:00','11:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(8,1,'2026-05-03','11:00:00','11:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(9,1,'2026-05-03','11:30:00','12:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(10,1,'2026-05-03','12:00:00','12:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(11,1,'2026-05-03','12:30:00','13:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(12,1,'2026-05-03','13:00:00','13:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(13,1,'2026-05-03','13:30:00','14:00:00',1,'2026-05-02 06:09:09','2026-05-02 07:26:28',1),(14,1,'2026-05-10','10:00:00','10:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(15,1,'2026-05-10','10:30:00','11:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(16,1,'2026-05-10','11:00:00','11:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(17,1,'2026-05-10','11:30:00','12:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(18,1,'2026-05-10','12:00:00','12:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(19,1,'2026-05-10','12:30:00','13:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(20,1,'2026-05-10','13:00:00','13:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(21,1,'2026-05-10','13:30:00','14:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(22,1,'2026-05-17','10:00:00','10:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(23,1,'2026-05-17','10:30:00','11:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(24,1,'2026-05-17','11:00:00','11:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(25,1,'2026-05-17','11:30:00','12:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(26,1,'2026-05-17','12:00:00','12:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(27,1,'2026-05-17','12:30:00','13:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(28,1,'2026-05-17','13:00:00','13:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(29,1,'2026-05-17','13:30:00','14:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(30,1,'2026-05-24','10:00:00','10:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(31,1,'2026-05-24','10:30:00','11:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(32,1,'2026-05-24','11:00:00','11:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(33,1,'2026-05-24','11:30:00','12:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(34,1,'2026-05-24','12:00:00','12:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(35,1,'2026-05-24','12:30:00','13:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(36,1,'2026-05-24','13:00:00','13:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(37,1,'2026-05-24','13:30:00','14:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(38,1,'2026-05-31','10:00:00','10:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(39,1,'2026-05-31','10:30:00','11:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(40,1,'2026-05-31','11:00:00','11:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(41,1,'2026-05-31','11:30:00','12:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(42,1,'2026-05-31','12:00:00','12:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(43,1,'2026-05-31','12:30:00','13:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(44,1,'2026-05-31','13:00:00','13:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(45,1,'2026-05-31','13:30:00','14:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(46,1,'2026-06-07','10:00:00','10:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(47,1,'2026-06-07','10:30:00','11:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(48,1,'2026-06-07','11:00:00','11:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(49,1,'2026-06-07','11:30:00','12:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(50,1,'2026-06-07','12:00:00','12:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(51,1,'2026-06-07','12:30:00','13:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(52,1,'2026-06-07','13:00:00','13:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(53,1,'2026-06-07','13:30:00','14:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(54,1,'2026-06-14','10:00:00','10:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(55,1,'2026-06-14','10:30:00','11:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(56,1,'2026-06-14','11:00:00','11:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(57,1,'2026-06-14','11:30:00','12:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(58,1,'2026-06-14','12:00:00','12:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(59,1,'2026-06-14','12:30:00','13:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(60,1,'2026-06-14','13:00:00','13:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(61,1,'2026-06-14','13:30:00','14:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(62,1,'2026-06-21','10:00:00','10:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(63,1,'2026-06-21','10:30:00','11:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(64,1,'2026-06-21','11:00:00','11:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(65,1,'2026-06-21','11:30:00','12:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(66,1,'2026-06-21','12:00:00','12:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(67,1,'2026-06-21','12:30:00','13:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(68,1,'2026-06-21','13:00:00','13:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(69,1,'2026-06-21','13:30:00','14:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(70,2,'2026-05-04','11:00:00','11:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(71,2,'2026-05-04','11:30:00','12:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(72,2,'2026-05-04','12:00:00','12:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(73,2,'2026-05-04','12:30:00','13:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(74,2,'2026-05-04','13:00:00','13:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(75,2,'2026-05-04','13:30:00','14:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(76,2,'2026-05-04','14:00:00','14:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(77,2,'2026-05-04','14:30:00','15:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(78,2,'2026-05-11','11:00:00','11:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(79,2,'2026-05-11','11:30:00','12:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(80,2,'2026-05-11','12:00:00','12:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(81,2,'2026-05-11','12:30:00','13:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(82,2,'2026-05-11','13:00:00','13:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(83,2,'2026-05-11','13:30:00','14:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(84,2,'2026-05-11','14:00:00','14:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(85,2,'2026-05-11','14:30:00','15:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(86,2,'2026-05-18','11:00:00','11:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(87,2,'2026-05-18','11:30:00','12:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(88,2,'2026-05-18','12:00:00','12:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(89,2,'2026-05-18','12:30:00','13:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(90,2,'2026-05-18','13:00:00','13:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(91,2,'2026-05-18','13:30:00','14:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(92,2,'2026-05-18','14:00:00','14:30:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(93,2,'2026-05-18','14:30:00','15:00:00',0,'2026-05-02 06:09:09','2026-05-02 06:09:09',1),(94,2,'2026-05-25','11:00:00','11:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(95,2,'2026-05-25','11:30:00','12:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(96,2,'2026-05-25','12:00:00','12:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(97,2,'2026-05-25','12:30:00','13:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(98,2,'2026-05-25','13:00:00','13:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(99,2,'2026-05-25','13:30:00','14:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(100,2,'2026-05-25','14:00:00','14:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(101,2,'2026-05-25','14:30:00','15:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(102,2,'2026-06-01','11:00:00','11:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(103,2,'2026-06-01','11:30:00','12:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(104,2,'2026-06-01','12:00:00','12:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(105,2,'2026-06-01','12:30:00','13:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(106,2,'2026-06-01','13:00:00','13:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(107,2,'2026-06-01','13:30:00','14:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(108,2,'2026-06-01','14:00:00','14:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(109,2,'2026-06-01','14:30:00','15:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(110,2,'2026-06-08','11:00:00','11:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(111,2,'2026-06-08','11:30:00','12:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(112,2,'2026-06-08','12:00:00','12:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(113,2,'2026-06-08','12:30:00','13:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(114,2,'2026-06-08','13:00:00','13:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(115,2,'2026-06-08','13:30:00','14:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(116,2,'2026-06-08','14:00:00','14:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(117,2,'2026-06-08','14:30:00','15:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(118,2,'2026-06-15','11:00:00','11:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(119,2,'2026-06-15','11:30:00','12:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(120,2,'2026-06-15','12:00:00','12:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(121,2,'2026-06-15','12:30:00','13:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(122,2,'2026-06-15','13:00:00','13:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(123,2,'2026-06-15','13:30:00','14:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(124,2,'2026-06-15','14:00:00','14:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(125,2,'2026-06-15','14:30:00','15:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(126,2,'2026-06-22','11:00:00','11:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(127,2,'2026-06-22','11:30:00','12:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(128,2,'2026-06-22','12:00:00','12:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(129,2,'2026-06-22','12:30:00','13:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(130,2,'2026-06-22','13:00:00','13:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(131,2,'2026-06-22','13:30:00','14:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(132,2,'2026-06-22','14:00:00','14:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(133,2,'2026-06-22','14:30:00','15:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(134,3,'2026-05-05','09:00:00','09:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(135,3,'2026-05-05','09:20:00','09:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(136,3,'2026-05-05','09:40:00','10:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(137,3,'2026-05-05','10:00:00','10:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(138,3,'2026-05-05','10:20:00','10:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(139,3,'2026-05-05','10:40:00','11:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(140,3,'2026-05-05','11:00:00','11:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(141,3,'2026-05-05','11:20:00','11:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(142,3,'2026-05-05','11:40:00','12:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(143,3,'2026-05-05','12:00:00','12:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(144,3,'2026-05-05','12:20:00','12:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(145,3,'2026-05-05','12:40:00','13:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(146,3,'2026-05-12','09:00:00','09:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(147,3,'2026-05-12','09:20:00','09:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(148,3,'2026-05-12','09:40:00','10:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(149,3,'2026-05-12','10:00:00','10:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(150,3,'2026-05-12','10:20:00','10:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(151,3,'2026-05-12','10:40:00','11:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(152,3,'2026-05-12','11:00:00','11:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(153,3,'2026-05-12','11:20:00','11:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(154,3,'2026-05-12','11:40:00','12:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(155,3,'2026-05-12','12:00:00','12:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(156,3,'2026-05-12','12:20:00','12:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(157,3,'2026-05-12','12:40:00','13:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(158,3,'2026-05-19','09:00:00','09:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(159,3,'2026-05-19','09:20:00','09:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(160,3,'2026-05-19','09:40:00','10:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(161,3,'2026-05-19','10:00:00','10:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(162,3,'2026-05-19','10:20:00','10:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(163,3,'2026-05-19','10:40:00','11:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(164,3,'2026-05-19','11:00:00','11:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(165,3,'2026-05-19','11:20:00','11:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(166,3,'2026-05-19','11:40:00','12:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(167,3,'2026-05-19','12:00:00','12:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(168,3,'2026-05-19','12:20:00','12:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(169,3,'2026-05-19','12:40:00','13:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(170,3,'2026-05-26','09:00:00','09:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(171,3,'2026-05-26','09:20:00','09:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(172,3,'2026-05-26','09:40:00','10:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(173,3,'2026-05-26','10:00:00','10:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(174,3,'2026-05-26','10:20:00','10:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(175,3,'2026-05-26','10:40:00','11:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(176,3,'2026-05-26','11:00:00','11:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(177,3,'2026-05-26','11:20:00','11:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(178,3,'2026-05-26','11:40:00','12:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(179,3,'2026-05-26','12:00:00','12:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(180,3,'2026-05-26','12:20:00','12:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(181,3,'2026-05-26','12:40:00','13:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(182,3,'2026-06-02','09:00:00','09:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(183,3,'2026-06-02','09:20:00','09:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(184,3,'2026-06-02','09:40:00','10:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(185,3,'2026-06-02','10:00:00','10:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(186,3,'2026-06-02','10:20:00','10:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(187,3,'2026-06-02','10:40:00','11:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(188,3,'2026-06-02','11:00:00','11:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(189,3,'2026-06-02','11:20:00','11:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(190,3,'2026-06-02','11:40:00','12:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(191,3,'2026-06-02','12:00:00','12:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(192,3,'2026-06-02','12:20:00','12:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(193,3,'2026-06-02','12:40:00','13:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(194,3,'2026-06-09','09:00:00','09:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(195,3,'2026-06-09','09:20:00','09:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(196,3,'2026-06-09','09:40:00','10:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(197,3,'2026-06-09','10:00:00','10:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(198,3,'2026-06-09','10:20:00','10:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(199,3,'2026-06-09','10:40:00','11:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(200,3,'2026-06-09','11:00:00','11:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(201,3,'2026-06-09','11:20:00','11:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(202,3,'2026-06-09','11:40:00','12:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(203,3,'2026-06-09','12:00:00','12:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(204,3,'2026-06-09','12:20:00','12:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(205,3,'2026-06-09','12:40:00','13:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(206,3,'2026-06-16','09:00:00','09:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(207,3,'2026-06-16','09:20:00','09:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(208,3,'2026-06-16','09:40:00','10:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(209,3,'2026-06-16','10:00:00','10:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(210,3,'2026-06-16','10:20:00','10:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(211,3,'2026-06-16','10:40:00','11:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(212,3,'2026-06-16','11:00:00','11:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(213,3,'2026-06-16','11:20:00','11:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(214,3,'2026-06-16','11:40:00','12:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(215,3,'2026-06-16','12:00:00','12:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(216,3,'2026-06-16','12:20:00','12:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(217,3,'2026-06-16','12:40:00','13:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(218,3,'2026-06-23','09:00:00','09:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(219,3,'2026-06-23','09:20:00','09:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(220,3,'2026-06-23','09:40:00','10:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(221,3,'2026-06-23','10:00:00','10:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(222,3,'2026-06-23','10:20:00','10:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(223,3,'2026-06-23','10:40:00','11:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(224,3,'2026-06-23','11:00:00','11:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(225,3,'2026-06-23','11:20:00','11:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(226,3,'2026-06-23','11:40:00','12:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(227,3,'2026-06-23','12:00:00','12:20:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(228,3,'2026-06-23','12:20:00','12:40:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(229,3,'2026-06-23','12:40:00','13:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(230,4,'2026-05-06','12:00:00','12:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(231,4,'2026-05-06','12:30:00','13:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(232,4,'2026-05-06','13:00:00','13:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(233,4,'2026-05-06','13:30:00','14:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(234,4,'2026-05-06','14:00:00','14:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(235,4,'2026-05-06','14:30:00','15:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(236,4,'2026-05-06','15:00:00','15:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(237,4,'2026-05-06','15:30:00','16:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(238,4,'2026-05-13','12:00:00','12:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(239,4,'2026-05-13','12:30:00','13:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(240,4,'2026-05-13','13:00:00','13:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(241,4,'2026-05-13','13:30:00','14:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(242,4,'2026-05-13','14:00:00','14:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(243,4,'2026-05-13','14:30:00','15:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(244,4,'2026-05-13','15:00:00','15:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(245,4,'2026-05-13','15:30:00','16:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(246,4,'2026-05-20','12:00:00','12:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(247,4,'2026-05-20','12:30:00','13:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(248,4,'2026-05-20','13:00:00','13:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(249,4,'2026-05-20','13:30:00','14:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(250,4,'2026-05-20','14:00:00','14:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(251,4,'2026-05-20','14:30:00','15:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(252,4,'2026-05-20','15:00:00','15:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(253,4,'2026-05-20','15:30:00','16:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(254,4,'2026-05-27','12:00:00','12:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(255,4,'2026-05-27','12:30:00','13:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(256,4,'2026-05-27','13:00:00','13:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(257,4,'2026-05-27','13:30:00','14:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(258,4,'2026-05-27','14:00:00','14:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(259,4,'2026-05-27','14:30:00','15:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(260,4,'2026-05-27','15:00:00','15:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(261,4,'2026-05-27','15:30:00','16:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(262,4,'2026-06-03','12:00:00','12:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(263,4,'2026-06-03','12:30:00','13:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(264,4,'2026-06-03','13:00:00','13:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(265,4,'2026-06-03','13:30:00','14:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(266,4,'2026-06-03','14:00:00','14:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(267,4,'2026-06-03','14:30:00','15:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(268,4,'2026-06-03','15:00:00','15:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(269,4,'2026-06-03','15:30:00','16:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(270,4,'2026-06-10','12:00:00','12:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(271,4,'2026-06-10','12:30:00','13:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(272,4,'2026-06-10','13:00:00','13:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(273,4,'2026-06-10','13:30:00','14:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(274,4,'2026-06-10','14:00:00','14:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(275,4,'2026-06-10','14:30:00','15:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(276,4,'2026-06-10','15:00:00','15:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(277,4,'2026-06-10','15:30:00','16:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(278,4,'2026-06-17','12:00:00','12:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(279,4,'2026-06-17','12:30:00','13:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(280,4,'2026-06-17','13:00:00','13:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(281,4,'2026-06-17','13:30:00','14:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(282,4,'2026-06-17','14:00:00','14:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(283,4,'2026-06-17','14:30:00','15:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(284,4,'2026-06-17','15:00:00','15:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(285,4,'2026-06-17','15:30:00','16:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(286,4,'2026-06-24','12:00:00','12:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(287,4,'2026-06-24','12:30:00','13:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(288,4,'2026-06-24','13:00:00','13:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(289,4,'2026-06-24','13:30:00','14:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(290,4,'2026-06-24','14:00:00','14:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(291,4,'2026-06-24','14:30:00','15:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(292,4,'2026-06-24','15:00:00','15:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(293,4,'2026-06-24','15:30:00','16:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(294,5,'2026-05-07','10:00:00','10:15:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(295,5,'2026-05-07','10:15:00','10:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(296,5,'2026-05-07','10:30:00','10:45:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(297,5,'2026-05-07','10:45:00','11:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(298,5,'2026-05-07','11:00:00','11:15:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(299,5,'2026-05-07','11:15:00','11:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(300,5,'2026-05-07','11:30:00','11:45:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(301,5,'2026-05-07','11:45:00','12:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(302,5,'2026-05-07','12:00:00','12:15:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(303,5,'2026-05-07','12:15:00','12:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(304,5,'2026-05-07','12:30:00','12:45:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(305,5,'2026-05-07','12:45:00','13:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(306,5,'2026-05-07','13:00:00','13:15:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(307,5,'2026-05-07','13:15:00','13:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(308,5,'2026-05-07','13:30:00','13:45:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(309,5,'2026-05-07','13:45:00','14:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(310,5,'2026-05-14','10:00:00','10:15:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(311,5,'2026-05-14','10:15:00','10:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(312,5,'2026-05-14','10:30:00','10:45:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(313,5,'2026-05-14','10:45:00','11:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(314,5,'2026-05-14','11:00:00','11:15:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(315,5,'2026-05-14','11:15:00','11:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(316,5,'2026-05-14','11:30:00','11:45:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(317,5,'2026-05-14','11:45:00','12:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(318,5,'2026-05-14','12:00:00','12:15:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(319,5,'2026-05-14','12:15:00','12:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(320,5,'2026-05-14','12:30:00','12:45:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(321,5,'2026-05-14','12:45:00','13:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(322,5,'2026-05-14','13:00:00','13:15:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(323,5,'2026-05-14','13:15:00','13:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(324,5,'2026-05-14','13:30:00','13:45:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(325,5,'2026-05-14','13:45:00','14:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(326,5,'2026-05-21','10:00:00','10:15:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(327,5,'2026-05-21','10:15:00','10:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(328,5,'2026-05-21','10:30:00','10:45:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(329,5,'2026-05-21','10:45:00','11:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(330,5,'2026-05-21','11:00:00','11:15:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(331,5,'2026-05-21','11:15:00','11:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(332,5,'2026-05-21','11:30:00','11:45:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(333,5,'2026-05-21','11:45:00','12:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(334,5,'2026-05-21','12:00:00','12:15:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(335,5,'2026-05-21','12:15:00','12:30:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(336,5,'2026-05-21','12:30:00','12:45:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(337,5,'2026-05-21','12:45:00','13:00:00',0,'2026-05-02 06:09:10','2026-05-02 06:09:10',1),(338,5,'2026-05-21','13:00:00','13:15:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(339,5,'2026-05-21','13:15:00','13:30:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(340,5,'2026-05-21','13:30:00','13:45:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(341,5,'2026-05-21','13:45:00','14:00:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(342,5,'2026-05-28','10:00:00','10:15:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(343,5,'2026-05-28','10:15:00','10:30:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(344,5,'2026-05-28','10:30:00','10:45:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(345,5,'2026-05-28','10:45:00','11:00:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(346,5,'2026-05-28','11:00:00','11:15:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(347,5,'2026-05-28','11:15:00','11:30:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(348,5,'2026-05-28','11:30:00','11:45:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(349,5,'2026-05-28','11:45:00','12:00:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(350,5,'2026-05-28','12:00:00','12:15:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(351,5,'2026-05-28','12:15:00','12:30:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(352,5,'2026-05-28','12:30:00','12:45:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(353,5,'2026-05-28','12:45:00','13:00:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(354,5,'2026-05-28','13:00:00','13:15:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(355,5,'2026-05-28','13:15:00','13:30:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(356,5,'2026-05-28','13:30:00','13:45:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(357,5,'2026-05-28','13:45:00','14:00:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(358,5,'2026-06-04','10:00:00','10:15:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(359,5,'2026-06-04','10:15:00','10:30:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(360,5,'2026-06-04','10:30:00','10:45:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(361,5,'2026-06-04','10:45:00','11:00:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(362,5,'2026-06-04','11:00:00','11:15:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(363,5,'2026-06-04','11:15:00','11:30:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(364,5,'2026-06-04','11:30:00','11:45:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(365,5,'2026-06-04','11:45:00','12:00:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(366,5,'2026-06-04','12:00:00','12:15:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(367,5,'2026-06-04','12:15:00','12:30:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(368,5,'2026-06-04','12:30:00','12:45:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(369,5,'2026-06-04','12:45:00','13:00:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(370,5,'2026-06-04','13:00:00','13:15:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(371,5,'2026-06-04','13:15:00','13:30:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(372,5,'2026-06-04','13:30:00','13:45:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(373,5,'2026-06-04','13:45:00','14:00:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(374,5,'2026-06-11','10:00:00','10:15:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(375,5,'2026-06-11','10:15:00','10:30:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(376,5,'2026-06-11','10:30:00','10:45:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(377,5,'2026-06-11','10:45:00','11:00:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(378,5,'2026-06-11','11:00:00','11:15:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(379,5,'2026-06-11','11:15:00','11:30:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(380,5,'2026-06-11','11:30:00','11:45:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(381,5,'2026-06-11','11:45:00','12:00:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(382,5,'2026-06-11','12:00:00','12:15:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(383,5,'2026-06-11','12:15:00','12:30:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(384,5,'2026-06-11','12:30:00','12:45:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(385,5,'2026-06-11','12:45:00','13:00:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(386,5,'2026-06-11','13:00:00','13:15:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(387,5,'2026-06-11','13:15:00','13:30:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(388,5,'2026-06-11','13:30:00','13:45:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(389,5,'2026-06-11','13:45:00','14:00:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(390,5,'2026-06-18','10:00:00','10:15:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(391,5,'2026-06-18','10:15:00','10:30:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(392,5,'2026-06-18','10:30:00','10:45:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(393,5,'2026-06-18','10:45:00','11:00:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(394,5,'2026-06-18','11:00:00','11:15:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(395,5,'2026-06-18','11:15:00','11:30:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(396,5,'2026-06-18','11:30:00','11:45:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(397,5,'2026-06-18','11:45:00','12:00:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(398,5,'2026-06-18','12:00:00','12:15:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(399,5,'2026-06-18','12:15:00','12:30:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(400,5,'2026-06-18','12:30:00','12:45:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(401,5,'2026-06-18','12:45:00','13:00:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(402,5,'2026-06-18','13:00:00','13:15:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(403,5,'2026-06-18','13:15:00','13:30:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(404,5,'2026-06-18','13:30:00','13:45:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(405,5,'2026-06-18','13:45:00','14:00:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(406,5,'2026-06-25','10:00:00','10:15:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(407,5,'2026-06-25','10:15:00','10:30:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(408,5,'2026-06-25','10:30:00','10:45:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(409,5,'2026-06-25','10:45:00','11:00:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(410,5,'2026-06-25','11:00:00','11:15:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(411,5,'2026-06-25','11:15:00','11:30:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(412,5,'2026-06-25','11:30:00','11:45:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(413,5,'2026-06-25','11:45:00','12:00:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(414,5,'2026-06-25','12:00:00','12:15:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(415,5,'2026-06-25','12:15:00','12:30:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(416,5,'2026-06-25','12:30:00','12:45:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(417,5,'2026-06-25','12:45:00','13:00:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(418,5,'2026-06-25','13:00:00','13:15:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(419,5,'2026-06-25','13:15:00','13:30:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(420,5,'2026-06-25','13:30:00','13:45:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1),(421,5,'2026-06-25','13:45:00','14:00:00',0,'2026-05-02 06:09:11','2026-05-02 06:09:11',1);
 /*!40000 ALTER TABLE `doctortimeslot` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -659,7 +655,6 @@ CREATE TABLE `familyhistory` (
   `inherited_from` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`patient_id`,`disease_id`),
   KEY `fk_familyhistory_disease` (`disease_id`),
   CONSTRAINT `fk_familyhistory_disease` FOREIGN KEY (`disease_id`) REFERENCES `inheritablediseases` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
@@ -673,7 +668,7 @@ CREATE TABLE `familyhistory` (
 
 LOCK TABLES `familyhistory` WRITE;
 /*!40000 ALTER TABLE `familyhistory` DISABLE KEYS */;
-INSERT INTO `familyhistory` VALUES (1,1,'Father','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(2,3,'Grandfather','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(3,2,'Mother','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(4,4,'Father','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(5,5,'Mother','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL);
+INSERT INTO `familyhistory` VALUES (1,1,'Father','2026-04-18 12:17:03','2026-04-18 12:17:03'),(2,3,'Grandfather','2026-04-18 12:17:03','2026-04-18 12:17:03'),(3,2,'Mother','2026-04-18 12:17:03','2026-04-18 12:17:03'),(4,4,'Father','2026-04-18 12:17:03','2026-04-18 12:17:03'),(5,5,'Mother','2026-04-18 12:17:03','2026-04-18 12:17:03');
 /*!40000 ALTER TABLE `familyhistory` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -693,7 +688,6 @@ CREATE TABLE `formersurgeries` (
   `hospital_name` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_former_surgeries_patient` (`patient_id`),
   CONSTRAINT `fk_former_surgeries_patient` FOREIGN KEY (`patient_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -706,7 +700,7 @@ CREATE TABLE `formersurgeries` (
 
 LOCK TABLES `formersurgeries` WRITE;
 /*!40000 ALTER TABLE `formersurgeries` DISABLE KEYS */;
-INSERT INTO `formersurgeries` VALUES (1,1,'Appendix','2015-01-01','Dr A','Cairo Hosp','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(2,3,'Knee','2018-01-01','Dr B','Giza Hosp','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(3,2,'Eye','2020-01-01','Dr C','Eye Center','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(4,4,'Heart','2021-01-01','Dr D','Heart Center','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(5,5,'Dental','2019-01-01','Dr E','Clinic','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL);
+INSERT INTO `formersurgeries` VALUES (1,1,'Appendix','2015-01-01','Dr A','Cairo Hosp','2026-04-18 12:17:03','2026-04-18 12:17:03'),(2,3,'Knee','2018-01-01','Dr B','Giza Hosp','2026-04-18 12:17:03','2026-04-18 12:17:03'),(3,2,'Eye','2020-01-01','Dr C','Eye Center','2026-04-18 12:17:03','2026-04-18 12:17:03'),(4,4,'Heart','2021-01-01','Dr D','Heart Center','2026-04-18 12:17:03','2026-04-18 12:17:03'),(5,5,'Dental','2019-01-01','Dr E','Clinic','2026-04-18 12:17:03','2026-04-18 12:17:03');
 /*!40000 ALTER TABLE `formersurgeries` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -750,7 +744,6 @@ CREATE TABLE `labtests` (
   `date` date NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_labtests_patient` (`patient_id`),
   CONSTRAINT `fk_labtests_patient` FOREIGN KEY (`patient_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -763,7 +756,7 @@ CREATE TABLE `labtests` (
 
 LOCK TABLES `labtests` WRITE;
 /*!40000 ALTER TABLE `labtests` DISABLE KEYS */;
-INSERT INTO `labtests` VALUES (1,1,'Blood Test','1.pdf','2026-04-20','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(2,3,'Urine Test','2.pdf','2026-04-21','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(3,1,'Sugar Test','3.pdf','2026-04-22','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(4,3,'CBC','4.pdf','2026-04-23','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(5,5,'Cholesterol','5.pdf','2026-04-24','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL);
+INSERT INTO `labtests` VALUES (1,1,'Blood Test','1.pdf','2026-04-20','2026-04-18 12:17:03','2026-04-18 12:17:03'),(2,3,'Urine Test','2.pdf','2026-04-21','2026-04-18 12:17:03','2026-04-18 12:17:03'),(3,1,'Sugar Test','3.pdf','2026-04-22','2026-04-18 12:17:03','2026-04-18 12:17:03'),(4,3,'CBC','4.pdf','2026-04-23','2026-04-18 12:17:03','2026-04-18 12:17:03'),(5,5,'Cholesterol','5.pdf','2026-04-24','2026-04-18 12:17:03','2026-04-18 12:17:03');
 /*!40000 ALTER TABLE `labtests` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -807,7 +800,6 @@ CREATE TABLE `medicalscans` (
   `result_file` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_medicalscans_patient` (`patient_id`),
   CONSTRAINT `fk_medicalscans_patient` FOREIGN KEY (`patient_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -820,7 +812,7 @@ CREATE TABLE `medicalscans` (
 
 LOCK TABLES `medicalscans` WRITE;
 /*!40000 ALTER TABLE `medicalscans` DISABLE KEYS */;
-INSERT INTO `medicalscans` VALUES (1,1,'X-Ray','2026-04-20','1.pdf','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(2,3,'MRI','2026-04-21','2.pdf','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(3,1,'CT','2026-04-22','3.pdf','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(4,3,'Ultrasound','2026-04-23','4.pdf','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(5,5,'Echo','2026-04-24','5.pdf','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL);
+INSERT INTO `medicalscans` VALUES (1,1,'X-Ray','2026-04-20','1.pdf','2026-04-18 12:17:03','2026-04-18 12:17:03'),(2,3,'MRI','2026-04-21','2.pdf','2026-04-18 12:17:03','2026-04-18 12:17:03'),(3,1,'CT','2026-04-22','3.pdf','2026-04-18 12:17:03','2026-04-18 12:17:03'),(4,3,'Ultrasound','2026-04-23','4.pdf','2026-04-18 12:17:03','2026-04-18 12:17:03'),(5,5,'Echo','2026-04-24','5.pdf','2026-04-18 12:17:03','2026-04-18 12:17:03');
 /*!40000 ALTER TABLE `medicalscans` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -843,6 +835,7 @@ CREATE TABLE `medicationreminder` (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `fk_reminder_patient` (`patient_id`),
   KEY `fk_reminder_prescription` (`prescription_id`),
@@ -857,7 +850,7 @@ CREATE TABLE `medicationreminder` (
 
 LOCK TABLES `medicationreminder` WRITE;
 /*!40000 ALTER TABLE `medicationreminder` DISABLE KEYS */;
-INSERT INTO `medicationreminder` VALUES (1,1,1,'Panadol','2026-04-20','2026-04-25',1,NULL,'2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(2,1,1,'Vitamin C','2026-04-20','2026-04-30',1,NULL,'2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(3,3,2,'Aspirin','2026-04-20','2026-04-27',1,NULL,'2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(4,1,3,'Insulin','2026-04-21','2026-05-21',1,NULL,'2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(5,3,4,'Antibiotic','2026-04-22','2026-04-27',1,NULL,'2026-04-18 12:17:03','2026-04-18 12:17:03',NULL);
+INSERT INTO `medicationreminder` VALUES (1,1,1,'Panadol','2026-04-20','2026-04-25',1,NULL,'2026-04-18 12:17:03','2026-04-18 12:17:03',NULL,1),(2,1,1,'Vitamin C','2026-04-20','2026-04-30',1,NULL,'2026-04-18 12:17:03','2026-04-18 12:17:03',NULL,1),(3,3,2,'Aspirin','2026-04-20','2026-04-27',1,NULL,'2026-04-18 12:17:03','2026-04-18 12:17:03',NULL,1),(4,1,3,'Insulin','2026-04-21','2026-05-21',1,NULL,'2026-04-18 12:17:03','2026-05-02 07:38:55',NULL,1),(5,3,4,'Antibiotic','2026-04-22','2026-04-27',1,NULL,'2026-04-18 12:17:03','2026-04-18 12:17:03',NULL,1);
 /*!40000 ALTER TABLE `medicationreminder` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -875,11 +868,11 @@ CREATE TABLE `notification` (
   `message` text NOT NULL,
   `is_allowed` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `deleted_at` timestamp NULL DEFAULT NULL,
+  `is_read` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `fk_notification_user` (`user_id`),
   CONSTRAINT `fk_notification_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -888,7 +881,7 @@ CREATE TABLE `notification` (
 
 LOCK TABLES `notification` WRITE;
 /*!40000 ALTER TABLE `notification` DISABLE KEYS */;
-INSERT INTO `notification` VALUES (1,1,'Reminder','Take medicine',1,'2026-04-18 12:17:03',NULL),(2,3,'Appointment','Visit tomorrow',1,'2026-04-18 12:17:03',NULL),(3,2,'System','New case',1,'2026-04-18 12:17:03',NULL),(4,4,'Update','Schedule updated',1,'2026-04-18 12:17:03',NULL),(5,5,'Alert','Check data',1,'2026-04-18 12:17:03',NULL);
+INSERT INTO `notification` VALUES (1,1,'Reminder','Take medicine',1,'2026-04-18 12:17:03',1),(2,3,'Appointment','Visit tomorrow',1,'2026-04-18 12:17:03',0),(3,2,'System','New case',1,'2026-04-18 12:17:03',0),(4,4,'Update','Schedule updated',1,'2026-04-18 12:17:03',1),(5,5,'Alert','Check data',1,'2026-04-18 12:17:03',0),(6,1,'Appointment Booked','Your appointment with Dr. Ahmed Ali on 2026-05-03 at 10:00 AM has been booked successfully.',1,'2026-05-02 06:30:01',1),(7,3,'Appointment In progress','Your appointment with Dr. Mona Ibrahim has started.',1,'2026-05-02 07:04:40',0),(8,3,'New Prescription','Dr. Mona Ibrahim has written a new prescription for you on 2026-05-02.',1,'2026-05-02 07:05:27',0),(9,3,'New Prescription','Dr. Mona Ibrahim has written a new prescription for you on 2026-05-02.',1,'2026-05-02 07:05:50',0),(10,3,'Follow-Up Available','Dr. Mona Ibrahim has authorized a follow-up appointment. You can book it within the next 30 days.',1,'2026-05-02 07:06:01',0),(11,3,'Appointment Completed','Your appointment with Dr. Mona Ibrahim on 2026-04-22 has been completed.',1,'2026-05-02 07:06:06',0),(12,1,'Appointment Booked','Your appointment with Dr. Ahmed Ali on 2026-05-03 at 01:30 PM has been booked successfully.',1,'2026-05-02 07:26:28',1);
 /*!40000 ALTER TABLE `notification` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -912,7 +905,6 @@ CREATE TABLE `patientprofile` (
   `emergency_contact_phone` varchar(11) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`user_id`),
   CONSTRAINT `patientprofile_user_id_241fb900_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
   CONSTRAINT `chk_emergency_phone` CHECK (((`emergency_contact_phone` is null) or regexp_like(`emergency_contact_phone`,_utf8mb4'^01[0-2,5][0-9]{8}$')))
@@ -925,7 +917,7 @@ CREATE TABLE `patientprofile` (
 
 LOCK TABLES `patientprofile` WRITE;
 /*!40000 ALTER TABLE `patientprofile` DISABLE KEYS */;
-INSERT INTO `patientprofile` VALUES (1,'2000-01-01','Female','A+',60.00,165.00,0,0,'Ahmed','01011111111','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(2,'1985-03-03','Male','O+',80.00,175.00,1,0,'Ali','01211111111','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(3,'1999-02-02','Female','B+',65.00,170.00,0,1,'Mona','01111111111','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(4,'1990-04-04','Female','AB+',55.00,160.00,0,0,'Sara','01511111111','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(5,'1988-05-05','Male','A-',75.00,180.00,1,1,'Omar','01022222222','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL);
+INSERT INTO `patientprofile` VALUES (1,'2000-01-29','Female',NULL,60.00,165.00,0,0,'Ahmed','01011111111','2026-04-18 12:17:03','2026-05-02 06:49:57'),(2,'1985-03-03','Male','O+',80.00,175.00,1,0,'Ali','01211111111','2026-04-18 12:17:03','2026-04-18 12:17:03'),(3,'1999-02-02','Female','B+',65.00,170.00,0,1,'Mona','01111111111','2026-04-18 12:17:03','2026-04-18 12:17:03'),(4,'1990-04-04','Female','AB+',55.00,160.00,0,0,'Sara','01511111111','2026-04-18 12:17:03','2026-04-18 12:17:03'),(5,'1988-05-05','Male','A-',75.00,180.00,1,1,'Omar','01022222222','2026-04-18 12:17:03','2026-04-18 12:17:03'),(12,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'2026-05-02 06:34:53','2026-05-02 06:34:53');
 /*!40000 ALTER TABLE `patientprofile` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -945,7 +937,6 @@ CREATE TABLE `prescribedmedication` (
   `note` text,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`prescription_id`,`medication_name`),
   CONSTRAINT `fk_prescribed_medication_prescription` FOREIGN KEY (`prescription_id`) REFERENCES `prescription` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -957,7 +948,7 @@ CREATE TABLE `prescribedmedication` (
 
 LOCK TABLES `prescribedmedication` WRITE;
 /*!40000 ALTER TABLE `prescribedmedication` DISABLE KEYS */;
-INSERT INTO `prescribedmedication` VALUES (1,'Panadol','2/day',5,'500mg','','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(1,'Vitamin C','1/day',10,'1000mg','','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(2,'Aspirin','1/day',7,'100mg','','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(3,'Insulin','2/day',30,'10ml','','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(4,'Antibiotic','3/day',5,'250mg','','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL);
+INSERT INTO `prescribedmedication` VALUES (1,'Panadol','2/day',5,'500mg','','2026-04-18 12:17:03','2026-04-18 12:17:03'),(1,'Vitamin C','1/day',10,'1000mg','','2026-04-18 12:17:03','2026-04-18 12:17:03'),(2,'Aspirin','1/day',7,'100mg','','2026-04-18 12:17:03','2026-04-18 12:17:03'),(3,'Insulin','2/day',30,'10ml','','2026-04-18 12:17:03','2026-04-18 12:17:03'),(4,'Antibiotic','3/day',5,'250mg','','2026-04-18 12:17:03','2026-04-18 12:17:03');
 /*!40000 ALTER TABLE `prescribedmedication` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -976,7 +967,6 @@ CREATE TABLE `prescription` (
   `date` date NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_prescription_patient` (`patient_id`),
   KEY `fk_prescription_doctor` (`doctor_id`),
@@ -984,7 +974,7 @@ CREATE TABLE `prescription` (
   CONSTRAINT `fk_prescription_appointment` FOREIGN KEY (`appointment_id`) REFERENCES `doctorappointment` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `fk_prescription_doctor` FOREIGN KEY (`doctor_id`) REFERENCES `doctor` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_prescription_patient` FOREIGN KEY (`patient_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -993,7 +983,7 @@ CREATE TABLE `prescription` (
 
 LOCK TABLES `prescription` WRITE;
 /*!40000 ALTER TABLE `prescription` DISABLE KEYS */;
-INSERT INTO `prescription` VALUES (1,1,2,1,'2026-04-20','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(2,3,2,2,'2026-04-20','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(3,1,4,4,'2026-04-21','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(4,3,4,4,'2026-04-22','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL),(5,1,2,3,'2026-04-23','2026-04-18 12:17:03','2026-04-18 12:17:03',NULL);
+INSERT INTO `prescription` VALUES (1,1,2,1,'2026-04-20','2026-04-18 12:17:03','2026-04-18 12:17:03'),(2,3,2,2,'2026-04-20','2026-04-18 12:17:03','2026-04-18 12:17:03'),(3,1,4,4,'2026-04-21','2026-04-18 12:17:03','2026-04-18 12:17:03'),(4,3,4,4,'2026-04-22','2026-04-18 12:17:03','2026-04-18 12:17:03'),(5,1,2,3,'2026-04-23','2026-04-18 12:17:03','2026-04-18 12:17:03'),(6,3,4,4,'2026-05-02','2026-05-02 07:05:27','2026-05-02 07:05:27'),(7,3,4,4,'2026-05-02','2026-05-02 07:05:50','2026-05-02 07:05:50');
 /*!40000 ALTER TABLE `prescription` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1037,7 +1027,7 @@ CREATE TABLE `user` (
   `password` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `phone` varchar(11) DEFAULT NULL,
-  `role` enum('Patient','Doctor','Moderator','Super_Admin') NOT NULL DEFAULT 'Patient',
+  `role` enum('Patient','Doctor','Doctor_Assistant','Moderator','Super_Admin') NOT NULL DEFAULT 'Patient',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
@@ -1060,7 +1050,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'mai','Mai','Kamel','pbkdf2_sha256$1200000$QFDi97wllHiopvs5Mtb3dC$Wm1vpmBaAxORK+fIpgR0rqZo/A/k8yTWXjqGgLP5X9A=','mai@gmail.com','01012345678','Patient','2026-04-18 12:12:43','2026-04-19 23:49:21',NULL,1,0,0,NULL,'2026-04-20 01:07:22'),(2,'doc_ahmed','Ahmed','Ali','pbkdf2_sha256$1200000$qA8rB6RHDefajXlvu7rsOv$/XO/toMl1PQU2nLiqTBa500R73+HHf6CC4Y5BZHWa44=','ahmed@doc.com','01112345678','Doctor','2026-04-18 12:12:43','2026-04-19 23:49:22',NULL,1,0,0,NULL,'2026-04-20 01:07:22'),(3,'sara','Sara','Hassan','pbkdf2_sha256$1200000$JqZsbvRzDARaQbAmvGTXdM$DKxqF1basHhiVf7AAAldNrRpGugmE5fY33Qv9AI0+Rg=','sara@gmail.com','01212345678','Patient','2026-04-18 12:12:43','2026-04-19 23:49:23',NULL,1,0,0,NULL,'2026-04-20 01:07:22'),(4,'doc_mona','Mona','Ibrahim','pbkdf2_sha256$1200000$WDfbdNGasq5mlkY49l0MKg$H+JLbCVJwMk+JBbv1dL2uv5zUe7uve0EpbnL9CbCPT8=','mona@doc.com','01512345678','Doctor','2026-04-18 12:12:43','2026-04-19 23:49:24',NULL,1,0,0,NULL,'2026-04-20 01:07:22'),(5,'omar','Omar','Nabil','pbkdf2_sha256$1200000$mQPRczynNvV83qjKcpnTx7$2EojI7YgvR8fnHiyNWdKZ9BLSr0C8aI8ZdxqSFs/mhI=','omar@gmail.com','01098765432','Patient','2026-04-18 12:12:43','2026-04-19 23:49:25',NULL,1,0,0,NULL,'2026-04-20 01:07:22'),(12,'admin','','','pbkdf2_sha256$1200000$j4OfBjBRdExCyGf0T5q48G$emw96jVV54uCan0x34+YlI/zEtDlNlOotAymMdybbZo=','admin@gmail.com',NULL,'Patient','2026-04-19 23:51:07','2026-04-19 23:51:33',NULL,1,1,1,'2026-04-19 23:51:33','2026-04-19 23:51:06');
+INSERT INTO `user` VALUES (1,'mai','Mai','Kamel','pbkdf2_sha256$1200000$QFDi97wllHiopvs5Mtb3dC$Wm1vpmBaAxORK+fIpgR0rqZo/A/k8yTWXjqGgLP5X9A=','mai@gmail.com','01012345678','Patient','2026-04-18 12:12:43','2026-05-02 10:21:41',NULL,1,0,0,'2026-05-02 10:21:42','2026-04-20 01:07:22'),(2,'doc_ahmed','Ahmed','Ali','pbkdf2_sha256$1200000$qA8rB6RHDefajXlvu7rsOv$/XO/toMl1PQU2nLiqTBa500R73+HHf6CC4Y5BZHWa44=','ahmed@doc.com','01112345678','Doctor','2026-04-18 12:12:43','2026-04-19 23:49:22',NULL,1,0,0,NULL,'2026-04-20 01:07:22'),(3,'sara','Sara','Hassan','pbkdf2_sha256$1200000$JqZsbvRzDARaQbAmvGTXdM$DKxqF1basHhiVf7AAAldNrRpGugmE5fY33Qv9AI0+Rg=','sara@gmail.com','01212345678','Patient','2026-04-18 12:12:43','2026-05-02 10:20:01',NULL,1,0,0,NULL,'2026-04-20 01:07:22'),(4,'doc_mona','Mona','Ibrahim','pbkdf2_sha256$1200000$WDfbdNGasq5mlkY49l0MKg$H+JLbCVJwMk+JBbv1dL2uv5zUe7uve0EpbnL9CbCPT8=','mona@doc.com','01512345678','Doctor','2026-04-18 12:12:43','2026-05-02 10:40:38',NULL,1,0,0,'2026-05-02 10:40:39','2026-04-20 01:07:22'),(5,'omar','Omar','Nabil','pbkdf2_sha256$1200000$mQPRczynNvV83qjKcpnTx7$2EojI7YgvR8fnHiyNWdKZ9BLSr0C8aI8ZdxqSFs/mhI=','omar@gmail.com','01098765432','Patient','2026-04-18 12:12:43','2026-04-23 12:13:26',NULL,1,0,0,'2026-04-23 12:13:27','2026-04-20 01:07:22'),(12,'admin','','','pbkdf2_sha256$1200000$j4OfBjBRdExCyGf0T5q48G$emw96jVV54uCan0x34+YlI/zEtDlNlOotAymMdybbZo=','admin@gmail.com',NULL,'Super_Admin','2026-04-19 23:51:07','2026-05-02 10:08:32',NULL,1,1,1,'2026-05-02 10:08:33','2026-04-19 23:51:06');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1165,4 +1155,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-04-20  3:34:42
+-- Dump completed on 2026-05-02 16:37:34

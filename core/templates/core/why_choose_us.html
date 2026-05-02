@@ -1,0 +1,31 @@
+{% extends "core/base.html" %}
+{% block title %}Why Choose Us - DOCBOT{% endblock %}
+{% block extra_css %}
+<style>
+.why-section{padding:120px 0 80px;text-align:center;}
+.why-section h2{font-size:40px;font-weight:700;color:#0b1220;margin-bottom:15px;}
+.why-section .subtitle{color:#64748b;max-width:600px;margin:0 auto 60px;font-size:18px;}
+.why-card{background:#fff;border:1px solid #e2e8f0;border-radius:20px;padding:30px;text-align:center;transition:all 0.3s ease;height:100%;}
+.why-card:hover{transform:translateY(-8px);box-shadow:0 15px 35px rgba(0,0,0,0.05);border-color:#4f46e5;}
+.why-icon{font-size:40px;color:#4f46e5;margin-bottom:20px;}
+.why-card h4{font-size:22px;font-weight:700;color:#2d3748;margin-bottom:15px;}
+.why-card p{font-size:16px;color:#4a5568;line-height:1.6;}
+
+</style>
+{% endblock %}
+{% block content %}
+<section class="why-section">
+  <div class="container">
+    <h2>Why Choose Us</h2>
+    <p class="subtitle">DocBot combines AI technology with verified medical expertise for the best healthcare experience</p>
+    <div class="row g-4">
+      <div class="col-lg-4 col-md-6"><div class="why-card"><div class="why-icon"><i class="bi bi-shield-fill-check"></i></div><h4>Secure &amp; Private</h4><p>Industry-leading security protecting your medical data with total confidentiality.</p></div></div>
+      <div class="col-lg-4 col-md-6"><div class="why-card"><div class="why-icon"><i class="bi bi-people"></i></div><h4>Verified Doctors</h4><p>A curated network of licensed specialists verified and managed by our team.</p></div></div>
+      <div class="col-lg-4 col-md-6"><div class="why-card"><div class="why-icon"><i class="bi bi-cpu"></i></div><h4>AI-Powered</h4><p>Evidence-based AI engine built on clinical protocols for reliable health assessments.</p></div></div>
+      <div class="col-lg-4 col-md-6"><div class="why-card"><div class="why-icon"><i class="bi bi-clock-history"></i></div><h4>24/7 Available</h4><p>Access your health records and AI assistant anytime, anywhere.</p></div></div>
+      <div class="col-lg-4 col-md-6"><div class="why-card"><div class="why-icon"><i class="bi bi-geo-alt"></i></div><h4>Local Specialists</h4><p>Find doctors near you filtered by governorate and specialization.</p></div></div>
+      <div class="col-lg-4 col-md-6"><div class="why-card"><div class="why-icon"><i class="bi bi-wallet2"></i></div><h4>Transparent Pricing</h4><p>See doctor prices upfront. No hidden fees or surprises.</p></div></div>
+    </div>
+  </div>
+</section>
+{% endblock %}

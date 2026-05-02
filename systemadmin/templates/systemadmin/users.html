@@ -1,0 +1,138 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}Manage Users - DOCBOT{% endblock %}
+{% block page_title %}Manage Users{% endblock %}
+
+{% block sidebar_nav %}
+<li><a href="{% url 'admin_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'admin_users' %}" class="active"><i class="bi bi-people"></i> Users</a></li>
+<li><a href="{% url 'admin_doctors' %}"><i class="bi bi-heart-pulse"></i> Doctors</a></li>
+{% if user.role == 'Super_Admin' %}
+<li><a href="{% url 'admin_assistant_add' %}"><i class="bi bi-person-badge"></i> Doctor Assistants</a></li>
+<li><a href="{% url 'admin_measurement_types' %}"><i class="bi bi-rulers"></i> Measurement Types</a></li>
+<li><a href="{% url 'admin_inheritable_diseases' %}"><i class="bi bi-diagram-3"></i> Inheritable Diseases</a></li>
+{% endif %}
+<li><a href="{% url 'admin_reviews' %}"><i class="bi bi-star"></i> Reviews</a></li>
+{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom flex-wrap gap-3">
+        <h5 class="m-0">System Users</h5>
+        <form method="get" class="d-flex gap-2">
+            <input type="text" name="search" class="form-control" placeholder="Search name/email..." value="{{ search }}">
+            <select name="role" class="form-select" style="min-width:150px;">
+                <option value="">All Roles</option>
+                <option value="Patient" {% if current_role == 'Patient' %}selected{% endif %}>Patient</option>
+                <option value="Doctor" {% if current_role == 'Doctor' %}selected{% endif %}>Doctor</option>
+                <option value="Doctor_Assistant" {% if current_role == 'Doctor_Assistant' %}selected{% endif %}>Doctor Assistant</option>
+                <option value="Moderator" {% if current_role == 'Moderator' %}selected{% endif %}>Moderator</option>
+                <option value="Super_Admin" {% if current_role == 'Super_Admin' %}selected{% endif %}>Super Admin</option>
+            </select>
+            <button type="submit" class="btn-primary-custom"><i class="bi bi-search"></i></button>
+            <a href="{% url 'admin_users' %}" class="btn btn-outline-secondary">Clear</a>
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-clean align-middle">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Joined</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <td class="fw-bold">{{ u.username }}</td>
+                    <td>{{ u.get_full_name }}</td>
+                    <td>{{ u.email }}</td>
+                    <td>
+                        <span class="badge 
+                            {% if u.role == 'Super_Admin' %}bg-danger
+                            {% elif u.role == 'Moderator' %}bg-warning text-dark
+                            {% elif u.role == 'Doctor' %}bg-primary
+                            {% elif u.role == 'Doctor_Assistant' %}bg-info text-dark
+                            {% else %}bg-secondary{% endif %}">
+                            {% if u.role == 'Super_Admin' %}Super Admin
+                            {% elif u.role == 'Doctor_Assistant' %}Doctor Assistant
+                            {% else %}{{ u.role }}{% endif %}
+                        </span>
+                        {% if not u.is_active or u.deleted_at %}
+                        <span class="badge bg-danger ms-1">Deactivated</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ u.date_joined|date:"M d, Y" }}</td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            {% if request.user.role == 'Super_Admin' %}
+                            <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editRoleModal{{ u.id }}">Role</button>
+                            {% endif %}
+                            
+                            {% if u.id != request.user.id %}
+                                {% if request.user.role == 'Super_Admin' or u.role != 'Super_Admin' %}
+                                    {% if u.is_active and not u.deleted_at %}
+                                    <form method="post" action="{% url 'admin_user_delete' u.id %}" onsubmit="return confirm('Deactivate this user? They will no longer be able to log in.');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                    </form>
+                                    {% else %}
+                                    <form method="post" action="{% url 'admin_user_reactivate' u.id %}" onsubmit="return confirm('Reactivate this user? They will regain access.');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-success"><i class="bi bi-arrow-counterclockwise"></i> Reactivate</button>
+                                    </form>
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                        </div>
+
+                        <!-- Edit Role Modal -->
+                        {% if request.user.role == 'Super_Admin' %}
+                        <div class="modal fade" id="editRoleModal{{ u.id }}" tabindex="-1">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title">Edit Role: {{ u.username }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                              </div>
+                              <form method="post" action="{% url 'admin_user_edit_role' u.id %}">
+                                {% csrf_token %}
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">Select New Role</label>
+                                        <select name="role" class="form-select" required>
+                                            <option value="Patient" {% if u.role == 'Patient' %}selected{% endif %}>Patient</option>
+                                            <option value="Doctor" {% if u.role == 'Doctor' %}selected{% endif %}>Doctor</option>
+                                            <option value="Doctor_Assistant" {% if u.role == 'Doctor_Assistant' %}selected{% endif %}>Doctor Assistant</option>
+                                            <option value="Moderator" {% if u.role == 'Moderator' %}selected{% endif %}>Moderator</option>
+                                            <option value="Super_Admin" {% if u.role == 'Super_Admin' %}selected{% endif %}>Super Admin</option>
+                                        </select>
+                                    </div>
+                                    <div class="alert alert-warning"><i class="bi bi-exclamation-triangle"></i> Changing a user's role affects their system access and functionality immediately.</div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary" style="background:#4f46e5;border:none;">Save Role</button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-4 text-muted">No users found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

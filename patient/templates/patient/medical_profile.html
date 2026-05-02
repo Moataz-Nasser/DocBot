@@ -1,0 +1,457 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}Medical Profile - DOCBOT{% endblock %}
+{% block page_title %}Medical Profile{% endblock %}
+
+{% block sidebar_nav %}
+<li><a href="{% url 'patient_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'patient_profile' %}"><i class="bi bi-person"></i> My Profile</a></li>
+<li><a href="{% url 'medical_profile' %}" class="active"><i class="bi bi-heart-pulse"></i> Medical Profile</a></li>
+<li><a href="{% url 'patient_appointments' %}"><i class="bi bi-calendar-check"></i> Appointments</a></li>
+<li><a href="{% url 'patient_prescriptions' %}"><i class="bi bi-prescription2"></i> Prescriptions</a></li>
+<li><a href="{% url 'patient_diagnoses' %}"><i class="bi bi-clipboard-pulse"></i> Diagnoses</a></li>
+<li><a href="{% url 'patient_reminders' %}"><i class="bi bi-alarm"></i> Reminders</a></li>
+<li><a href="{% url 'chatbot_chat' %}"><i class="bi bi-robot"></i> AI Chatbot</a></li>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.nav-pills .nav-link { border-radius: 10px; color: #475569; padding: 10px 20px; font-weight: 500; margin-right: 5px; margin-bottom: 10px; }
+.nav-pills .nav-link.active { background-color: #4f46e5; color: #fff; }
+.delete-btn { color: #ef4444; background: none; border: none; cursor: pointer; padding: 5px; }
+.delete-btn:hover { color: #dc2626; }
+.add-btn { background: #eef2ff; color: #4f46e5; border: none; padding: 8px 15px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+.add-btn:hover { background: #e0e7ff; }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Quick Access Menu -->
+    <div class="col-md-3 mb-4">
+        <div class="content-card p-3">
+            <h6 class="mb-3 ps-2 border-bottom pb-2">Record Types</h6>
+            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <button class="nav-link active text-start" data-bs-toggle="pill" data-bs-target="#v-pills-basic" type="button">Basic Metrics</button>
+                <button class="nav-link text-start" data-bs-toggle="pill" data-bs-target="#v-pills-allergies" type="button">Allergies</button>
+                <button class="nav-link text-start" data-bs-toggle="pill" data-bs-target="#v-pills-chronic" type="button">Chronic Diseases</button>
+                <button class="nav-link text-start" data-bs-toggle="pill" data-bs-target="#v-pills-meds" type="button">Current Medications</button>
+                <button class="nav-link text-start" data-bs-toggle="pill" data-bs-target="#v-pills-surgeries" type="button">Surgeries</button>
+                <button class="nav-link text-start" data-bs-toggle="pill" data-bs-target="#v-pills-family" type="button">Family History</button>
+                
+                <a href="{% url 'vitals_list' %}" class="nav-link text-start mt-3" style="background: #f8fafc;"><i class="bi bi-box-arrow-up-right me-2"></i>Vitals Log</a>
+                <a href="{% url 'lab_tests_list' %}" class="nav-link text-start" style="background: #f8fafc;"><i class="bi bi-box-arrow-up-right me-2"></i>Lab Tests</a>
+                <a href="{% url 'scans_list' %}" class="nav-link text-start" style="background: #f8fafc;"><i class="bi bi-box-arrow-up-right me-2"></i>Medical Scans</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Area -->
+    <div class="col-md-9">
+        <div class="tab-content" id="v-pills-tabContent">
+            
+            <!-- Basic Metrics -->
+            <div class="tab-pane fade show active" id="v-pills-basic">
+                <div class="content-card">
+                    <h5 class="mb-4 pb-3 border-bottom">Basic Medical Information</h5>
+                    <form method="post" action="{% url 'medical_profile_update' %}">
+                        {% csrf_token %}
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <label class="form-label">Date of Birth</label>
+                                <input type="date" name="date_of_birth" class="form-control" value="{{ profile.date_of_birth|date:'Y-m-d' }}">
+                                {% if profile.age %}<div class="text-muted mt-1" style="font-size:12px;">Age: {{ profile.age }} years</div>{% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Gender</label>
+                                <select name="gender" class="form-select">
+                                    <option value="">Select</option>
+                                    <option value="Male" {% if profile.gender == 'Male' %}selected{% endif %}>Male</option>
+                                    <option value="Female" {% if profile.gender == 'Female' %}selected{% endif %}>Female</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Blood Type</label>
+                                <select name="blood_type" class="form-select">
+                                    <option value="">Select</option>
+                                    <option value="A+" {% if profile.blood_type == 'A+' %}selected{% endif %}>A+</option>
+                                    <option value="A-" {% if profile.blood_type == 'A-' %}selected{% endif %}>A-</option>
+                                    <option value="B+" {% if profile.blood_type == 'B+' %}selected{% endif %}>B+</option>
+                                    <option value="B-" {% if profile.blood_type == 'B-' %}selected{% endif %}>B-</option>
+                                    <option value="AB+" {% if profile.blood_type == 'AB+' %}selected{% endif %}>AB+</option>
+                                    <option value="AB-" {% if profile.blood_type == 'AB-' %}selected{% endif %}>AB-</option>
+                                    <option value="O+" {% if profile.blood_type == 'O+' %}selected{% endif %}>O+</option>
+                                    <option value="O-" {% if profile.blood_type == 'O-' %}selected{% endif %}>O-</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Weight (kg)</label>
+                                <input type="number" step="0.1" name="weight" class="form-control" value="{{ profile.weight|default:'' }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Height (cm)</label>
+                                <input type="number" step="0.1" name="height" class="form-control" value="{{ profile.height|default:'' }}">
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end pb-2">
+                                <div class="form-check me-4">
+                                    <input class="form-check-input" type="checkbox" name="is_smoker" id="smoker" {% if profile.is_smoker %}checked{% endif %}>
+                                    <label class="form-check-label" for="smoker">Smoker</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="is_left_handed" id="lefthanded" {% if profile.is_left_handed %}checked{% endif %}>
+                                    <label class="form-check-label" for="lefthanded">Left Handed</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Emergency Contact Name</label>
+                                <input type="text" name="emergency_contact_name" class="form-control" value="{{ profile.emergency_contact_name|default:'' }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Emergency Contact Phone</label>
+                                <input type="text" name="emergency_contact_phone" class="form-control" value="{{ profile.emergency_contact_phone|default:'' }}">
+                            </div>
+                        </div>
+                        <div class="text-end mt-4 pt-3 border-top">
+                            <button type="submit" class="btn-primary-custom">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Allergies -->
+            <div class="tab-pane fade" id="v-pills-allergies">
+                <div class="content-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                        <h5 class="m-0">Allergies</h5>
+                        <button class="add-btn" data-bs-toggle="modal" data-bs-target="#addAllergyModal"><i class="bi bi-plus"></i> Add</button>
+                    </div>
+                    {% if allergies %}
+                    <div class="table-responsive">
+                        <table class="table table-clean">
+                            <thead><tr><th>Allergy Name</th><th>Severity</th><th>Action</th></tr></thead>
+                            <tbody>
+                                {% for a in allergies %}
+                                <tr>
+                                    <td>{{ a.allergy_name }}</td>
+                                    <td>{{ a.severity|default:"-" }}</td>
+                                    <td>
+                                        <form method="post" action="{% url 'allergy_delete' %}" style="display:inline;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="allergy_name" value="{{ a.allergy_name }}">
+                                            <button type="submit" class="delete-btn" onclick="return confirm('Remove this allergy?');"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 text-muted">No allergies recorded.</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Chronic Diseases -->
+            <div class="tab-pane fade" id="v-pills-chronic">
+                <div class="content-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                        <h5 class="m-0">Chronic Diseases</h5>
+                        <button class="add-btn" data-bs-toggle="modal" data-bs-target="#addChronicModal"><i class="bi bi-plus"></i> Add</button>
+                    </div>
+                    {% if chronic_diseases %}
+                    <div class="table-responsive">
+                        <table class="table table-clean">
+                            <thead><tr><th>Disease Name</th><th>Diagnosis Date</th><th>Action</th></tr></thead>
+                            <tbody>
+                                {% for c in chronic_diseases %}
+                                <tr>
+                                    <td>{{ c.disease_name }}</td>
+                                    <td>{{ c.diagnosis_date|date:"M d, Y"|default:"Unknown" }}</td>
+                                    <td>
+                                        <form method="post" action="{% url 'chronic_disease_delete' %}" style="display:inline;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="disease_name" value="{{ c.disease_name }}">
+                                            <button type="submit" class="delete-btn" onclick="return confirm('Remove this chronic disease?');"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 text-muted">No chronic diseases recorded.</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Current Medications -->
+            <div class="tab-pane fade" id="v-pills-meds">
+                <div class="content-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                        <h5 class="m-0">Current Medications</h5>
+                        <button class="add-btn" data-bs-toggle="modal" data-bs-target="#addMedModal"><i class="bi bi-plus"></i> Add</button>
+                    </div>
+                    {% if current_medications %}
+                    <div class="table-responsive">
+                        <table class="table table-clean">
+                            <thead><tr><th>Medication Name</th><th>Dosage Strength</th><th>Action</th></tr></thead>
+                            <tbody>
+                                {% for m in current_medications %}
+                                <tr>
+                                    <td>{{ m.medication_name }}</td>
+                                    <td>{{ m.dosage_strength|default:"-" }}</td>
+                                    <td>
+                                        <form method="post" action="{% url 'medication_delete' %}" style="display:inline;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="medication_name" value="{{ m.medication_name }}">
+                                            <button type="submit" class="delete-btn" onclick="return confirm('Remove this medication?');"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 text-muted">No current medications recorded.</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Surgeries -->
+            <div class="tab-pane fade" id="v-pills-surgeries">
+                <div class="content-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                        <h5 class="m-0">Former Surgeries</h5>
+                        <button class="add-btn" data-bs-toggle="modal" data-bs-target="#addSurgeryModal"><i class="bi bi-plus"></i> Add</button>
+                    </div>
+                    {% if surgeries %}
+                    <div class="table-responsive">
+                        <table class="table table-clean">
+                            <thead><tr><th>Surgery</th><th>Date</th><th>Doctor</th><th>Hospital</th><th>Action</th></tr></thead>
+                            <tbody>
+                                {% for s in surgeries %}
+                                <tr>
+                                    <td>{{ s.surgery_name }}</td>
+                                    <td>{{ s.date|date:"M d, Y" }}</td>
+                                    <td>{{ s.doctor_name|default:"-" }}</td>
+                                    <td>{{ s.hospital_name|default:"-" }}</td>
+                                    <td>
+                                        <form method="post" action="{% url 'surgery_delete' s.id %}" style="display:inline;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="pk" value="{{ s.id }}">
+                                            <button type="submit" class="delete-btn" onclick="return confirm('Remove this surgery?');"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 text-muted">No surgeries recorded.</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Family History -->
+            <div class="tab-pane fade" id="v-pills-family">
+                <div class="content-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                        <h5 class="m-0">Family History</h5>
+                        <button class="add-btn" data-bs-toggle="modal" data-bs-target="#addFamilyModal"><i class="bi bi-plus"></i> Add</button>
+                    </div>
+                    {% if family_history %}
+                    <div class="table-responsive">
+                        <table class="table table-clean">
+                            <thead><tr><th>Disease</th><th>Inherited From</th><th>Action</th></tr></thead>
+                            <tbody>
+                                {% for f in family_history %}
+                                <tr>
+                                    <td>{{ f.disease.disease_name }}</td>
+                                    <td>{{ f.inherited_from|default:"-" }}</td>
+                                    <td>
+                                        <form method="post" action="{% url 'family_history_delete' %}" style="display:inline;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="disease_id" value="{{ f.disease.id }}">
+                                            <button type="submit" class="delete-btn" onclick="return confirm('Remove this record?');"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 text-muted">No family history recorded.</div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- MODALS -->
+
+<!-- Allergy Modal -->
+<div class="modal fade" id="addAllergyModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Allergy</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="post" action="{% url 'allergy_add' %}">
+        {% csrf_token %}
+        <div class="modal-body">
+            <div class="mb-3">
+                <label class="form-label">Allergy Name</label>
+                <input type="text" name="allergy_name" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Severity</label>
+                <input type="text" name="severity" class="form-control" placeholder="e.g. Mild, Severe">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Add</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Chronic Disease Modal -->
+<div class="modal fade" id="addChronicModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Chronic Disease</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="post" action="{% url 'chronic_disease_add' %}">
+        {% csrf_token %}
+        <div class="modal-body">
+            <div class="mb-3">
+                <label class="form-label">Disease Name</label>
+                <input type="text" name="disease_name" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Diagnosis Date</label>
+                <input type="date" name="diagnosis_date" class="form-control">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Add</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Medication Modal -->
+<div class="modal fade" id="addMedModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Medication</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="post" action="{% url 'medication_add' %}">
+        {% csrf_token %}
+        <div class="modal-body">
+            <div class="mb-3">
+                <label class="form-label">Medication Name</label>
+                <input type="text" name="medication_name" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Dosage Strength</label>
+                <input type="text" name="dosage_strength" class="form-control" placeholder="e.g. 500mg">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Add</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Surgery Modal -->
+<div class="modal fade" id="addSurgeryModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Surgery</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="post" action="{% url 'surgery_add' %}">
+        {% csrf_token %}
+        <div class="modal-body">
+            <div class="mb-3">
+                <label class="form-label">Surgery Name</label>
+                <input type="text" name="surgery_name" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Date</label>
+                <input type="date" name="date" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Doctor Name</label>
+                <input type="text" name="doctor_name" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Hospital Name</label>
+                <input type="text" name="hospital_name" class="form-control">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Add</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Family History Modal -->
+<div class="modal fade" id="addFamilyModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Family History</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="post" action="{% url 'family_history_add' %}">
+        {% csrf_token %}
+        <div class="modal-body">
+            <div class="mb-3">
+                <label class="form-label">Inheritable Disease</label>
+                <select name="disease_id" class="form-select" required>
+                    <option value="">Select Disease...</option>
+                    {% for d in inheritable_diseases %}
+                        <option value="{{ d.id }}">{{ d.disease_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Inherited From</label>
+                <input type="text" name="inherited_from" class="form-control" placeholder="e.g. Father, Mother, Grandfather">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Add</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

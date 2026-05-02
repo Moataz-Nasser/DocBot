@@ -1,0 +1,131 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}Doctor Schedules - DOCBOT{% endblock %}
+{% block page_title %}Schedules for Dr. {{ doctor.user.last_name }}{% endblock %}
+
+{% block sidebar_nav %}
+<li><a href="{% url 'admin_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'admin_users' %}"><i class="bi bi-people"></i> Users</a></li>
+<li><a href="{% url 'admin_doctors' %}" class="active"><i class="bi bi-heart-pulse"></i> Doctors</a></li>
+{% if user.role == 'Super_Admin' %}
+<li><a href="{% url 'admin_assistant_add' %}"><i class="bi bi-person-badge"></i> Doctor Assistants</a></li>
+<li><a href="{% url 'admin_measurement_types' %}"><i class="bi bi-rulers"></i> Measurement Types</a></li>
+<li><a href="{% url 'admin_inheritable_diseases' %}"><i class="bi bi-diagram-3"></i> Inheritable Diseases</a></li>
+{% endif %}
+<li><a href="{% url 'admin_reviews' %}"><i class="bi bi-star"></i> Reviews</a></li>
+{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div>
+            <h5 class="m-0">Doctor Schedules</h5>
+            <div class="text-muted mt-1" style="font-size:13px;">Manage working hours for Dr. {{ doctor.user.get_full_name }}.</div>
+        </div>
+        <div>
+            <a href="{% url 'admin_doctors' %}" class="btn-outline-custom me-2 py-1 px-3">Back</a>
+            <button class="btn-primary-custom" data-bs-toggle="modal" data-bs-target="#addScheduleModal"><i class="bi bi-plus-lg me-1"></i> Add Schedule</button>
+        </div>
+    </div>
+
+    {% if schedules %}
+    <div class="table-responsive">
+        <table class="table table-clean align-middle">
+            <thead>
+                <tr>
+                    <th>Day</th>
+                    <th>Time</th>
+                    <th>Duration</th>
+                    <th>Location</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sch in schedules %}
+                <tr>
+                    <td class="fw-bold text-primary">{{ sch.day_of_week }}</td>
+                    <td>{{ sch.start_time|time:"g:i A" }} - {{ sch.end_time|time:"g:i A" }}</td>
+                    <td>{{ sch.slot_duration }} mins</td>
+                    <td>{{ sch.doctor_address.governorate }} (Fl. {{ sch.doctor_address.floor|default:"-" }})</td>
+                    <td>
+                        <form method="post" action="{% url 'admin_doctor_schedule_delete' doctor.user_id sch.id %}" style="margin:0;" onsubmit="return confirm('Delete this schedule? Future unbooked slots will be removed.');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger px-3"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5 text-muted">
+        <i class="bi bi-calendar-x" style="font-size:48px;"></i>
+        <h5 class="mt-3">No schedules configured.</h5>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Add Schedule Modal -->
+<div class="modal fade" id="addScheduleModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Schedule</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="post" action="{% url 'admin_doctor_schedule_add' doctor.user_id %}">
+        {% csrf_token %}
+        <div class="modal-body">
+            <div class="mb-3">
+                <label class="form-label">Clinic Location</label>
+                <select name="doctor_address" class="form-select" required>
+                    <option value="">Select Location...</option>
+                    {% for addr in addresses %}
+                        <option value="{{ addr.id }}">{{ addr.full_address }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Day of Week</label>
+                <select name="day_of_week" class="form-select" required>
+                    <option value="">Select Day...</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                    <option value="Sunday">Sunday</option>
+                </select>
+            </div>
+            <div class="row g-3 mb-3">
+                <div class="col-6">
+                    <label class="form-label">Start Time</label>
+                    <input type="time" name="start_time" class="form-control" required>
+                </div>
+                <div class="col-6">
+                    <label class="form-label">End Time</label>
+                    <input type="time" name="end_time" class="form-control" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Slot Duration</label>
+                <select name="slot_duration" class="form-select" required>
+                    <option value="15">15 Minutes</option>
+                    <option value="20">20 Minutes</option>
+                    <option value="30" selected>30 Minutes</option>
+                    <option value="45">45 Minutes</option>
+                    <option value="60">60 Minutes</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary" style="background:#4f46e5;border:none;">Save Schedule</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

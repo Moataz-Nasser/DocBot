@@ -1,0 +1,76 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}Measurement Types - DOCBOT{% endblock %}
+{% block page_title %}Measurement Types{% endblock %}
+
+{% block sidebar_nav %}
+<li><a href="{% url 'admin_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'admin_users' %}"><i class="bi bi-people"></i> Users</a></li>
+<li><a href="{% url 'admin_doctors' %}"><i class="bi bi-heart-pulse"></i> Doctors</a></li>
+{% if user.role == 'Super_Admin' %}
+<li><a href="{% url 'admin_assistant_add' %}"><i class="bi bi-person-badge"></i> Doctor Assistants</a></li>
+<li><a href="{% url 'admin_measurement_types' %}" class="active"><i class="bi bi-rulers"></i> Measurement Types</a></li>
+<li><a href="{% url 'admin_inheritable_diseases' %}"><i class="bi bi-diagram-3"></i> Inheritable Diseases</a></li>
+{% endif %}
+<li><a href="{% url 'admin_reviews' %}"><i class="bi bi-star"></i> Reviews</a></li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="content-card">
+            <h5 class="mb-4 pb-3 border-bottom">System Measurement Types</h5>
+            <div class="table-responsive">
+                <table class="table table-clean">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Unit</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in types %}
+                        <tr>
+                            <td>{{ t.id }}</td>
+                            <td class="fw-bold">{{ t.name }}</td>
+                            <td><span class="badge bg-light text-dark border">{{ t.unit }}</span></td>
+                            <td>
+                                <form method="post" onsubmit="return confirm('Delete this measurement type?');" style="margin:0;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="delete">
+                                    <input type="hidden" name="type_id" value="{{ t.id }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center py-3 text-muted">No types defined.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="content-card bg-light border">
+            <h6 class="mb-3">Add New Type</h6>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add">
+                <div class="mb-3">
+                    <label class="form-label">Measurement Name</label>
+                    <input type="text" name="name" class="form-control" required placeholder="e.g. Blood Pressure">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Unit</label>
+                    <input type="text" name="unit" class="form-control" required placeholder="e.g. mmHg">
+                </div>
+                <button type="submit" class="btn btn-primary w-100" style="background:#4f46e5;border:none;">Add Type</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

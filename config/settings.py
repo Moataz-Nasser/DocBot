@@ -28,7 +28,9 @@ SECRET_KEY = 'django-insecure-(^+(@g@7h0txq^^jus4b@+jop04@js*_%b6jaw1uk=q9@x6i=o
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['empty-sheep-stand.loca.lt']
+ALLOWED_HOSTS = ['*'] # Allowed all for localtunnel testing
+
+CSRF_TRUSTED_ORIGINS = ['https://*.loca.lt', 'https://*.run.pinggy-free.link', 'https://*.serveo.net', 'https://*.serveousercontent.com']
 
 
 AUTH_USER_MODEL = 'patient.User'
@@ -43,11 +45,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary_storage',
+    'cloudinary',
+    'core',
     'patient',
     'doctor',
     'systemadmin',
     'appointment',
     'notification',
+    'chatbot',
 ]
 
 MIDDLEWARE = [
@@ -65,13 +71,14 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'core.context_processors.notifications_context',
             ],
         },
     },
@@ -119,7 +126,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Cairo'
 
 USE_I18N = True
 
@@ -130,3 +137,47 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Media files (user uploads)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+
+# =============================================================================
+# Cloudinary Configuration
+# Used for storing lab test files, medical scan files, and doctor images.
+# =============================================================================
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME', ''),
+    'API_KEY': os.getenv('CLOUDINARY_API_KEY', ''),
+    'API_SECRET': os.getenv('CLOUDINARY_API_SECRET', ''),
+}
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+
+# =============================================================================
+# Authentication
+# =============================================================================
+LOGIN_URL = '/auth/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/auth/login/'
+
+
+# =============================================================================
+# Email Backend
+# =============================================================================
+# Currently using console backend for development (prints emails to terminal).
+# To switch to real email for production, replace with:
+#
+#   EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+#   EMAIL_HOST = 'smtp.gmail.com'
+#   EMAIL_PORT = 587
+#   EMAIL_USE_TLS = True
+#   EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+#   EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+#   DEFAULT_FROM_EMAIL = 'DocBot <noreply@docbot.com>'
+#
+# And add EMAIL_HOST_USER and EMAIL_HOST_PASSWORD to your .env file.
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

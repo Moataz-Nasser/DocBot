@@ -1,0 +1,26 @@
+{% extends "core/base.html" %}
+{% block title %}Contact - DOCBOT{% endblock %}
+{% block content %}
+<section class="py-5 mt-5">
+  <div class="container">
+    <div style="max-width:600px;margin:0 auto;background:#fff;padding:40px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,0.08);">
+      <h2 class="text-center mb-4">Contact Us</h2>
+      <form>
+        <div class="mb-3">
+          <label class="form-label">Name</label>
+          <input type="text" class="form-control" placeholder="Enter your name">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control" placeholder="Enter your email">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Message</label>
+          <textarea class="form-control" rows="5" placeholder="Write your message"></textarea>
+        </div>
+        <button class="btn-main w-100" style="text-align:center;" type="button">Send Message</button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

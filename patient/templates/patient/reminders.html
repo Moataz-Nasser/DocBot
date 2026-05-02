@@ -1,0 +1,78 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}Medication Reminders - DOCBOT{% endblock %}
+{% block page_title %}Medication Reminders{% endblock %}
+
+{% block sidebar_nav %}
+<li><a href="{% url 'patient_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'patient_profile' %}"><i class="bi bi-person"></i> My Profile</a></li>
+<li><a href="{% url 'medical_profile' %}"><i class="bi bi-heart-pulse"></i> Medical Profile</a></li>
+<li><a href="{% url 'patient_appointments' %}"><i class="bi bi-calendar-check"></i> Appointments</a></li>
+<li><a href="{% url 'patient_prescriptions' %}"><i class="bi bi-prescription2"></i> Prescriptions</a></li>
+<li><a href="{% url 'patient_diagnoses' %}"><i class="bi bi-clipboard-pulse"></i> Diagnoses</a></li>
+<li><a href="{% url 'patient_reminders' %}" class="active"><i class="bi bi-alarm"></i> Reminders</a></li>
+<li><a href="{% url 'chatbot_chat' %}"><i class="bi bi-robot"></i> AI Chatbot</a></li>
+{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <h5 class="m-0">Active Reminders</h5>
+    </div>
+
+    {% if reminders %}
+    <div class="row g-4">
+        {% for r in reminders %}
+        <div class="col-md-6">
+            <div class="card h-100 border-0 shadow-sm" style="border-radius:16px;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title text-primary fw-bold mb-0">
+                            {{ r.medication_name }}
+                            {% if not r.is_active %}
+                            <span class="badge bg-secondary ms-2" style="font-size:11px; vertical-align: middle;">Disabled</span>
+                            {% endif %}
+                        </h5>
+                        <span class="badge bg-light text-dark border">Every {{ r.repeat_interval_days }} days</span>
+                    </div>
+                    <p class="text-muted" style="font-size:13px;">From {{ r.start_date|date:"M d, Y" }} to {{ r.end_date|date:"M d, Y" }}</p>
+                    
+                    <div class="mt-3">
+                        <div class="fw-bold mb-1" style="font-size:13px;">Times:</div>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for time_obj in r.times %}
+                            <span class="badge bg-primary bg-opacity-10 text-primary">{{ time_obj.time|time:"g:i A" }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    {% if r.note %}
+                    <div class="mt-3 p-2 bg-light rounded" style="font-size:13px;">
+                        <strong>Note:</strong> {{ r.note }}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mt-3 pt-3 border-top d-flex justify-content-end">
+                        <form method="post" action="{% url 'patient_reminder_toggle' r.id %}">
+                            {% csrf_token %}
+                            {% if r.is_active %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-bell-slash"></i> Turn Off Reminders</button>
+                            {% else %}
+                                <button type="submit" class="btn btn-sm btn-outline-success"><i class="bi bi-bell"></i> Turn On Reminders</button>
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5 text-muted">
+        <i class="bi bi-alarm" style="font-size:48px;"></i>
+        <h5 class="mt-3">No active medication reminders.</h5>
+        <p>Reminders are automatically created from your prescriptions.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

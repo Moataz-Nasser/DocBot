@@ -1,0 +1,148 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Dr. {{ doctor.user.get_full_name }} - DOCBOT{% endblock %}
+{% block extra_css %}
+<style>
+.profile-section{padding:120px 0 80px;}
+.profile-header{background:#fff;border-radius:20px;padding:30px;box-shadow:0 4px 20px rgba(0,0,0,0.06);margin-bottom:30px;display:flex;gap:25px;align-items:center;flex-wrap:wrap;}
+.profile-avatar{width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#6366f1);display:flex;align-items:center;justify-content:center;color:#fff;font-size:40px;font-weight:700;flex-shrink:0;}
+.profile-avatar img{width:120px;height:120px;border-radius:50%;object-fit:cover;}
+.profile-info h2{font-weight:700;color:#1a202c;margin-bottom:5px;}
+.profile-info .spec{color:#4f46e5;font-weight:600;font-size:16px;margin-bottom:5px;}
+.profile-info .meta{color:#64748b;font-size:14px;}
+.price-box{background:#eef2ff;padding:15px 25px;border-radius:12px;text-align:center;}
+.price-box .label{font-size:12px;color:#64748b;font-weight:600;}
+.price-box .price{font-size:24px;font-weight:700;color:#4f46e5;}
+.info-card{background:#fff;border-radius:16px;padding:25px;box-shadow:0 4px 20px rgba(0,0,0,0.06);margin-bottom:20px;}
+.info-card h5{font-weight:700;color:#1a202c;margin-bottom:15px;border-bottom:2px solid #eef2ff;padding-bottom:10px;}
+.slot-badge{display:inline-block;padding:8px 14px;border-radius:10px;border:1px solid #e2e8f0;font-size:13px;margin:4px;transition:0.2s;cursor:default;}
+.slot-badge:hover{border-color:#4f46e5;background:#eef2ff;}
+.review-item{border-bottom:1px solid #f1f5f9;padding:15px 0;}
+.review-item:last-child{border-bottom:none;}
+.review-item .name{font-weight:600;color:#1a202c;}
+.review-item .stars{color:#f59e0b;}
+.review-item .comment{color:#64748b;margin-top:5px;}
+.review-item .date{font-size:12px;color:#94a3b8;}
+.btn-book{display:inline-block;padding:12px 30px;border-radius:12px;background:linear-gradient(135deg,#4f46e5,#6366f1);color:#fff;text-decoration:none;font-weight:600;transition:0.3s;}
+.btn-book:hover{transform:translateY(-3px);box-shadow:0 10px 25px rgba(79,70,229,0.3);color:#fff;}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="profile-section">
+  <div class="container">
+    <div class="profile-header">
+      <div class="profile-avatar">
+        {% if doctor.image %}
+          <img src="{{ doctor.image }}" alt="Dr. {{ doctor.user.get_full_name }}">
+        {% else %}
+          {{ doctor.user.first_name|first }}{{ doctor.user.last_name|first }}
+        {% endif %}
+      </div>
+      <div class="profile-info flex-grow-1">
+        <h2>Dr. {{ doctor.user.get_full_name }}</h2>
+        <div class="spec">{{ doctor.specialization }}</div>
+        <div class="meta">{{ doctor.years_of_experience }} years of experience</div>
+        <div class="meta mt-1">
+          {% if avg_rating %}
+            <span style="color:#f59e0b;">★ {{ avg_rating|floatformat:1 }}</span> ({{ review_count }} reviews)
+          {% else %}
+            No reviews yet
+          {% endif %}
+        </div>
+      </div>
+      <div>
+        <div class="price-box mb-2">
+          <div class="label">Consultation</div>
+          <div class="price">{{ doctor.price|floatformat:0 }} EGP</div>
+        </div>
+        <div class="price-box">
+          <div class="label">Follow-up</div>
+          <div class="price">{{ doctor.follow_up_price|floatformat:0 }} EGP</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-8">
+        <!-- Addresses -->
+        <div class="info-card">
+          <h5><i class="bi bi-geo-alt me-2"></i>Clinic Addresses</h5>
+          {% for addr in addresses %}
+            <div class="mb-2">
+              <i class="bi bi-building text-primary me-1"></i>
+              {{ addr.full_address }}
+              {% if addr.floor %} (Floor {{ addr.floor }}){% endif %}
+            </div>
+          {% empty %}
+            <p class="text-muted">No addresses listed yet.</p>
+          {% endfor %}
+        </div>
+
+        <!-- Schedule -->
+        <div class="info-card">
+          <h5><i class="bi bi-calendar3 me-2"></i>Weekly Schedule</h5>
+          {% for sch in schedules %}
+            <div class="d-flex justify-content-between align-items-center mb-2 p-2" style="background:#f8fafc;border-radius:10px;">
+              <div>
+                <strong>{{ sch.day_of_week }}</strong>
+                <span class="text-muted ms-2">@ {{ sch.doctor_address.full_address }}</span>
+              </div>
+              <span style="color:#4f46e5;font-weight:600;">{{ sch.time_range }}</span>
+            </div>
+          {% empty %}
+            <p class="text-muted">No schedule available.</p>
+          {% endfor %}
+        </div>
+
+        <!-- Available Slots -->
+        <div class="info-card">
+          <h5><i class="bi bi-clock me-2"></i>Available Slots</h5>
+          {% if available_slots %}
+            {% regroup available_slots by slot_date as date_slots %}
+            {% for group in date_slots %}
+              <div class="mb-3">
+                <strong>{{ group.grouper|date:"D, M d, Y" }}</strong>
+                <div>
+                  {% for slot in group.list %}
+                    <span class="slot-badge">{{ slot.start_time|time:"g:i A" }} - {{ slot.end_time|time:"g:i A" }}</span>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endfor %}
+            {% if user.is_authenticated and user.role == 'Patient' %}
+              <a href="{% url 'book_appointment' doctor.user_id %}" class="btn-book mt-3">
+                <i class="bi bi-calendar-check me-1"></i> Book Appointment
+              </a>
+            {% elif not user.is_authenticated %}
+              <a href="{% url 'login' %}?next={% url 'doctor_public_profile' doctor.user_id %}" class="btn-book mt-3">Login to Book</a>
+            {% endif %}
+          {% else %}
+            <p class="text-muted">No available slots at the moment.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <!-- Reviews -->
+        <div class="info-card">
+          <h5><i class="bi bi-star me-2"></i>Reviews ({{ review_count }})</h5>
+          {% for r in reviews %}
+            <div class="review-item">
+              <div class="d-flex justify-content-between">
+                <span class="name">{{ r.patient.first_name }}</span>
+                <span class="stars">{% for i in "12345" %}{% if forloop.counter <= r.rating %}★{% else %}☆{% endif %}{% endfor %}</span>
+              </div>
+              {% if r.comment %}<div class="comment">{{ r.comment }}</div>{% endif %}
+              <div class="date">{{ r.created_at|date:"M d, Y" }}</div>
+            </div>
+          {% empty %}
+            <p class="text-muted">No reviews yet.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

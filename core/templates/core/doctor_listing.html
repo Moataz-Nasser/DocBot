@@ -1,0 +1,106 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Find a Doctor - DOCBOT{% endblock %}
+{% block extra_css %}
+<style>
+.listing-section{padding:120px 0 80px;}
+.listing-section h2{font-size:36px;font-weight:700;color:#0b1220;margin-bottom:30px;text-align:center;}
+.filter-bar{background:#fff;padding:20px 25px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.06);margin-bottom:30px;display:flex;flex-wrap:wrap;gap:15px;align-items:end;}
+.filter-bar .form-group{flex:1;min-width:180px;}
+.filter-bar label{font-size:13px;font-weight:600;color:#64748b;margin-bottom:5px;display:block;}
+.filter-bar select,.filter-bar input{width:100%;padding:10px 14px;border-radius:10px;border:1px solid #e2e8f0;outline:none;font-size:14px;}
+.filter-bar button{padding:10px 25px;border-radius:10px;border:none;background:linear-gradient(135deg,#4f46e5,#6366f1);color:#fff;font-weight:600;cursor:pointer;transition:0.3s;}
+.filter-bar button:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(79,70,229,0.3);}
+.doctor-card{background:#fff;border:1px solid #e2e8f0;border-radius:20px;padding:25px;transition:all 0.3s ease;height:100%;}
+.doctor-card:hover{transform:translateY(-5px);box-shadow:0 15px 35px rgba(0,0,0,0.06);border-color:#4f46e5;}
+.doctor-card .avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#6366f1);display:flex;align-items:center;justify-content:center;color:#fff;font-size:28px;font-weight:700;margin:0 auto 15px;}
+.doctor-card .avatar img{width:80px;height:80px;border-radius:50%;object-fit:cover;}
+.doctor-card h5{font-weight:700;color:#1a202c;text-align:center;margin-bottom:5px;}
+.doctor-card .spec{color:#4f46e5;font-weight:600;font-size:14px;text-align:center;margin-bottom:10px;}
+.doctor-card .info{font-size:13px;color:#64748b;text-align:center;}
+.doctor-card .price-tag{display:inline-block;background:#eef2ff;color:#4f46e5;padding:5px 12px;border-radius:8px;font-weight:600;font-size:14px;}
+.doctor-card .rating{color:#f59e0b;font-size:14px;}
+.doctor-card .btn-view{display:block;margin-top:15px;padding:10px;border-radius:10px;border:1px solid #4f46e5;color:#4f46e5;text-align:center;text-decoration:none;font-weight:600;transition:0.3s;}
+.doctor-card .btn-view:hover{background:#4f46e5;color:#fff;}
+.no-results{text-align:center;padding:60px;color:#64748b;}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="listing-section">
+  <div class="container">
+    <h2>Find a Doctor</h2>
+
+    <form method="get" class="filter-bar">
+      <div class="form-group">
+        <label>Specialization</label>
+        <select name="specialization">
+          <option value="">All</option>
+          {% for s in specializations %}
+            <option value="{{ s }}" {% if current_specialization == s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Governorate</label>
+        <select name="governorate">
+          <option value="">All</option>
+          {% for g in governorates %}
+            <option value="{{ g }}" {% if current_governorate == g %}selected{% endif %}>{{ g }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Min Price (EGP)</label>
+        <input type="number" name="min_price" value="{{ current_min_price }}" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>Max Price (EGP)</label>
+        <input type="number" name="max_price" value="{{ current_max_price }}" placeholder="Any">
+      </div>
+      <button type="submit">Search</button>
+    </form>
+
+    {% if doctors %}
+    <div class="row g-4">
+      {% for doc in doctors %}
+      <div class="col-lg-4 col-md-6">
+        <div class="doctor-card">
+          <div class="avatar">
+            {% if doc.image %}
+              <img src="{{ doc.image }}" alt="Dr. {{ doc.user.get_full_name }}">
+            {% else %}
+              {{ doc.user.first_name|first }}{{ doc.user.last_name|first }}
+            {% endif %}
+          </div>
+          <h5>Dr. {{ doc.user.get_full_name }}</h5>
+          <div class="spec">{{ doc.specialization }}</div>
+          <div class="info">
+            <span class="price-tag">{{ doc.price|floatformat:0 }} EGP</span>
+            <span class="ms-2">{{ doc.years_of_experience }} yrs exp</span>
+          </div>
+          <div class="info mt-2">
+            <span class="rating">
+              {% if doc.avg_rating %}
+                ★ {{ doc.avg_rating|floatformat:1 }} ({{ doc.review_count }})
+              {% else %}
+                No reviews yet
+              {% endif %}
+            </span>
+          </div>
+          <a href="{% url 'doctor_public_profile' doc.user_id %}" class="btn-view">View Profile</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-results">
+      <i class="bi bi-search" style="font-size:48px;"></i>
+      <h4 class="mt-3">No doctors found</h4>
+      <p>Try adjusting your search filters.</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

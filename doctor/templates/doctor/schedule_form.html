@@ -1,0 +1,80 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}{% if schedule %}Edit Schedule{% else %}Add Schedule{% endif %} - DOCBOT{% endblock %}
+{% block page_title %}{% if schedule %}Edit Schedule{% else %}Add Schedule{% endif %}{% endblock %}
+
+{% block sidebar_nav %}
+{% if is_assistant %}
+<li><a href="{% url 'assistant_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'assistant_doctor_profile' %}"><i class="bi bi-person"></i> Doctor Profile</a></li>
+<li><a href="{% url 'assistant_schedules' %}" class="active"><i class="bi bi-calendar3"></i> Schedules</a></li>
+<li><a href="{% url 'assistant_appointments' %}"><i class="bi bi-calendar-check"></i> Appointments</a></li>
+{% else %}
+<li><a href="{% url 'doctor_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'doctor_profile' %}"><i class="bi bi-person"></i> My Profile</a></li>
+<li><a href="{% url 'doctor_schedules' %}" class="active"><i class="bi bi-calendar3"></i> My Schedules</a></li>
+<li><a href="{% url 'doctor_appointments' %}"><i class="bi bi-calendar-check"></i> Appointments</a></li>
+<li><a href="{% url 'doctor_reviews' %}"><i class="bi bi-star"></i> My Reviews</a></li>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="content-card" style="max-width: 600px; margin: 0 auto;">
+    <h5 class="mb-4 pb-3 border-bottom">{% if schedule %}Edit{% else %}Add{% endif %} Weekly Schedule</h5>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">Clinic Location</label>
+            <select name="doctor_address" class="form-select" required>
+                <option value="">Select Location...</option>
+                {% for addr in addresses %}
+                    <option value="{{ addr.id }}" {% if schedule and schedule.doctor_address_id == addr.id %}selected{% endif %}>{{ addr.full_address }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Day of Week</label>
+            <select name="day_of_week" class="form-select" required>
+                <option value="">Select Day...</option>
+                <option value="Monday" {% if schedule and schedule.day_of_week == 'Monday' %}selected{% endif %}>Monday</option>
+                <option value="Tuesday" {% if schedule and schedule.day_of_week == 'Tuesday' %}selected{% endif %}>Tuesday</option>
+                <option value="Wednesday" {% if schedule and schedule.day_of_week == 'Wednesday' %}selected{% endif %}>Wednesday</option>
+                <option value="Thursday" {% if schedule and schedule.day_of_week == 'Thursday' %}selected{% endif %}>Thursday</option>
+                <option value="Friday" {% if schedule and schedule.day_of_week == 'Friday' %}selected{% endif %}>Friday</option>
+                <option value="Saturday" {% if schedule and schedule.day_of_week == 'Saturday' %}selected{% endif %}>Saturday</option>
+                <option value="Sunday" {% if schedule and schedule.day_of_week == 'Sunday' %}selected{% endif %}>Sunday</option>
+            </select>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label class="form-label">Start Time</label>
+                <input type="time" name="start_time" class="form-control" value="{{ schedule.start_time|time:'H:i' }}" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">End Time</label>
+                <input type="time" name="end_time" class="form-control" value="{{ schedule.end_time|time:'H:i' }}" required>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label">Slot Duration (Minutes)</label>
+            <select name="slot_duration" class="form-select" required>
+                <option value="15" {% if schedule and schedule.slot_duration == 15 %}selected{% endif %}>15 Minutes</option>
+                <option value="20" {% if schedule and schedule.slot_duration == 20 %}selected{% endif %}>20 Minutes</option>
+                <option value="30" {% if schedule and schedule.slot_duration == 30 %}selected{% endif %}>30 Minutes</option>
+                <option value="45" {% if schedule and schedule.slot_duration == 45 %}selected{% endif %}>45 Minutes</option>
+                <option value="60" {% if schedule and schedule.slot_duration == 60 %}selected{% endif %}>60 Minutes</option>
+            </select>
+            <div class="form-text" style="font-size:11px;">Changing duration for an existing schedule will regenerate all future unbooked slots.</div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+            <a href="{% if is_assistant %}{% url 'assistant_schedules' %}{% else %}{% url 'doctor_schedules' %}{% endif %}" class="btn-outline-custom">Cancel</a>
+            <button type="submit" class="btn-primary-custom">Save Schedule</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

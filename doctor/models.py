@@ -7,6 +7,8 @@ class Doctor(models.Model):
     specialization = models.CharField(max_length=255)
     years_of_experience = models.IntegerField()
     price = models.FloatField()
+    follow_up_price = models.DecimalField(max_digits=10, decimal_places=2)
+
     image = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
@@ -67,6 +69,7 @@ class Doctortimeslot(models.Model):
     start_time = models.TimeField()
     end_time = models.TimeField()
     is_booked = models.IntegerField()
+    is_available = models.IntegerField(default=1)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
 

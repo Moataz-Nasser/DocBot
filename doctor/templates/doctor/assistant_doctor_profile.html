@@ -1,0 +1,70 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}Doctor Profile - DOCBOT{% endblock %}
+{% block page_title %}Doctor Profile{% endblock %}
+
+{% block sidebar_nav %}
+<li><a href="{% url 'assistant_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'assistant_doctor_profile' %}" class="active"><i class="bi bi-person"></i> Doctor Profile</a></li>
+<li><a href="{% url 'assistant_schedules' %}"><i class="bi bi-calendar3"></i> Schedules</a></li>
+<li><a href="{% url 'assistant_appointments' %}"><i class="bi bi-calendar-check"></i> Appointments</a></li>
+{% endblock %}
+
+{% block content %}
+<div class="content-card mb-4">
+    <div class="row align-items-center">
+        <div class="col-md-2 text-center">
+            <div style="width:100px;height:100px;border-radius:50%;background:#4f46e5;color:white;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:bold;margin:0 auto;">
+                {% if doctor.image %}
+                    <img src="{{ doctor.image }}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
+                {% else %}
+                    {{ doctor.user.first_name|first }}{{ doctor.user.last_name|first }}
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-10">
+            <h4>Dr. {{ doctor.user.get_full_name }}</h4>
+            <div class="text-primary fw-bold">{{ doctor.specialization }}</div>
+            <div class="text-muted">{{ doctor.years_of_experience }} Years Experience</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="content-card h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                <h5 class="m-0">Pricing Details</h5>
+                <a href="{% url 'assistant_edit_price' %}" class="btn-outline-custom py-1 px-3">Edit</a>
+            </div>
+            <div class="mb-3">
+                <div class="text-muted" style="font-size:12px;font-weight:600;text-transform:uppercase;">Initial Consultation Fee</div>
+                <div class="fs-4 fw-bold text-dark">{{ doctor.price|floatformat:0 }} <span class="fs-6 text-muted">EGP</span></div>
+            </div>
+            <div>
+                <div class="text-muted" style="font-size:12px;font-weight:600;text-transform:uppercase;">Follow-up Fee</div>
+                <div class="fs-4 fw-bold text-dark">{{ doctor.follow_up_price|floatformat:0 }} <span class="fs-6 text-muted">EGP</span></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="content-card h-100">
+            <h5 class="mb-3 pb-2 border-bottom">Clinic Addresses</h5>
+            {% if addresses %}
+            <ul class="list-group list-group-flush">
+                {% for addr in addresses %}
+                <li class="list-group-item px-0 py-3">
+                    <div class="fw-bold">{{ addr.governorate }}</div>
+                    <div class="text-muted">{{ addr.building_number }} {{ addr.street }}</div>
+                    {% if addr.floor %}<div class="text-muted" style="font-size:13px;">Floor: {{ addr.floor }}</div>{% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-muted py-3">No addresses configured.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}My Appointments - DOCBOT{% endblock %}
+{% block page_title %}My Appointments{% endblock %}
+
+{% block sidebar_nav %}
+<li><a href="{% url 'patient_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'patient_profile' %}"><i class="bi bi-person"></i> My Profile</a></li>
+<li><a href="{% url 'medical_profile' %}"><i class="bi bi-heart-pulse"></i> Medical Profile</a></li>
+<li><a href="{% url 'patient_appointments' %}" class="active"><i class="bi bi-calendar-check"></i> Appointments</a></li>
+<li><a href="{% url 'patient_prescriptions' %}"><i class="bi bi-prescription2"></i> Prescriptions</a></li>
+<li><a href="{% url 'patient_diagnoses' %}"><i class="bi bi-clipboard-pulse"></i> Diagnoses</a></li>
+<li><a href="{% url 'patient_reminders' %}"><i class="bi bi-alarm"></i> Reminders</a></li>
+<li><a href="{% url 'chatbot_chat' %}"><i class="bi bi-robot"></i> AI Chatbot</a></li>
+{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom flex-wrap gap-3">
+        <h5 class="m-0">Appointments History</h5>
+        <div class="d-flex gap-2">
+            <form method="get" class="d-flex gap-2">
+                <select name="status" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Statuses</option>
+                    <option value="Booked" {% if current_status == 'Booked' %}selected{% endif %}>Booked</option>
+                    <option value="In progress" {% if current_status == 'In progress' %}selected{% endif %}>In Progress</option>
+                    <option value="Completed" {% if current_status == 'Completed' %}selected{% endif %}>Completed</option>
+                    <option value="Canceled" {% if current_status == 'Canceled' %}selected{% endif %}>Canceled</option>
+                    <option value="No-show" {% if current_status == 'No-show' %}selected{% endif %}>No-show</option>
+                </select>
+            </form>
+            <a href="{% url 'doctor_listing' %}" class="btn-primary-custom"><i class="bi bi-plus-lg me-1"></i> Book New</a>
+        </div>
+    </div>
+
+    {% if appointments %}
+    <div class="table-responsive">
+        <table class="table table-clean">
+            <thead>
+                <tr>
+                    <th>Doctor</th>
+                    <th>Date & Time</th>
+                    <th>Clinic / Location</th>
+                    <th>Status</th>
+                    <th>Type</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appt in appointments %}
+                <tr>
+                    <td>
+                        <div class="fw-bold">Dr. {{ appt.doctor.user.get_full_name }}</div>
+                        <div class="text-muted" style="font-size:12px;">{{ appt.doctor.specialization }}</div>
+                    </td>
+                    <td>
+                        <div>{{ appt.slot.slot_date|date:"M d, Y" }}</div>
+                        <div class="text-muted" style="font-size:12px;">{{ appt.slot.start_time|time:"g:i A" }} - {{ appt.slot.end_time|time:"g:i A" }}</div>
+                    </td>
+                    <td>
+                        <div>{{ appt.doctor_address.full_address }}</div>
+                        {% if appt.doctor_address.floor %}
+                        <div class="text-muted" style="font-size:12px;">Floor: {{ appt.doctor_address.floor }}</div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge-status 
+                            {% if appt.status == 'Booked' %}badge-booked
+                            {% elif appt.status == 'In progress' %}badge-inprogress
+                            {% elif appt.status == 'Completed' %}badge-completed
+                            {% elif appt.status == 'Canceled' %}badge-canceled
+                            {% else %}badge-noshow{% endif %}">
+                            {{ appt.status }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if appt.is_follow_up %}
+                            <span class="badge bg-info text-dark">Follow-up</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Initial</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'patient_appointment_detail' appt.id %}" class="btn-outline-custom" style="padding:4px 10px;">Details</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5 text-muted">
+        <i class="bi bi-calendar-x" style="font-size: 48px;"></i>
+        <h5 class="mt-3">No appointments found.</h5>
+        <p>Book a new appointment or change your filters.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

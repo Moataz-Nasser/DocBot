@@ -1,0 +1,30 @@
+{% extends "core/base.html" %}
+{% block title %}Services - DOCBOT{% endblock %}
+{% block extra_css %}
+<style>
+.services-section{padding:100px 0;background-color:#ffffff;text-align:center;}
+.services-header h2{font-size:40px;font-weight:700;color:#0b1220;margin-bottom:15px;}
+.services-header p{color:#64748b;max-width:600px;margin:0 auto 60px;line-height:1.6;}
+.home-service-card{background:#fff;border:1px solid #e2e8f0;border-radius:20px;padding:20px;text-align:center;transition:all 0.3s ease;height:100%;}
+.home-service-card:hover{transform:translateY(-8px);box-shadow:0 15px 35px rgba(0,0,0,0.05);border-color:#4f46e5;}
+.service-icon{font-size:40px;color:#4f46e5;margin-bottom:25px;}
+.home-service-card h4{font-size:22px;font-weight:700;color:#2d3748;margin-bottom:15px;}
+.home-service-card p{font-size:16px;color:#4a5568;line-height:1.6;}
+
+</style>
+{% endblock %}
+{% block content %}
+<section class="services-section">
+  <div class="container">
+    <div class="services-header"><h2>Our Services</h2><p>Comprehensive healthcare solutions for your complete medical journey</p></div>
+    <div class="row g-4">
+      <div class="col-lg-4 col-md-6"><div class="home-service-card"><div class="service-icon"><i class="bi bi-chat-dots"></i></div><h4>AI Health Assistant</h4><p>Smart symptom analysis powered by advanced AI to help you understand your health better.</p></div></div>
+      <div class="col-lg-4 col-md-6"><div class="home-service-card"><div class="service-icon"><i class="bi bi-calendar2-heart"></i></div><h4>Appointment Booking</h4><p>Book appointments with verified specialists based on your needs, location, and budget.</p></div></div>
+      <div class="col-lg-4 col-md-6"><div class="home-service-card"><div class="service-icon"><i class="bi bi-clipboard-pulse"></i></div><h4>Health Records</h4><p>Manage your complete medical history including vitals, lab tests, scans, and prescriptions.</p></div></div>
+      <div class="col-lg-4 col-md-6"><div class="home-service-card"><div class="service-icon"><i class="bi bi-bell"></i></div><h4>Medication Reminders</h4><p>Never miss a dose with smart medication reminders tied to your prescriptions.</p></div></div>
+      <div class="col-lg-4 col-md-6"><div class="home-service-card"><div class="service-icon"><i class="bi bi-shield-check"></i></div><h4>Secure Data</h4><p>Your medical data is encrypted and accessible only to you and your authorized doctors.</p></div></div>
+      <div class="col-lg-4 col-md-6"><div class="home-service-card"><div class="service-icon"><i class="bi bi-arrow-repeat"></i></div><h4>Follow-Up Care</h4><p>Seamless follow-up appointment booking to ensure continuity of care.</p></div></div>
+    </div>
+  </div>
+</section>
+{% endblock %}

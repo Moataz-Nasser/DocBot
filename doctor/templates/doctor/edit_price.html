@@ -1,0 +1,43 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}Edit Pricing - DOCBOT{% endblock %}
+{% block page_title %}Edit Pricing{% endblock %}
+
+{% block sidebar_nav %}
+{% if is_assistant %}
+<li><a href="{% url 'assistant_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'assistant_doctor_profile' %}" class="active"><i class="bi bi-person"></i> Doctor Profile</a></li>
+<li><a href="{% url 'assistant_schedules' %}"><i class="bi bi-calendar3"></i> Schedules</a></li>
+<li><a href="{% url 'assistant_appointments' %}"><i class="bi bi-calendar-check"></i> Appointments</a></li>
+{% else %}
+<li><a href="{% url 'doctor_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'doctor_profile' %}" class="active"><i class="bi bi-person"></i> My Profile</a></li>
+<li><a href="{% url 'doctor_schedules' %}"><i class="bi bi-calendar3"></i> My Schedules</a></li>
+<li><a href="{% url 'doctor_appointments' %}"><i class="bi bi-calendar-check"></i> Appointments</a></li>
+<li><a href="{% url 'doctor_reviews' %}"><i class="bi bi-star"></i> My Reviews</a></li>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="content-card" style="max-width: 500px; margin: 0 auto;">
+    <h5 class="mb-4 pb-3 border-bottom">Update Consultation Fees</h5>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-4">
+            <label class="form-label">Initial Consultation Price (EGP)</label>
+            <input type="number" step="0.01" min="0" name="price" class="form-control form-control-lg" value="{{ doctor.price }}" required>
+        </div>
+        
+        <div class="mb-4">
+            <label class="form-label">Follow-up Consultation Price (EGP)</label>
+            <input type="number" step="0.01" min="0" name="follow_up_price" class="form-control form-control-lg" value="{{ doctor.follow_up_price }}" required>
+        </div>
+        
+        <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+            <a href="{% if is_assistant %}{% url 'assistant_doctor_profile' %}{% else %}{% url 'doctor_profile' %}{% endif %}" class="btn-outline-custom">Cancel</a>
+            <button type="submit" class="btn-primary-custom">Save Pricing</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

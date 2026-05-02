@@ -1,0 +1,29 @@
+{% extends "core/base.html" %}
+{% block title %}How it Works - DOCBOT{% endblock %}
+{% block extra_css %}
+<style>
+.how-section{padding:120px 0 80px;text-align:center;}
+.how-section h2{font-size:40px;font-weight:700;color:#0b1220;margin-bottom:15px;}
+.how-section .subtitle{color:#64748b;max-width:600px;margin:0 auto 60px;line-height:1.6;font-size:18px;}
+.step-card{background:#fff;border:1px solid #e2e8f0;border-radius:20px;padding:30px;text-align:center;transition:all 0.3s ease;height:100%;}
+.step-card:hover{transform:translateY(-8px);box-shadow:0 15px 35px rgba(0,0,0,0.05);border-color:#4f46e5;}
+.step-number{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#6366f1);color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:20px;font-weight:700;}
+.step-card h4{font-size:22px;font-weight:700;color:#2d3748;margin-bottom:15px;}
+.step-card p{font-size:16px;color:#4a5568;line-height:1.6;}
+
+</style>
+{% endblock %}
+{% block content %}
+<section class="how-section">
+  <div class="container">
+    <h2>How it Works</h2>
+    <p class="subtitle">Get started with DocBot in just a few simple steps</p>
+    <div class="row g-4">
+      <div class="col-lg-3 col-md-6"><div class="step-card"><div class="step-number">1</div><h4>Create Account</h4><p>Sign up for free and set up your medical profile with your basic health information.</p></div></div>
+      <div class="col-lg-3 col-md-6"><div class="step-card"><div class="step-number">2</div><h4>Describe Symptoms</h4><p>Chat with our AI assistant about your symptoms for a preliminary health evaluation.</p></div></div>
+      <div class="col-lg-3 col-md-6"><div class="step-card"><div class="step-number">3</div><h4>Find a Doctor</h4><p>Browse verified specialists filtered by specialization, location, and price range.</p></div></div>
+      <div class="col-lg-3 col-md-6"><div class="step-card"><div class="step-number">4</div><h4>Book Appointment</h4><p>Select a convenient time slot and confirm your appointment with a single click.</p></div></div>
+    </div>
+  </div>
+</section>
+{% endblock %}

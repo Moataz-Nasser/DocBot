@@ -10,6 +10,7 @@ class Medicationreminder(models.Model):
     end_date = models.DateField()
     repeat_interval_days = models.IntegerField()
     note = models.TextField(blank=True, null=True)
+    is_active = models.IntegerField(default=1)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
 
@@ -22,6 +23,7 @@ class Notification(models.Model):
     title = models.CharField(max_length=255)
     message = models.TextField()
     is_allowed = models.IntegerField()
+    is_read = models.IntegerField(default=0)
     created_at = models.DateTimeField()
 
     class Meta:

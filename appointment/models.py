@@ -7,10 +7,10 @@ class Doctorappointment(models.Model):
     doctor = models.ForeignKey('doctor.Doctor', models.DO_NOTHING)
     doctor_address = models.ForeignKey('doctor.Doctoraddress', models.DO_NOTHING)
     status = models.CharField(max_length=11)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
     parent_appointment = models.ForeignKey('self', models.DO_NOTHING, blank=True, null=True)
     canceled_by = models.ForeignKey('patient.User', models.SET_NULL, null=True, blank=True, related_name='canceled_appointments', db_column='canceled_by')
     is_follow_up = models.IntegerField()
+    follow_up_allowed = models.IntegerField(default=0)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
     

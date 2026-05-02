@@ -1,0 +1,56 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}Edit Profile - DOCBOT{% endblock %}
+{% block page_title %}Edit Profile{% endblock %}
+
+{% block sidebar_nav %}
+<li><a href="{% url 'patient_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'patient_profile' %}" class="active"><i class="bi bi-person"></i> My Profile</a></li>
+<li><a href="{% url 'medical_profile' %}"><i class="bi bi-heart-pulse"></i> Medical Profile</a></li>
+<li><a href="{% url 'patient_appointments' %}"><i class="bi bi-calendar-check"></i> Appointments</a></li>
+<li><a href="{% url 'patient_prescriptions' %}"><i class="bi bi-prescription2"></i> Prescriptions</a></li>
+<li><a href="{% url 'patient_diagnoses' %}"><i class="bi bi-clipboard-pulse"></i> Diagnoses</a></li>
+<li><a href="{% url 'patient_reminders' %}"><i class="bi bi-alarm"></i> Reminders</a></li>
+<li><a href="{% url 'chatbot_chat' %}"><i class="bi bi-robot"></i> AI Chatbot</a></li>
+{% endblock %}
+
+{% block content %}
+<div class="content-card" style="max-width: 800px; margin: 0 auto;">
+    <h5 class="mb-4 pb-3 border-bottom">Edit Personal Information</h5>
+
+    <form method="post" action="{% url 'patient_profile_edit' %}">
+        {% csrf_token %}
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <label class="form-label">First Name</label>
+                <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Last Name</label>
+                <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Email Address</label>
+                <input type="email" name="email" class="form-control" value="{{ user.email }}" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Phone Number</label>
+                <input type="text" name="phone" class="form-control" value="{{ user.phone|default:'' }}">
+            </div>
+        </div>
+
+        <h5 class="mb-4 pb-3 border-bottom mt-5">Change Password (Optional)</h5>
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <label class="form-label">New Password</label>
+                <input type="password" name="new_password" class="form-control" placeholder="Leave blank to keep current">
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+            <a href="{% url 'patient_profile' %}" class="btn-outline-custom">Cancel</a>
+            <button type="submit" class="btn-primary-custom">Save Changes</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,132 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}Patient Dashboard - DOCBOT{% endblock %}
+{% block page_title %}Patient Dashboard{% endblock %}
+
+{% block sidebar_nav %}
+<li><a href="{% url 'patient_dashboard' %}" class="active"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'patient_profile' %}"><i class="bi bi-person"></i> My Profile</a></li>
+<li><a href="{% url 'medical_profile' %}"><i class="bi bi-heart-pulse"></i> Medical Profile</a></li>
+<li><a href="{% url 'patient_appointments' %}"><i class="bi bi-calendar-check"></i> Appointments</a></li>
+<li><a href="{% url 'patient_prescriptions' %}"><i class="bi bi-prescription2"></i> Prescriptions</a></li>
+<li><a href="{% url 'patient_diagnoses' %}"><i class="bi bi-clipboard-pulse"></i> Diagnoses</a></li>
+<li><a href="{% url 'patient_reminders' %}"><i class="bi bi-alarm"></i> Reminders</a></li>
+<li><a href="{% url 'chatbot_chat' %}"><i class="bi bi-robot"></i> AI Chatbot</a></li>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+  <div class="col-md-4">
+    <div class="stat-card">
+      <div class="icon" style="background:#e0e7ff;color:#4f46e5;"><i class="bi bi-calendar-heart"></i></div>
+      <div class="value">{{ total_appointments }}</div>
+      <div class="label">Total Appointments</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card">
+      <div class="icon" style="background:#dcfce7;color:#15803d;"><i class="bi bi-check-circle"></i></div>
+      <div class="value">{{ completed_appointments }}</div>
+      <div class="label">Completed Visits</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card">
+      <div class="icon" style="background:#fef3c7;color:#b45309;"><i class="bi bi-clock-history"></i></div>
+      <div class="value">{{ upcoming_appointments.count }}</div>
+      <div class="label">Upcoming Appointments</div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-8">
+    <div class="content-card">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="m-0">Upcoming Appointments</h5>
+        <a href="{% url 'patient_appointments' %}" class="btn-outline-custom">View All</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-clean">
+          <thead>
+            <tr>
+              <th>Doctor</th>
+              <th>Date &amp; Time</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for appt in upcoming_appointments %}
+            <tr>
+              <td>
+                <div class="fw-bold">Dr. {{ appt.doctor.user.get_full_name }}</div>
+                <div class="text-muted" style="font-size:12px;">{{ appt.doctor.specialization }}</div>
+              </td>
+              <td>
+                <div>{{ appt.slot.slot_date|date:"M d, Y" }}</div>
+                <div class="text-muted" style="font-size:12px;">{{ appt.slot.start_time|time:"g:i A" }}</div>
+              </td>
+              <td><span class="badge-status badge-booked">{{ appt.status }}</span></td>
+              <td><a href="{% url 'patient_appointment_detail' appt.id %}" class="btn-outline-custom" style="padding:4px 10px;">Details</a></td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="4" class="text-center py-4 text-muted">No upcoming appointments. <a href="{% url 'doctor_listing' %}">Book one now</a>.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="content-card mt-4">
+      <h5 class="mb-3">Recent Prescriptions</h5>
+      <div class="table-responsive">
+        <table class="table table-clean">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Doctor</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in recent_prescriptions %}
+            <tr>
+              <td>{{ p.date|date:"M d, Y" }}</td>
+              <td>Dr. {{ p.doctor.user.get_full_name }}</td>
+              <td><a href="{% url 'patient_prescriptions' %}" class="btn-outline-custom" style="padding:4px 10px;">View</a></td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="3" class="text-center py-4 text-muted">No recent prescriptions.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="content-card">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="m-0">Notifications</h5>
+        <a href="{% url 'notifications_list' %}" class="btn-outline-custom" style="padding:4px 10px;font-size:12px;">All</a>
+      </div>
+      <div>
+        {% for note in recent_notifications %}
+        <div style="padding:12px 0;border-bottom:1px solid #f1f5f9;{% if not note.is_read %}background:#f8fafc;{% endif %}">
+          <div class="fw-bold" style="font-size:14px;color:#1e293b;">{{ note.title }}</div>
+          <div style="font-size:13px;color:#64748b;margin-top:4px;">{{ note.message }}</div>
+          <div style="font-size:11px;color:#94a3b8;margin-top:4px;">{{ note.created_at|timesince }} ago</div>
+        </div>
+        {% empty %}
+        <div class="text-center py-4 text-muted">No notifications yet.</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
