@@ -35,10 +35,9 @@ def why_choose_us(request):
 
 @login_required
 def chatbot_page(request):
-    """Chatbot page - requires login, not doctor or assistant."""
-    if request.user.role in ('Doctor', 'Doctor_Assistant'):
-        return render(request, 'core/403.html', status=403)
-    return render(request, 'core/chatbot.html')
+    """Redirect to the new AI Chatbot page."""
+    from django.shortcuts import redirect
+    return redirect('chatbot_chat')
 
 
 def doctor_listing(request):
