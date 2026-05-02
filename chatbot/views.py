@@ -33,62 +33,6 @@ def chat_page_view(request):
     return render(request, 'chatbot/chat.html', {'chatbot_token': token})
 
 @csrf_exempt
-def validate_chatbot_token(request):
-    token = request.headers.get('X-Chatbot-Token')
-    if not token:
-        return JsonResponse({'error': 'No token provided'}, status=401)
-    
-    user_id = cache.get(f'chatbot_token_{token}')
-    if not user_id:
-        return JsonResponse({'error': 'Invalid or expired token'}, status=401)
-    
-    try:
-        user = User.objects.get(id=user_id)
-        return JsonResponse({
-            'user_id': user.id,
-            'role': getattr(user, 'role', 'Patient'),
-            'first_name': getattr(user, 'first_name', ''),
-            'last_name': getattr(user, 'last_name', ''),
-        })
-    except User.DoesNotExist:
-        return JsonResponse({'error': 'User not found'}, status=404)
-
-@csrf_exempt
-def chatbot_patient_data(request):
-    token = request.headers.get('X-Chatbot-Token')
-    if not token:
-        return JsonResponse({'error': 'No token provided'}, status=401)
-        
-    user_id = cache.get(f'chatbot_token_{token}')
-    if not user_id:
-        return JsonResponse({'error': 'Unauthorized'}, status=401)
-    
-    try:
-        user = User.objects.get(id=user_id)
-        try:
-            profile = Patientprofile.objects.get(user_id=user.id)
-            blood_type = profile.blood_type
-            weight = float(profile.weight) if profile.weight else None
-        except Patientprofile.DoesNotExist:
-            blood_type = None
-            weight = None
-            
-        allergies = Allergies.objects.filter(patient_id=user.id)
-        
-        return JsonResponse({
-            'profile': {
-                'blood_type': blood_type,
-                'weight': weight,
-            },
-            'allergies': [
-                {'name': getattr(a, 'allergy_name', ''), 'severity': getattr(a, 'severity', '')}
-                for a in allergies
-            ]
-        })
-    except User.DoesNotExist:
-        return JsonResponse({'error': 'User not found'}, status=404)
-
-@csrf_exempt
 def webhook_view(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Method not allowed'}, status=405)

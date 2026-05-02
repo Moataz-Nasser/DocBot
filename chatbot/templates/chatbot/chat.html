@@ -187,15 +187,44 @@
         chatHistory.scrollTop = chatHistory.scrollHeight;
 
         try {
-            // Note: Replace the URL below with the actual deployed model endpoint if available.
-            // Currently mocking the response locally for demonstration since we are the backend.
+            // Send to n8n Webhook
+            const n8nUrl = "https://yahiaei33.app.n8n.cloud/webhook/106e3896-b6d5-440b-bbd5-f1abc7edea8c/chat";
+            const sessionId = "user_{{ request.user.id }}";
             
-            // Simulating API delay
-            await new Promise(r => setTimeout(r, 1500));
+            const response = await fetch(`${n8nUrl}?sessionId=${sessionId}&session_id=${sessionId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Chatbot-Token': token,
+                    'bypass-tunnel-reminder': 'true'
+                },
+                body: JSON.stringify({
+                    chatInput: text,
+                    text: text,
+                    sessionId: sessionId,
+                    // Keep these for n8n logic but the AI will mostly see chatInput/text
+                    user_id: "{{ request.user.id }}",
+                    token: token
+                })
+            });
+
+            if (!response.ok) throw new Error('Network response was not ok');
             
-            appendMessage("I've noted your symptoms. Based on your profile, I recommend booking an appointment with a general practitioner for further evaluation.", false);
+            const data = await response.json();
+            console.log("n8n Response:", data);
+            
+            // Handle different n8n response formats
+            let botResponse = "";
+            if (Array.isArray(data)) {
+                botResponse = data[0].output || data[0].message || data[0].text || JSON.stringify(data[0]);
+            } else {
+                botResponse = data.output || data.message || data.text || data.response || "I've received your symptoms. My brain is processing them!";
+            }
+            
+            appendMessage(botResponse, false);
             
         } catch (error) {
+            console.error('Error:', error);
             appendMessage("Sorry, I'm having trouble connecting to my brain right now. Please try again later.", false);
         } finally {
             typingIndicator.style.display = 'none';
