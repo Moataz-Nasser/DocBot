@@ -1,0 +1,77 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}Edit Pricing - DOCBOT{% endblock %}
+{% block page_title %}Edit Pricing{% endblock %}
+
+{% block sidebar_nav %}
+{% if is_assistant %}
+<li><a href="{% url 'assistant_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'assistant_doctor_profile' %}" class="active"><i class="bi bi-person"></i> Doctor Profile</a></li>
+<li><a href="{% url 'assistant_schedules' %}"><i class="bi bi-calendar3"></i> Schedules</a></li>
+<li><a href="{% url 'assistant_appointments' %}"><i class="bi bi-calendar-check"></i> Appointments</a></li>
+{% else %}
+<li><a href="{% url 'doctor_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'doctor_profile' %}" class="active"><i class="bi bi-person"></i> My Profile</a></li>
+<li><a href="{% url 'doctor_schedules' %}"><i class="bi bi-calendar3"></i> My Schedules</a></li>
+<li><a href="{% url 'doctor_appointments' %}"><i class="bi bi-calendar-check"></i> Appointments</a></li>
+<li><a href="{% url 'doctor_reviews' %}"><i class="bi bi-star"></i> My Reviews</a></li>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="content-card" style="max-width: 800px; height: 500px; margin: 0 auto; padding:32px;">
+    <div class="mb-4 pb-3 border-bottom">
+    <h5 class="fw-bold mb-1">
+        Appointment Pricing
+    </h5>
+
+    <p class="text-muted mb-0">
+        Update your appointment and follow-up fees.
+    </p>
+</div>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-5">
+    <label class="form-label fw-semibold">Appointment Price</label>
+
+    <div class="input-group input-group-lg">
+        <span class="input-group-text">EGP</span>
+        <input
+            type="number"
+            step="1"
+            min="250"
+            name="price"
+            class="form-control"
+            value="{{ doctor.price }}"
+            required>
+    </div>
+</div>
+        <div class="mb-4">
+    <label class="form-label fw-semibold">Follow-up Price</label>
+
+    <div class="input-group input-group-lg">
+        <span class="input-group-text">EGP</span>
+        <input
+            type="number"
+            step="1"
+            min="0"
+            name="follow_up_price"
+            class="form-control"
+            value="{{ doctor.follow_up_price }}"
+            required>
+    </div>
+</div>
+        
+<div class="alert alert-info border-0 rounded-4 mb-3 py-2" style="font-size:13px;">
+    <i class="bi bi-info-circle me-2"></i>
+    Price updates will apply only to future bookings.
+</div>
+
+        <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+            <a href="{% if is_assistant %}{% url 'assistant_doctor_profile' %}{% else %}{% url 'doctor_profile' %}{% endif %}" class="btn-outline-custom">Cancel</a>
+            <button type="submit" class="btn-primary-custom">Save Pricing</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

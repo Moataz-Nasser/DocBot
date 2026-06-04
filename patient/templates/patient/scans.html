@@ -1,0 +1,146 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}Medical Scans - DOCBOT{% endblock %}
+{% block page_title %}Medical Scans{% endblock %}
+
+{% block sidebar_nav %}
+<li><a href="{% url 'patient_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'patient_profile' %}"><i class="bi bi-person"></i> My Profile</a></li>
+<li><a href="{% url 'medical_profile' %}"><i class="bi bi-heart-pulse"></i> Medical Profile</a></li>
+<li><a href="{% url 'patient_appointments' %}"><i class="bi bi-calendar-check"></i> Appointments</a></li>
+<li><a href="{% url 'patient_prescriptions' %}"><i class="bi bi-prescription2"></i> Prescriptions</a></li>
+<li><a href="{% url 'patient_diagnoses' %}"><i class="bi bi-clipboard-pulse"></i> Diagnoses</a></li>
+<li><a href="{% url 'patient_reminders' %}"><i class="bi bi-alarm"></i> Reminders</a></li>
+<li><a href="{% url 'chatbot_chat' %}"><i class="bi bi-robot"></i> AI Chatbot</a></li>
+{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <h5 class="m-0">Medical Scans & Imaging</h5>
+        <button class="btn-primary-custom" data-bs-toggle="modal" data-bs-target="#addScanModal"><i class="bi bi-plus-lg me-1"></i> Upload Scan</button>
+    </div>
+
+    {% if scans %}
+    <div class="table-responsive">
+        <table class="table table-clean">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Scan Type</th>
+                    <th>Result File</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for scan in scans %}
+                <tr>
+                    <td>{{ scan.date|date:"M d, Y" }}</td>
+                    <td class="fw-bold">{{ scan.type }}</td>
+                    <td>
+                        {% if scan.result_file %}
+                        <a href="{{ scan.result_file }}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-image me-1"></i> View Scan</a>
+                        {% else %}
+                        <span class="text-muted">No file</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+    <button type="button"
+            class="delete-btn"
+            data-bs-toggle="modal"
+            data-bs-target="#deleteModal"
+            data-action="{% url 'scans_delete' scan.pk %}"
+            data-name="{{ scan.type }}">
+        <i class="bi bi-trash"></i>
+    </button>
+</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5 text-muted">
+        <i class="bi bi-images" style="font-size:48px;"></i>
+        <h5 class="mt-3">No medical scans uploaded.</h5>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="addScanModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Upload Medical Scan</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="post" action="{% url 'scans_add' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="modal-body">
+            <div class="mb-3">
+                <label class="form-label">Scan Type/Description</label>
+                <input type="text" name="type" class="form-control" required placeholder="e.g. Chest X-Ray, Brain MRI">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Date of Scan</label>
+                <input type="date" name="date" class="form-control" required value="{% now 'Y-m-d' %}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Result File (PDF/Image)</label>
+                <input type="file" name="result_file" class="form-control">
+                <div class="form-text" style="font-size:11px;">Will be uploaded to secure cloud storage.</div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary" style="background:#4f46e5;border:none;">Upload</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius:16px; border:none; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
+      <div class="modal-body text-center p-5">
+        <div class="mb-4">
+          <i class="bi bi-exclamation-triangle text-danger" style="font-size: 4rem;"></i>
+        </div>
+        <h4 class="fw-bold mb-3">Delete Medical Scan?</h4>
+        <p class="text-muted mb-4">Are you sure you want to delete <span id="deleteItemName" class="fw-bold text-dark"></span>? This action cannot be undone.</p>
+        <div class="d-flex justify-content-center gap-3">
+          <button type="button" class="btn btn-light px-4 py-2 fw-bold" data-bs-dismiss="modal" style="border-radius:10px;">Cancel</button>
+          <form id="deleteForm" method="post" action="">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger px-4 py-2 fw-bold" style="border-radius:10px;">Yes, Delete It</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteModal = document.getElementById('deleteModal');
+    if (deleteModal) {
+        deleteModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const actionUrl = button.getAttribute('data-action');
+            const itemName = button.getAttribute('data-name');
+            
+            const form = deleteModal.querySelector('#deleteForm');
+            const nameSpan = deleteModal.querySelector('#deleteItemName');
+            
+            form.setAttribute('action', actionUrl);
+            nameSpan.textContent = itemName;
+        });
+    }
+});
+</script>
+{% endblock %}

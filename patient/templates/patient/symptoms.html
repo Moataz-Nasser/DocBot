@@ -1,0 +1,169 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}Manage Symptoms - DOCBOT{% endblock %}
+{% block page_title %}Manage Symptoms for Appointment{% endblock %}
+
+{% block sidebar_nav %}
+<li><a href="{% url 'patient_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'patient_profile' %}"><i class="bi bi-person"></i> My Profile</a></li>
+<li><a href="{% url 'medical_profile' %}"><i class="bi bi-heart-pulse"></i> Medical Profile</a></li>
+<li><a href="{% url 'patient_appointments' %}" class="active"><i class="bi bi-calendar-check"></i> Appointments</a></li>
+<li><a href="{% url 'patient_prescriptions' %}"><i class="bi bi-prescription2"></i> Prescriptions</a></li>
+<li><a href="{% url 'patient_diagnoses' %}"><i class="bi bi-clipboard-pulse"></i> Diagnoses</a></li>
+<li><a href="{% url 'patient_reminders' %}"><i class="bi bi-alarm"></i> Reminders</a></li>
+<li><a href="{% url 'chatbot_chat' %}"><i class="bi bi-robot"></i> AI Chatbot</a></li>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+
+.symptom-form-box{
+    background: linear-gradient(180deg,#f8faff,#ffffff);
+    border:1px solid #e2e8f0;
+    border-radius:18px;
+    padding:22px;
+    box-shadow:0 6px 20px rgba(15,23,42,0.04);
+}
+
+.symptom-list{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+.symptom-item{
+    background:#fff;
+    border:1px solid #e2e8f0;
+    border-radius:16px;
+    padding:18px 20px;
+    transition:0.25s ease;
+    box-shadow:0 4px 14px rgba(15,23,42,0.03);
+}
+
+.symptom-item:hover{
+    transform:translateY(-2px);
+    box-shadow:0 12px 28px rgba(15,23,42,0.08);
+    border-color:#c7d2fe;
+}
+
+.symptom-name{
+    font-size:15px;
+    font-weight:700;
+    color:#0f172a;
+    margin-bottom:4px;
+}
+
+.symptom-severity{
+    font-size:12px;
+    color:#64748b;
+}
+
+.severity-badge{
+    padding:5px 12px;
+    border-radius:999px;
+    font-size:11px;
+    font-weight:700;
+}
+
+.severity-mild{
+    background:#ecfdf5;
+    color:#059669;
+}
+
+.severity-moderate{
+    background:#fef3c7;
+    color:#d97706;
+}
+
+.severity-severe{
+    background:#fee2e2;
+    color:#dc2626;
+}
+
+.delete-symptom-btn{
+    width:38px;
+    height:38px;
+    border:none;
+    border-radius:12px;
+    background:#fef2f2;
+    color:#ef4444;
+    transition:0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-symptom-btn:hover{
+    background:#ef4444;
+    color:#fff;
+    transform:scale(1.05);
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-card" style="max-width: 800px; margin: 0 auto;">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div>
+            <h5 class="m-0">Symptoms</h5>
+            <div class="text-muted" style="font-size:13px;">Appt. Date: {{ appointment.scheduled_date }}</div>
+        </div>
+        <a href="{% url 'patient_appointment_detail' appointment.id %}" class="btn-outline-custom py-1">Back to Appt</a>
+    </div>
+
+    <!-- Add Symptom Form -->
+    <div class="symptom-form-box mb-4">
+        <h6 class="mb-3 text-primary">Add a Symptom</h6>
+        <form method="post" class="row g-3 align-items-end">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add">
+            <div class="col-md-6">
+                <label class="form-label">Symptom Description</label>
+                <input type="text" name="symptom_name" class="form-control" placeholder="e.g. Headache, Fever" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Severity</label>
+                <select name="severity" class="form-select">
+                    <option value="">Select...</option>
+                    <option value="Mild">Mild</option>
+                    <option value="Moderate">Moderate</option>
+                    <option value="Severe">Severe</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100" style="background:#4f46e5;border:none;height:42px;border-radius:10px;">Add</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Symptom List -->
+    <h6 class="mb-3">Reported Symptoms</h6>
+    {% if symptoms %}
+    <div class="symptom-list">
+        {% for s in symptoms %}
+        <div class="symptom-item d-flex justify-content-between align-items-center">
+            <div>
+                <div class="symptom-name">{{ s.symptom_name }}</div>
+                {% if s.severity %}
+                    <span class="severity-badge {% if s.severity == 'Mild' %}severity-mild{% elif s.severity == 'Moderate' %}severity-moderate{% elif s.severity == 'Severe' %}severity-severe{% endif %}">
+                        {{ s.severity }}
+                    </span>
+                {% endif %}
+            </div>
+            <form method="post" style="margin:0;">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="symptom_id" value="{{ s.id }}">
+                <button type="submit" class="delete-symptom-btn" onclick="return confirm('Remove symptom?');">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-muted text-center py-4">No symptoms added yet. Describe what you're feeling to help your doctor.</p>
+    {% endif %}
+</div>
+{% endblock %}

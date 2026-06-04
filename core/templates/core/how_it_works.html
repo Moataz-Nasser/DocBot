@@ -1,0 +1,626 @@
+{% extends "core/base.html" %}
+{% block title %}How it Works - DOCBOT{% endblock %}
+{% block extra_css %}
+<style>
+  body {
+    margin: 0;
+    font-family: Inter, sans-serif;
+    background: #f7f9fc;
+    transition: 0.25s ease;
+  }
+
+  /* ================= SPLASH ================= */
+  #splash {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle, #1f2937, #0b1220);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 99999;
+  }
+
+  #splash.hide {
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.6s ease;
+  }
+
+  .splash-title {
+    color: #fff;
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+  }
+
+  /* LOADER BAR */
+  .loader-bar {
+    width: 200px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50px;
+    overflow: hidden;
+  }
+
+  .loader-bar span {
+    display: block;
+    height: 100%;
+    width: 40%;
+    background: linear-gradient(90deg, #4f46e5, #6366f1);
+    animation: load 1s infinite;
+  }
+
+  @keyframes load {
+    0% {
+      transform: translateX(-120%)
+    }
+
+    100% {
+      transform: translateX(300%)
+    }
+  }
+
+  /* ================= NAVBAR ================= */
+  .navbar {
+    background: rgba(255, 255, 255, 0.9) !important;
+    padding: 15px 0;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  }
+
+  .logo-img {
+    height: 30px;
+  }
+
+  .nav-link {
+    font-size: 16px !important;
+    /* تكبير حجم الخط */
+    font-weight: 500 !important;
+    /* جعل الخط عريض (اختياري) */
+    padding-left: 25px !important;
+    /* توسيع المسافة من جهة اليسار */
+    padding-right: 25px !important;
+    /* توسيع المسافة من جهة اليمين */
+    transition: 0.3s ease;
+    position: relative;
+  }
+
+  /* active page */
+  .nav-link.active {
+    color: #4f46e5 !important;
+    font-weight: 700;
+  }
+
+  .nav-link.active::after {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #4f46e5;
+    border-radius: 10px;
+  }
+
+
+  /* ده هيخلي الزرار وكل اللينكات اللي جنبه في نص النيف بار بالظبط */
+  .navbar-nav {
+    display: flex;
+    align-items: center;
+    /* سنترة رأسية */
+  }
+
+  .login-btn {
+    /* شيلنا الـ translateY واستبدلناه بسنترة تلقائية */
+    transform: none !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    display: flex !important;
+    align-items: center;
+    height: fit-content;
+  }
+
+  /* تأكد إن الـ Navbar نفسه بيسنتر العناصر */
+  .navbar .container {
+    display: flex;
+    align-items: center;
+  }
+
+  /* HERO */
+
+  /* SECTION TITLE */
+  .how-title {
+    padding-top: 140px;
+    /* عشان الناف بار */
+    padding-bottom: 40px;
+  }
+
+  .how-title h2 {
+    font-size: 42px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .how-title p {
+    color: #666;
+    max-width: 600px;
+    margin: auto;
+    line-height: 1.6;
+  }
+
+  /* HOW IT WORKS SECTION */
+  .how-step {
+    padding: 60px 0;
+  }
+
+  /* LEFT */
+  .step-badge {
+    background: #e0e7ff;
+    color: #4f46e5;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14px;
+    display: inline-block;
+    margin-bottom: 15px;
+  }
+
+  .step-title {
+    font-size: 38px;
+    font-weight: 700;
+    margin-bottom: 15px;
+  }
+
+  .step-desc {
+    color: #555;
+    line-height: 1.7;
+    margin-bottom: 25px;
+  }
+
+  .step-features div {
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+
+  .step-features i {
+    color: #22c55e;
+    margin-right: 8px;
+  }
+
+  /* RIGHT BOX */
+  .chat-box {
+    background: #dbeafe;
+    padding: 40px;
+    border-radius: 20px;
+    position: relative;
+  }
+
+  /* ICON */
+  .chat-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  /* CARD */
+  .chat-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  }
+
+  /* MESSAGES */
+  .chat-msg {
+    padding: 12px 15px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    max-width: 80%;
+  }
+
+  .chat-msg.ai {
+    background: #f1f5f9;
+  }
+
+  .chat-msg.user {
+    background: #4f46e5;
+    color: #fff;
+    margin-left: auto;
+  }
+
+  /* PROGRESS BAR */
+  .progress {
+    height: 6px;
+    border-radius: 10px;
+    background: #e5e7eb;
+  }
+
+  .progress-bar {
+    background: linear-gradient(90deg, #4f46e5, #6366f1);
+  }
+
+  /* DOCTOR CARDS */
+  .doctor-card {
+    background: #f9fafb;
+    padding: 12px 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+  }
+
+  .doctor-card strong {
+    font-weight: 600;
+  }
+
+  .doctor-card span {
+    color: #666;
+    font-size: 13px;
+  }
+
+  /* SECTION */
+
+  /* FOOTER */
+  footer {
+    padding-bottom: 1px !important;
+  }
+
+  footer {
+    background: #0f172a;
+    color: #fff;
+    padding: 180px 5px;
+  }
+
+
+  .footer-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* LEFT */
+  .footer-left {
+    max-width: 300px;
+  }
+
+  .footer-left img {
+    height: 40px;
+    margin-bottom: 10px;
+    transform: translateY(-100px);
+  }
+
+  .footer-left p {
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+    transform: translateY(-50px);
+
+  }
+
+  /* CENTER */
+  .footer-center {
+    text-align: center;
+    margin-top: 1px;
+  }
+
+  .footer-center p {
+    color: rgba(255, 255, 255, 0.7);
+    margin: 1px 0;
+  }
+
+  /* SOCIAL */
+  .footer-social {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .social-icons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 30px;
+  }
+
+  .social-icons a {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    font-size: 18px;
+    transition: 0.3s;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .social-icons a:hover {
+    background: #4f46e5;
+    transform: translateY(-5px) scale(1.1);
+    box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+  }
+
+  /* BOTTOM */
+  .footer-bottom {
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.5);
+    padding: 30px 0;
+    font-size: 13px;
+    transform: translateY(-4px);
+    line-height: 1.2;
+
+  }
+
+  /* ================= PROGRESS BAR ================= */
+  #scrollBar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 4px;
+    width: 0%;
+    background: linear-gradient(90deg, #4f46e5, #6366f1);
+    z-index: 99999;
+  }
+
+  /* ================= SCROLL TO TOP ================= */
+  #scrollTopBtn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    transition: 0.3s;
+  }
+
+  #scrollTopBtn:hover {
+    transform: translateY(-4px) scale(1.1);
+    box-shadow: 0 15px 30px rgba(79, 70, 229, 0.4);
+  }
+
+  /* ================= HIDE DEFAULT SCROLLBAR ================= */
+  html,
+  body {
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+
+
+
+  .btn-main {
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    color: #fff;
+    padding: 12px 26px;
+    border-radius: 50px;
+    border: none;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: 0.3s;
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25);
+  }
+
+  .btn-main:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 15px 30px rgba(79, 70, 229, 0.4);
+  }
+</style>
+{% endblock %}
+{% block content %}
+<section class="how-title text-center">
+  <div class="container">
+    <h2>How DocBot Works</h2>
+    <p>
+      Discover how DocBot guides you from symptoms to the right care in just a few simple steps.
+    </p>
+  </div>
+</section>
+
+<section class="how-step container">
+  <div class="row align-items-center">
+
+    <!-- LEFT -->
+    <div class="col-lg-6">
+
+      <span class="step-badge">Step 1</span>
+
+      <h2 class="step-title">Share Your Symptoms</h2>
+
+      <p class="step-desc">
+        Start a friendly chat with DocBot. Describe how you feel in plain language—just like you're talking to a friend.
+        Our AI uses natural language processing to ask the right follow-up questions and understand the full context of
+        your health.
+      </p>
+
+      <div class="step-features">
+        <div><i class="bi bi-check-circle-fill"></i> Interactive AI Chat: Easy conversation with text and options.</div>
+        <div><i class="bi bi-check-circle-fill"></i> Intelligent Follow-ups: Smart questions tailored to your inputs.
+        </div>
+        <div><i class="bi bi-check-circle-fill"></i> 24/7 Availability: Get guidance the moment you feel unwell.</div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="col-lg-6">
+
+      <div class="chat-box">
+
+        <div class="chat-icon">
+          <i class="bi bi-chat"></i>
+        </div>
+
+        <div class="chat-card">
+          <div class="chat-msg ai">
+            Hi! What symptoms are you experiencing?
+          </div>
+
+          <div class="chat-msg user">
+            I have a headache and fever since yesterday
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<section class="how-step container">
+  <div class="row align-items-center flex-lg-row-reverse">
+
+    <!-- LEFT (TEXT) -->
+    <div class="col-lg-6">
+
+      <span class="step-badge">Step 2</span>
+
+      <h2 class="step-title">Smart Clinical Evaluation</h2>
+
+      <p class="step-desc">
+        DocBot’s AI analyzes your symptoms against clinical logic to evaluate the urgency of your case. You’ll receive
+        immediate guidance:
+        whether it's simple advice for home rest or a recommendation to visit a specialist for further examination.
+      </p>
+
+      <div class="step-features">
+        <div><i class="bi bi-check-circle-fill"></i> Urgency Assessment: Knowing if your case is mild or needs
+          attention.</div>
+        <div><i class="bi bi-check-circle-fill"></i> Clinical Data Mapping: Your symptoms are organized into a
+          professional summary.</div>
+        <div><i class="bi bi-check-circle-fill"></i> Direct Doctor Notification: Your summarized case is sent directly
+          to your chosen specialist.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT (UI BOX) -->
+    <div class="col-lg-6">
+
+      <div class="chat-box">
+
+        <div class="chat-icon">
+          <i class="bi bi-activity"></i>
+        </div>
+
+        <div class="chat-card">
+
+          <div class="chat-msg ai">
+            Analyzing your symptoms...
+          </div>
+
+          <div class="progress my-2">
+            <div class="progress-bar w-75"></div>
+          </div>
+
+          <div class="chat-msg ai">
+            Your case is moderate. Recommended: consult a specialist.
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<section class="how-step container">
+  <div class="row align-items-center">
+
+    <!-- LEFT -->
+    <div class="col-lg-6">
+
+      <span class="step-badge">Step 3</span>
+
+      <h2 class="step-title">Match with Top Specialists</h2>
+
+      <p class="step-desc">
+        If a visit is needed, DocBot doesn't leave you searching. Our system identifies the exact internal medicine
+        sub-specialty you need
+        and recommends the top 3 verified doctors in that field to ensure you get the best care.
+      </p>
+
+      <div class="step-features">
+        <div><i class="bi bi-check-circle-fill"></i>Smart Specialty Matching: Automatic routing to the right
+          organ-specific expert.</div>
+        <div><i class="bi bi-check-circle-fill"></i> Top 3 Recommendations: Hand-picked consultants based on your needs.
+        </div>
+        <div><i class="bi bi-check-circle-fill"></i> Integrated EHR: Your doctor reviews your AI-generated history
+          before you even walk into the clinic.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="col-lg-6">
+
+      <div class="chat-box">
+
+        <div class="chat-icon">
+          <i class="bi bi-person-check"></i>
+        </div>
+
+        <div class="chat-card">
+
+          <div class="doctor-card">
+            <strong>Dr. Ahmed Hassan</strong>
+            <span>Cardiology Specialist</span>
+          </div>
+
+          <div class="doctor-card">
+            <strong>Dr. Sara Ali</strong>
+            <span>Internal Medicine</span>
+          </div>
+
+          <div class="doctor-card">
+            <strong>Dr. Mohamed Adel</strong>
+            <span>General Physician</span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,239 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}AI Chatbot - DOCBOT{% endblock %}
+{% block page_title %}Medical Assistant{% endblock %}
+
+{% block sidebar_nav %}
+<li><a href="{% url 'patient_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'patient_profile' %}"><i class="bi bi-person"></i> My Profile</a></li>
+<li><a href="{% url 'medical_profile' %}"><i class="bi bi-heart-pulse"></i> Medical Profile</a></li>
+<li><a href="{% url 'patient_appointments' %}"><i class="bi bi-calendar-check"></i> Appointments</a></li>
+<li><a href="{% url 'patient_prescriptions' %}"><i class="bi bi-prescription2"></i> Prescriptions</a></li>
+<li><a href="{% url 'patient_diagnoses' %}"><i class="bi bi-clipboard-pulse"></i> Diagnoses</a></li>
+<li><a href="{% url 'patient_reminders' %}"><i class="bi bi-alarm"></i> Reminders</a></li>
+<li><a href="{% url 'chatbot_chat' %}" class="active"><i class="bi bi-robot"></i> AI Chatbot</a></li>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.chat-shell {
+  width:100%;
+  height:calc(100vh - 180px);
+  background:#fff;
+  border-radius:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.05);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  border:1px solid #f1f5f9;
+}
+
+.chat-header {
+  padding:15px 20px;
+  border-bottom:1px solid #f1f5f9;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#f8fafc;
+}
+
+.chat-title { font-weight:600; color:#1e293b; }
+.status { font-size:12px; padding:4px 10px; background:#dcfce7; color:#166534; border-radius:20px; display:inline-flex; align-items:center; gap:5px; }
+.status-dot { width:6px; height:6px; border-radius:50%; background:#16a34a; }
+
+.chat-body {
+  flex:1;
+  overflow-y:auto;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+  background:#fafafa;
+}
+
+.chat-message { max-width:80%; display:flex; gap:10px; align-items:flex-start; }
+.message-bot { align-self:flex-start; }
+.message-user { align-self:flex-end; flex-direction:row-reverse; }
+
+.avatar { width:35px; height:35px; border-radius:50%; display:flex; justify-content:center; align-items:center; flex-shrink:0; font-size:14px; font-weight:bold; }
+.avatar-bot { background:#4f46e5; color:#fff; }
+.avatar-user { background:#e2e8f0; color:#475569; }
+
+.message-bubble { padding:12px 16px; border-radius:18px; font-size:14px; line-height:1.5; position:relative; }
+.message-bot .message-bubble { background:#fff; border:1px solid #e2e8f0; border-top-left-radius:4px; color:#334155; }
+.message-user .message-bubble { background:#4f46e5; color:#fff; border-top-right-radius:4px; }
+
+.chat-input {
+  padding:15px 20px;
+  border-top:1px solid #f1f5f9;
+  display:flex;
+  gap:10px;
+  background:#fff;
+}
+
+.chat-input input {
+  flex:1;
+  border:1px solid #e2e8f0;
+  outline:none;
+  padding:12px 20px;
+  border-radius:25px;
+  background:#f8fafc;
+  transition:all 0.2s;
+}
+.chat-input input:focus { border-color:#4f46e5; background:#fff; box-shadow:0 0 0 3px rgba(79,70,229,0.1); }
+
+.send-btn {
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  border:none;
+  background:#4f46e5;
+  color:#fff;
+  font-size:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.send-btn:hover { background:#4338ca; transform:scale(1.05); }
+.send-btn:disabled { background:#cbd5e1; cursor:not-allowed; transform:none; }
+
+.typing-indicator { display:none; gap:4px; align-items:center; padding:10px 15px; background:#fff; border:1px solid #e2e8f0; border-radius:18px; border-top-left-radius:4px; align-self:flex-start; width:fit-content; }
+.typing-dot { width:6px; height:6px; background:#94a3b8; border-radius:50%; animation:typing 1.4s infinite ease-in-out; }
+.typing-dot:nth-child(1) { animation-delay:-0.32s; }
+.typing-dot:nth-child(2) { animation-delay:-0.16s; }
+@keyframes typing { 0%, 80%, 100% { transform:scale(0); } 40% { transform:scale(1); } }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="chat-shell">
+            <div class="chat-header">
+                <div class="chat-title"><i class="bi bi-robot me-2 text-primary"></i>DocBot Medical Assistant</div>
+                <div class="status"><div class="status-dot"></div> Connected</div>
+            </div>
+
+            <div class="chat-body" id="chatHistory">
+                <!-- Welcome Message -->
+                <div class="chat-message message-bot">
+                    <div class="avatar avatar-bot"><i class="bi bi-robot"></i></div>
+                    <div class="message-bubble">
+                        Hello {{ request.user.first_name }}! 👋<br>
+                        I'm your AI medical assistant. I can help analyze your symptoms based on your medical history.<br><br>
+                        ⚠️ <strong>Please note:</strong> I am an AI assistant and do <strong>not</strong> replace a real doctor. Always consult a healthcare professional for medical decisions.<br><br>
+                        How are you feeling today?
+                    </div>
+                </div>
+                
+                <!-- Chat messages will be injected here -->
+                
+                <!-- Typing Indicator -->
+                <div class="typing-indicator" id="typingIndicator">
+                    <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+                </div>
+            </div>
+
+            <div class="chat-input">
+                <input type="hidden" id="chatToken" value="{{ token }}">
+                <input type="text" id="chatInput" placeholder="Type your symptoms here..." autocomplete="off" onkeypress="if(event.key === 'Enter') sendMessage()">
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()"><i class="bi bi-send-fill"></i></button>
+            </div>
+        </div>
+        <div class="text-center mt-3 text-muted" style="font-size:12px;">
+            <i class="bi bi-shield-check me-1"></i> DocBot AI analyzes symptoms securely using your medical profile. <strong>It does not replace professional medical advice.</strong>
+        </div>
+    </div>
+</div>
+
+<script>
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const chatHistory = document.getElementById('chatHistory');
+    const typingIndicator = document.getElementById('typingIndicator');
+    const token = document.getElementById('chatToken').value;
+
+    function appendMessage(text, isUser) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `chat-message ${isUser ? 'message-user' : 'message-bot'}`;
+        
+        const avatarStr = isUser 
+            ? `<div class="avatar avatar-user"><i class="bi bi-person"></i></div>`
+            : `<div class="avatar avatar-bot"><i class="bi bi-robot"></i></div>`;
+            
+        msgDiv.innerHTML = `
+            ${avatarStr}
+            <div class="message-bubble">${text}</div>
+        `;
+        
+        // Insert before typing indicator
+        chatHistory.insertBefore(msgDiv, typingIndicator);
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+
+    async function sendMessage() {
+        const text = chatInput.value.trim();
+        if (!text) return;
+
+        // Add user message
+        appendMessage(text, true);
+        chatInput.value = '';
+        chatInput.disabled = true;
+        sendBtn.disabled = true;
+        
+        // Show typing indicator
+        typingIndicator.style.display = 'flex';
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+
+        try {
+            // Send to local n8n Webhook
+            // Production URL (requires the workflow to be toggled to "Active" in n8n)
+            const n8nUrl = "http://127.0.0.1:5678/webhook/106e3896-b6d5-440b-bbd5-f1abc7edea8c/chat";
+            const sessionId = "user_{{ request.user.id }}";
+            
+            const response = await fetch(n8nUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Chatbot-Token': token
+                },
+                body: JSON.stringify({
+                    chatInput: text,
+                    text: text,
+                    sessionId: sessionId,
+                    user_id: "{{ request.user.id }}",
+                    token: token
+                })
+            });
+
+            if (!response.ok) throw new Error('Network response was not ok');
+            
+            const data = await response.json();
+            console.log("n8n Response:", data);
+            
+            // Handle different n8n response formats
+            let botResponse = "";
+            if (Array.isArray(data)) {
+                const item = data[0];
+                botResponse = item.output || item.message || item.text || JSON.stringify(item);
+            } else {
+                botResponse = data.output || data.message || data.text || data.response || "Error: The AI returned an empty response. Please check the n8n workflow.";
+            }
+            
+            appendMessage(botResponse, false);
+            
+        } catch (error) {
+            console.error('Error:', error);
+            appendMessage("Sorry, I'm having trouble connecting to my brain right now. Please try again later.", false);
+        } finally {
+            typingIndicator.style.display = 'none';
+            chatInput.disabled = false;
+            sendBtn.disabled = false;
+            chatInput.focus();
+        }
+    }
+</script>
+{% endblock %}

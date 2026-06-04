@@ -1,0 +1,97 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}Manage Doctors - DOCBOT{% endblock %}
+{% block page_title %}Manage Doctors{% endblock %}
+
+{% block sidebar_nav %}
+<li><a href="{% url 'admin_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'admin_users' %}"><i class="bi bi-people"></i> Users</a></li>
+<li><a href="{% url 'admin_doctors' %}" class="active"><i class="bi bi-heart-pulse"></i> Doctors</a></li>
+{% if user.role == 'Super_Admin' %}
+<li><a href="{% url 'admin_assistant_add' %}"><i class="bi bi-person-badge"></i> Doctor Assistants</a></li>
+<li><a href="{% url 'admin_measurement_types' %}"><i class="bi bi-rulers"></i> Measurement Types</a></li>
+<li><a href="{% url 'admin_inheritable_diseases' %}"><i class="bi bi-diagram-3"></i> Inheritable Diseases</a></li>
+{% endif %}
+<li><a href="{% url 'admin_reviews' %}"><i class="bi bi-star"></i> Reviews</a></li>
+{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <h5 class="m-0">Registered Doctors</h5>
+        {% if user.role == 'Super_Admin' %}
+        <a href="{% url 'admin_doctor_add' %}" class="btn-primary-custom"><i class="bi bi-plus-lg me-1"></i> Add Doctor</a>
+        {% endif %}
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-clean align-middle">
+            <thead>
+                <tr>
+                    <th>Doctor Name</th>
+                    <th>Specialization</th>
+                    <th>Experience</th>
+                    <th>Rating</th>
+                    <th>Appts</th>
+                    {% if user.role == 'Super_Admin' %}<th>Management</th>{% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in doctors %}
+                <tr>
+                    <td>
+                        <div class="fw-bold">{{ d.user.get_full_name }}</div>
+                        <div class="text-muted" style="font-size:12px;">{{ d.user.email }}</div>
+                    </td>
+                    <td><span class="badge bg-light text-dark border">{{ d.specialization }}</span></td>
+                    <td>{{ d.years_of_experience }} Yrs</td>
+                    <td>
+                        <div class="text-warning"><i class="bi bi-star-fill"></i> {{ d.avg_rating|default:"0.0"|floatformat:1 }}</div>
+                    </td>
+                    <td>{{ d.appointment_count }}</td>
+                    {% if request.user.role == 'Super_Admin' %}
+                    <td>
+                        <div class="d-flex gap-2 flex-wrap">
+
+        <a href="{% url 'admin_doctor_edit' d.user.username %}" 
+           class="btn btn-sm btn-light border"
+           style="border-radius:10px;">
+            <i class="bi bi-pencil"></i>
+        </a>
+
+        <a href="{% url 'admin_doctor_addresses' d.user.username %}" 
+           class="btn btn-sm btn-light border"
+           style="border-radius:10px;">
+            <i class="bi bi-geo-alt"></i>
+        </a>
+
+        <a href="{% url 'admin_doctor_schedules' d.user.username %}" 
+           class="btn btn-sm btn-light border"
+           style="border-radius:10px;">
+            <i class="bi bi-calendar3"></i>
+        </a>
+
+                                    <form method="post" action="{% url 'admin_doctor_delete' d.user.username %}" onsubmit="return confirm('Deactivate doctor?');" style="margin:0;">
+                                        {% csrf_token %}
+                                          <button type="submit"
+              class="btn btn-sm btn-light border"
+                style="border-radius:10px;">
+            <i class="bi bi-trash text-danger"></i>
+                 </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-4 text-muted">No doctors found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

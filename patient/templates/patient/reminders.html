@@ -1,0 +1,213 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}Medication Reminders - DOCBOT{% endblock %}
+{% block page_title %}Medication Reminders{% endblock %}
+
+{% block sidebar_nav %}
+<li><a href="{% url 'patient_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'patient_profile' %}"><i class="bi bi-person"></i> My Profile</a></li>
+<li><a href="{% url 'medical_profile' %}"><i class="bi bi-heart-pulse"></i> Medical Profile</a></li>
+<li><a href="{% url 'patient_appointments' %}"><i class="bi bi-calendar-check"></i> Appointments</a></li>
+<li><a href="{% url 'patient_prescriptions' %}"><i class="bi bi-prescription2"></i> Prescriptions</a></li>
+<li><a href="{% url 'patient_diagnoses' %}"><i class="bi bi-clipboard-pulse"></i> Diagnoses</a></li>
+<li><a href="{% url 'patient_reminders' %}" class="active"><i class="bi bi-alarm"></i> Reminders</a></li>
+<li><a href="{% url 'chatbot_chat' %}"><i class="bi bi-robot"></i> AI Chatbot</a></li>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+
+.reminder-card{
+    border-radius: 22px !important;
+    border: 1px solid #eef2ff !important;
+    transition: 0.28s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.reminder-card::before{
+    content:'';
+    position:absolute;
+    left:0;
+    top:0;
+    width:3px;
+    height:100%;
+    background:linear-gradient(to bottom,#6366f1,#a78bfa);
+    box-shadow:0 0 12px rgba(99,102,241,0.4);
+}
+
+.reminder-card:hover{
+    transform: translateY(-4px);
+    box-shadow: 0 18px 35px rgba(79,70,229,0.10) !important;
+}
+
+.schedule-pill{
+    background:#f8fafc;
+    color:#4f46e5;
+    border:1px solid #e2e8f0;
+    border-radius:999px;
+    padding:8px 14px;
+    font-size:12px;
+    font-weight:600;
+}
+
+.reminder-note{
+    background:#f8fafc;
+    border:1px dashed #dbeafe;
+    border-radius:14px;
+    padding:12px;
+}
+
+.reminder-action{
+    border:none;
+    border-radius:12px;
+    padding:10px 18px;
+    font-size:13px;
+    font-weight:600;
+    transition:0.25s;
+}
+
+.reminder-action.disable{
+    background:#fef2f2;
+    color:#ef4444;
+}
+
+.reminder-action.disable:hover{
+    background:#ef4444;
+    color:white;
+}
+
+.reminder-action.enable{
+    background:#ecfdf5;
+    color:#16a34a;
+}
+
+.reminder-action.enable:hover{
+    background:#16a34a;
+    color:white;
+}
+
+.history-table{
+    border-collapse:separate;
+    border-spacing:0 12px;
+}
+
+.history-table tbody tr{
+    background:white;
+    box-shadow:0 4px 14px rgba(15,23,42,0.04);
+}
+
+.history-table tbody td{
+    border:none;
+    padding:16px;
+}
+
+.history-table tbody td:first-child{
+    border-radius:12px 0 0 12px;
+}
+
+.history-table tbody td:last-child{
+    border-radius:0 12px 12px 0;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Active Reminders Section -->
+        <div class="content-card mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                <h5 class="m-0 fw-bold text-primary"><i class="bi bi-alarm me-2"></i>Active Reminders</h5>
+            </div>
+
+            {% if active_reminders %}
+            <div class="row g-4">
+                {% for r in active_reminders %}
+                <div class="col-md-6">
+                    <div class="card h-100 border-0 shadow-sm reminder-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title text-dark fw-bold mb-0">
+                                    {{ r.medication_name }}
+                                    {% if not r.is_active %}
+                                    <span class="badge bg-secondary ms-2" style="font-size:10px;">Disabled</span>
+                                    {% endif %}
+                                </h5>
+                                <span class="badge bg-primary bg-opacity-10 text-primary">Every {{ r.repeat_interval_days }} days</span>
+                            </div>
+                            <p class="text-muted small mb-3">Duration: {{ r.start_date|date:"M d" }} — {{ r.end_date|date:"M d, Y" }}</p>
+                            
+                            <div class="mb-3">
+                                <div class="text-muted small fw-bold text-uppercase mb-2" style="letter-spacing: 0.5px;">Schedule</div>
+                                <div class="d-flex flex-wrap gap-2">
+                                    {% for time_obj in r.times %}
+                                    <span class="schedule-pill">{{ time_obj.time|time:"g:i A" }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            {% if r.note %}
+                            <div class="reminder-note small text-muted mb-3">
+                                <i class="bi bi-info-circle me-1"></i> {{ r.note }}
+                            </div>
+                            {% endif %}
+                            
+                            <div class="mt-auto pt-3 border-top d-flex justify-content-end">
+                                <form method="post" action="{% url 'patient_reminder_toggle' r.id %}">
+                                    {% csrf_token %}
+                                    {% if r.is_active %}
+                                        <button type="submit" class="reminder-action disable"><i class="bi bi-bell-slash me-1"></i> Disable</button>
+                                    {% else %}
+                                        <button type="submit" class="reminder-action enable"><i class="bi bi-bell me-1"></i> Enable</button>
+                                    {% endif %}
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-check2-circle" style="font-size:48px;"></i>
+                <h6 class="mt-3">No active reminders.</h6>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Past/Expired Reminders Section -->
+        <div class="content-card" style="opacity: 0.85; background: #f8fafc;">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                <h5 class="m-0 fw-bold text-muted"><i class="bi bi-clock-history me-2"></i>Past & Expired</h5>
+            </div>
+
+            {% if past_reminders %}
+            <div class="table-responsive">
+                <table class="table history-table align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Medication</th>
+                            <th>Ended On</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in past_reminders %}
+                        <tr>
+                            <td class="fw-medium text-muted">{{ r.medication_name }}</td>
+                            <td class="text-muted">{{ r.end_date|date:"M d, Y" }}</td>
+                            <td><span class="badge bg-light text-muted border">Completed</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-center text-muted py-3 small">No history of expired reminders.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

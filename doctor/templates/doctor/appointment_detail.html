@@ -1,0 +1,660 @@
+{% extends "core/dashboard_base.html"%}
+
+{% block title %}Appointment Session - DOCBOT{% endblock %}
+{% block page_title %}Appointment Session{% endblock %}
+
+{% block sidebar_nav %}
+<li><a href="{% url 'doctor_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'doctor_profile' %}"><i class="bi bi-person"></i> My Profile</a></li>
+<li><a href="{% url 'doctor_schedules' %}"><i class="bi bi-calendar3"></i> My Schedules</a></li>
+<li><a href="{% url 'doctor_appointments' %}" class="active"><i class="bi bi-calendar-check"></i> Appointments</a></li>
+<li><a href="{% url 'doctor_reviews' %}"><i class="bi bi-star"></i> My Reviews</a></li>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .clinical-tab {
+        border-radius: 10px;
+        color: #475569;
+        padding: 10px 15px;
+        font-weight: 500;
+        font-size: 14px;
+        margin-right: 5px;
+    }
+
+    .clinical-tab.active {
+        color: #fff;
+    }
+
+    .section-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 15px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .data-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+.session-header{
+    border-radius:28px;
+    padding:28px;
+    background:linear-gradient(135deg,#ffffff,#f8fafc);
+    border:1px solid #eef2ff;
+    box-shadow:0 15px 35px rgba(15,23,42,.06);
+}
+
+.patient-avatar{
+    width:68px;
+    height:68px;
+    border-radius:20px;
+    background:#eef2ff;
+    color:#4f46e5;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:28px;
+    font-weight:700;
+}
+.nav-tabs{
+    padding:10px;
+}
+
+.nav-tabs .nav-link{
+    border:none !important;
+    border-radius:14px !important;
+    padding:12px 18px;
+    font-weight:600;
+    color:#64748b !important;
+    transition:.2s;
+}
+
+.nav-tabs .nav-link.active{
+    background:#4f46e5 !important;
+    color:#fff !important;
+}
+.history-section{
+    background:#fff;
+    border:1px solid #eef2ff;
+    border-radius:18px;
+    padding:18px;
+    margin-bottom:18px;
+}
+.data-box{
+    background:#ffffff;
+    border:1px solid #eef2ff;
+    border-radius:18px;
+    padding:18px;
+    margin-bottom:16px;
+    box-shadow:0 4px 12px rgba(15,23,42,.03);
+}
+.start-btn{
+    background:linear-gradient(135deg,#10b981,#059669);
+    border:none;
+    border-radius:14px;
+    padding:12px;
+    font-weight:500;
+    box-shadow:0 10px 22px rgba(16,185,129,.22);
+    height:42px;
+}
+.rx-card{
+    border:none;
+    border-radius:22px;
+    overflow:hidden;
+    background:#fff;
+    box-shadow:0 10px 24px rgba(15,23,42,.06);
+}
+
+.rx-header{
+    background:#eef2ff;
+    padding:14px 18px;
+}
+.col-lg-8 .content-card{
+    background:#ffffff;
+}
+
+.col-lg-4 .content-card{
+    background:#fff;
+}
+.info-pill{
+    background:#f8fafc;
+    border:1px solid #e2e8f0;
+    border-radius:12px;
+    padding:8px 14px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:13px;
+    font-weight:500;
+    color:#334155;
+}
+
+.info-pill i{
+    color:#4f46e5;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Appointment Header -->
+<div class="content-card mb-4"  {% if appointment.status  == 'In progress' %}style="border-top:4px solid #10b981;"  {%  endif  %}>
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+       <div>
+           <h4 class="mb-1">Patient: {{ appointment.patient.get_full_name }}</h4>
+            <div class="d-flex flex-wrap gap-2 mt-2">
+
+    <div class="info-pill">
+        <i class="bi bi-calendar-event"></i>
+        {{ appointment.slot.slot_date|date:"M d, Y" }}
+    </div>
+
+    <div class="info-pill">
+        <i class="bi bi-clock"></i>
+        {{ appointment.slot.start_time|time:"g:i A" }}
+    </div>
+
+    <div class="info-pill">
+        <i class="bi bi-gender-ambiguous"></i>
+        {{ patient_profile.gender|default:"Unknown" }}
+    </div>
+
+    <div class="info-pill">
+        <i class="bi bi-person"></i>
+        {{ patient_profile.age|default:"Unknown" }} yrs
+    </div>
+
+</div>
+        </div>
+        
+        <div class="d-flex gap-2 align-items-center">
+            <span class="badge-status 
+                {% if appointment.status == 'Booked' %}badge-booked
+                {% elif appointment.status == 'In progress' %}badge-inprogress
+                {% elif appointment.status == 'Completed' %}badge-completed
+                {% elif appointment.status == 'Canceled' %}badge-canceled
+                {% else %}badge-noshow{% endif %} fs-6 me-2 px-3 py-2">
+                {{ appointment.status }}
+            </span>
+
+             {% if appointment.status == 'Booked' %}
+            <button type="button" class="btn btn-success fw-bold" data-bs-toggle="modal"
+                data-bs-target="#startSessionModal">
+                <i class="bi bi-play-fill me-1"></i> Start Session</button>
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+                    data-bs-toggle="dropdown">Actions</button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <form method="post" action="{% url 'doctor_appointment_cancel' appointment.id %}"
+                            onsubmit="return confirm('Are you sure you want to cancel this appointment?');">
+                            {% csrf_token %}
+                            <button type="submit" class="dropdown-item text-danger"><i
+                                    class="bi bi-x-circle me-2"></i>Cancel</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+             {%  elif appointment.status == 'In progress'   %}
+            <form method="post" action="{% url 'doctor_appointment_complete' appointment.id %}" style="margin:0;"
+                onsubmit="return validateCompleteSession(event);">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary fw-bold" style="background:#4f46e5; border:none;">
+                    <i class="bi bi-check-lg me-1"></i> Complete Session
+                </button>
+            </form>
+             {%  endif   %}
+           
+             {%  if appointment.status == 'In progress' or appointment.status == 'Completed' %}
+             {%  if not appointment.follow_up_allowed and not appointment.is_follow_up   %}
+            <form method="post" action="{% url 'doctor_allow_followup' appointment.id %}" style="margin:0;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-info btn-sm"><i class="bi bi-arrow-repeat me-1"></i> Allow
+                    Follow-up</button>
+            </form>
+             {%  elif appointment.follow_up_allowed   %}
+            <span class="badge-status badge-booked"><i class="bi bi-check me-1"></i>Follow-up Allowed</span>
+             {%  endif   %}
+             {%  endif   %}
+           
+            
+        </div>
+    </div>
+</div>
+
+<!-- Reported Symptoms -->
+ {%  if symptoms or appointment.status == 'Booked'   %}
+<div class="content-card mb-4">
+    <h5 class="section-title">Patient Reported Symptoms</h5>
+     {%  if symptoms   %}
+    <div class="d-flex flex-wrap gap-2">
+         {%  for s in symptoms   %}
+        <span class="badge bg-light text-dark border p-2" style="font-size:14px;">
+            {{ s.symptom_name }}
+             {%  if s.severity   %}<span class="text-danger ms-1">({{ s.severity }})</span> {%  endif   %}
+        </span>
+         {%  endfor   %}
+    </div>
+     {%  else   %}
+    <p class="text-muted m-0">No symptoms reported by the patient prior to the visit.</p>
+     {%  endif %}
+
+</div>
+ {%  endif   %}
+
+<!-- Full Clinical Interface (Available during In Progress, Read-only after Completed) -->
+ {%  if can_view_medical or appointment.status == 'Completed'   %}
+<div class="row">
+    <!-- Left Col: Patient History -->
+    <div class="col-lg-4 mb-4">
+        <div class="content-card h-100 p-0" style="overflow:hidden;">
+            <div class="bg-light p-3 border-bottom">
+                <h5 class="m-0 text-primary"><i class="bi bi-journal-medical me-2"></i>Medical History</h5>
+            </div>
+
+            <!-- History Tabs -->
+            <ul class="nav nav-tabs nav-fill border-bottom-0" id="historyTabs" role="tablist"
+                style="background:#f8fafc;">
+                <li class="nav-item" role="presentation"><button class="nav-link active rounded-0 border-0 fw-bold"
+                        data-bs-toggle="tab" data-bs-target="#hist-basic" type="button"
+                        style="color:#4f46e5;">Basic</button></li>
+                <li class="nav-item" role="presentation"><button class="nav-link rounded-0 border-0 fw-bold"
+                        data-bs-toggle="tab" data-bs-target="#hist-vitals" type="button"
+                        style="color:#64748b;">Vitals</button></li>
+                <li class="nav-item" role="presentation"><button class="nav-link rounded-0 border-0 fw-bold"
+                        data-bs-toggle="tab" data-bs-target="#hist-files" type="button"
+                        style="color:#64748b;">Files</button></li>
+            </ul>
+
+            <div class="tab-content p-3" id="historyTabsContent" style="max-height:600px; overflow-y:auto;">
+                <!-- Basic History -->
+                <div class="tab-pane fade show active" id="hist-basic">
+                    <div class="mb-4">
+                        <div class="fw-bold text-muted mb-2" style="font-size:12px;text-transform:uppercase;">Chronic
+                            Diseases</div>
+                        {% for c in chronic_diseases   %}
+                        <div class="mb-1"><i class="bi bi-exclamation-circle text-warning me-2"></i>{{ c.disease_name }}
+                        </div>
+                         {%  empty   %}<div class="text-muted small">None recorded</div> {%  endfor   %}
+                    </div>
+                    <div class="mb-4">
+                        <div class="fw-bold text-muted mb-2" style="font-size:12px;text-transform:uppercase;">Allergies
+                        </div>
+                        {% for a in allergies %}
+                        <div class="mb-1"><i class="bi bi-virus text-danger me-2"></i>{{ a.allergy_name }} <span
+                                class="text-muted small">({{ a.severity|default:"-" }})</span></div>
+                        {% empty %}<div class="text-muted small">None recorded</div>{% endfor %}
+                    </div>
+                    <div class="mb-4">
+                        <div class="fw-bold text-muted mb-2" style="font-size:12px;text-transform:uppercase;">Current
+                            Medications</div>
+                        {% for m in current_medications %}
+                        <div class="mb-1"><i class="bi bi-capsule text-primary me-2"></i>{{ m.medication_name }} <span
+                                class="text-muted small">({{ m.dosage_strength|default:"-" }})</span></div>
+                        {% empty %}<div class="text-muted small">None recorded</div>{% endfor %}
+                    </div>
+                    <div class="mb-4">
+                        <div class="fw-bold text-muted mb-2" style="font-size:12px;text-transform:uppercase;">Surgeries
+                        </div>
+                        {% for s in surgeries %}
+                        <div class="mb-1"><i class="bi bi-bandaid text-info me-2"></i>{{ s.surgery_name }} <span
+                                class="text-muted small">({{ s.date|date:"Y" }})</span></div>
+                        {% empty %}<div class="text-muted small">None recorded</div>{% endfor %}
+                    </div>
+                    <div>
+                        <div class="fw-bold text-muted mb-2" style="font-size:12px;text-transform:uppercase;">Family
+                            History</div>
+                        {% for f in family_history %}
+                        <div class="mb-1"><i class="bi bi-people text-secondary me-2"></i>{{ f.disease.disease_name }}
+                            <span class="text-muted small">({{ f.inherited_from|default:"-" }})</span>
+                        </div>
+                        {% empty %}<div class="text-muted small">None recorded</div>{% endfor %}
+                    </div>
+                </div>
+
+                <!-- Vitals -->
+                <div class="tab-pane fade" id="hist-vitals">
+                    {% for v in vitals %}
+                    <div class="data-box p-2 mb-2">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="fw-bold" style="font-size:13px;">{{ v.measurement_type.name }}</span>
+                            <span class="text-muted" style="font-size:11px;">{{ v.date|date:"M d" }}</span>
+                        </div>
+                        <div class="fs-5 fw-bold text-primary">{{ v.value }}{% if v.value_secondary %} /
+                            {{ v.value_secondary }}{% endif %} <span class="fs-6 text-muted">{{ v.measurement_type.unit}}</span></div>
+                    </div>
+                    {% empty %}
+                    <div class="text-muted text-center pt-4">No vitals logged.</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Lab Tests & Scans -->
+                <div class="tab-pane fade" id="hist-files">
+                    <div class="fw-bold text-muted mb-2" style="font-size:12px;text-transform:uppercase;">Lab Tests
+                    </div>
+                    {% for l in lab_tests %}
+                    <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                        <div>
+                            <div class="fw-bold" style="font-size:13px;">{{ l.test_name }}</div>
+                            <div class="text-muted" style="font-size:11px;">{{ l.date|date:"M d, Y" }}</div>
+                        </div>
+                         {%  if l.result_file   %}
+                        <a href="{{ l.result_file }}" target="_blank" class="btn btn-sm btn-outline-primary py-0 px-2"
+                            style="font-size:12px;">View</a>
+                         {% endif   %}
+                    </div>
+                    {% empty %}<div class="text-muted small mb-4">No lab tests</div>{% endfor %}
+
+                    <div class="fw-bold text-muted mb-2 mt-4" style="font-size:12px;text-transform:uppercase;">Medical
+                        Scans</div>
+                    {% for s in scans %}
+                    <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                        <div>
+                            <div class="fw-bold" style="font-size:13px;">{{ s.type }}</div>
+                            <div class="text-muted" style="font-size:11px;">{{ s.date|date:"M d, Y" }}</div>
+                        </div>
+                         {%  if s.result_file   %}
+                        <a href="{{ s.result_file }}" target="_blank" class="btn btn-sm btn-outline-primary py-0 px-2"
+                            style="font-size:12px;">View</a>
+                         {%  endif   %}
+                    </div>
+                    {% empty %}<div class="text-muted small">No scans</div>{% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <!-- Right Col: Clinical Documentation (Session) -->
+    <div class="col-lg-8 mb-4">
+        <div class="content-card h-100 p-0" style="overflow:hidden;">
+            <div class="bg-light p-3 border-bottom">
+                <h5 class="m-0 text-primary"><i class="bi bi-pencil-square me-2"></i>Clinical Documentation</h5>
+            </div>
+
+            <div class="p-4">
+                <!-- Diagnoses -->
+                <div class="mb-5">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="section-title m-0">Diagnoses</h6>
+                         {%  if can_edit_clinical   %}
+                         <button class="btn-primary-custom"
+                         data-bs-toggle="modal"
+                         data-bs-target="#addDiagModal">
+                         <i class="bi bi-plus-lg me-1"></i>
+                         Add Diagnosis
+                        </button>
+                         {%  endif %}
+                    </div>
+                      {%  if diagnoses   %}
+                     <ul class="list-group" id="diagnoses-list">
+                        {% for d in diagnoses %}
+                        <li
+                            class="list-group-item d-flex justify-content-between align-items-center border-0 bg-light mb-2 rounded">
+                            <span class="fw-bold">{{ d.diagnosis_name }}</span>
+                             {%  if can_edit_clinical and d.created_by == request.user   %}
+                            <form method="post" action="{% url 'doctor_diagnosis_manage' appointment.id %}"
+                                style="margin:0;"
+                                onsubmit="return confirm('Are you sure you want to delete this diagnosis?');">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="delete">
+                                <input type="hidden" name="diagnosis_id" value="{{ d.id }}">
+                                <button type="submit"
+                                class="delete-btn">
+                            <i class="bi bi-trash"></i>
+
+                            </button>
+                            </form>
+                             {%  endif   %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                     {%  else   %}
+                    <div class="text-muted fst-italic">No diagnoses recorded for this session.</div>
+                     {%  endif   %}
+                </div>
+
+                <!-- Notes -->
+                <div class="mb-5">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="section-title m-0">Doctor's Notes</h6>
+                         {%  if can_edit_clinical   %}
+                        <button class="btn-primary-custom"
+                        data-bs-toggle="modal"
+                        data-bs-target="#addNoteModal">
+                        <i class="bi bi-plus-lg me-1"></i>
+                        Add Note
+                    </button>
+                         {%  endif %}
+                    </div>
+                    <div id="notes-list">
+                     {%  if notes   %}
+                     {%  for n in notes   %}
+                    <div class="data-box position-relative">
+                        {{ n.note|linebreaks }}
+                         {%  if can_edit_clinical   %}
+                        <div class="position-absolute top-0 end-0 p-2">
+                            <form method="post" action="{% url 'doctor_notes_manage' appointment.id %}"
+                                style="margin:0;"
+                                onsubmit="return confirm('Are you sure you want to delete this note?');">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="delete">
+                                <input type="hidden" name="note_id" value="{{ n.id }}">
+                                <button type="submit"
+                                class="btn btn-sm btn-light border border-danger text-danger"
+                                style="border-radius:10px;">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                            </form>
+                        </div>
+                         {%  endif   %}
+                    </div>
+                     {%  endfor %}
+                     {%  else %}
+                     <div class="text-muted fst-italic">No clinical notes recorded.</div>
+                      {%  endif   %}
+                    </div>
+                    
+                </div>
+
+                <!-- Prescriptions -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="section-title m-0">Prescriptions</h6>
+                         {%  if can_edit_clinical   %}
+                        <form method="post" action="{% url 'doctor_prescription_manage' appointment.id %}"
+                            style="margin:0;">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="create_prescription">
+                            <button type="submit"
+                            class="btn-primary-custom">
+                            <i class="bi bi-file-earmark-medical me-1"></i>
+                            New Rx
+                        </button>
+                                
+                                
+                        </form>
+                         {%  endif   %}
+                    </div>
+                      {%  if prescriptions   %}
+                     <div class="row g-3" id="prescriptions-list">
+                         {%  for p in prescriptions   %}
+                        <div class="col-12">
+                            <div class="card border border-primary border-opacity-25 shadow-sm">
+                                <div
+                                    class="card-header bg-primary bg-opacity-10 py-2 d-flex justify-content-between align-items-center border-bottom-0">
+                                    <span class="fw-bold text-primary">Rx #{{ p.id }}</span>
+                                    <div class="d-flex gap-2 align-items-center">
+                                         {%  if can_edit_clinical   %}
+                                        <a href="{% url 'doctor_prescription_detail' appointment.id p.id %}"
+                                        class="btn-outline-custom py-1 px-3">Edit Meds</a>
+                                        <form method="post" action="{% url 'doctor_prescription_manage' appointment.id %}" style="margin:0;"
+                                            onsubmit="return confirm('Are you sure you want to delete this prescription?');">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="action" value="delete_prescription">
+                                            <input type="hidden" name="prescription_id" value="{{ p.id }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger py-1 px-3" style="border-radius:10px;">
+                                                <i class="bi bi-trash me-1"></i>Delete
+                                            </button>
+                                        </form>
+                                         {%  else   %}
+                                        <a href="{% url 'doctor_prescription_detail' appointment.id p.id %}"
+                                        class="btn-outline-custom py-1 px-3">View</a>
+                                         {%  endif   %}
+                                    </div>
+                                </div>
+                                <div class="card-body p-2">
+                                    <ul class="mb-0 ps-3">
+                                         {%  for m in p.medications %}
+                                        <li style="font-size:14px;"><span class="fw-bold">{{ m.medication_name }}</span>
+                                            ({{ m.dose|default:"-" }}) for {{ m.period }} days</li>
+                                         {%  empty %}
+                                        <li class="text-muted text-center list-unstyled" style="font-size:13px;">No
+                                            medications added yet.</li>
+                                         {%  endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                         {%  endfor   %}
+                    </div>
+                     {%  else   %}
+                    <div class="text-muted fst-italic">No prescriptions created for this session.</div>
+                     {%  endif %}
+                
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+ {%  if can_edit_clinical   %}
+<!-- Add Diagnosis Modal -->
+<div class="modal fade" id="addDiagModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Record Diagnosis</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'doctor_diagnosis_manage' appointment.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Diagnosis Name</label>
+                        <input type="text" name="diagnosis_name" class="form-control" required
+                            placeholder="e.g. Acute Pharyngitis">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" style="background:#4f46e5;border:none;">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Note Modal -->
+<div class="modal fade" id="addNoteModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Clinical Note</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'doctor_notes_manage' appointment.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Findings & Notes</label>
+                        <textarea name="note" class="form-control" rows="8" required
+                            placeholder="Patient presents with..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" style="background:#4f46e5;border:none;">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+ {%  endif   %}
+
+ {%  else   %}
+ {%  if appointment.status == 'Booked'   %}
+<div class="text-center py-5">
+    <i class="bi bi-shield-lock text-muted" style="font-size:64px;"></i>
+    <h4 class="mt-3 text-muted">Clinical Record Locked</h4>
+    <p class="text-muted">You must start the session to view the patient's full medical history and document findings.
+    </p>
+</div>
+ {%  endif   %}
+ {%  endif   %}
+
+{% if appointment.status == 'Booked' %}
+<!-- Start Session Modal -->
+<div class="modal fade" id="startSessionModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">Start Clinical Session?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body py-4">
+                <div class="text-center mb-3">
+                    <i class="bi bi-exclamation-triangle-fill text-warning" style="font-size: 48px;"></i>
+                </div>
+                <p class="text-center mb-0">You are about to start the clinical session for <strong>{{ appointment.patient.get_full_name }}</strong>.</p>
+                <p class="text-center text-danger fw-bold mt-2">Note: Once started, you cannot undo this action or mark the appointment as canceled.</p>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button"class="btn-outline-custom px-4"data-bs-dismiss="modal">Go Back</button>
+                <form method="post" action="{% url 'doctor_appointment_start' appointment.id %}" style="margin:0;">
+                    {% csrf_token %}
+                    <button type="submit"class="btn-primary-custom px-4">Confirm & Start</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script>
+function validateCompleteSession(event) {
+    // 1. Get presence of each clinical field in the current DOM
+    const diagnosisList = document.getElementById('diagnoses-list');
+    const hasDiagnoses = diagnosisList && diagnosisList.querySelectorAll('li').length > 0;
+
+    const notesList = document.getElementById('notes-list');
+    const hasNotes = notesList && notesList.querySelectorAll('.data-box').length > 0;
+
+    const prescriptionList = document.getElementById('prescriptions-list');
+    // Check for cards with actual prescriptions (excluding empty list messages if any)
+    const hasPrescriptions = prescriptionList && prescriptionList.querySelectorAll('.card').length > 0;
+
+    // 2. Conditional validation check
+    let errorMessage = "";
+
+    if (!hasDiagnoses && !hasPrescriptions && !hasNotes) {
+        errorMessage = "At least one of Diagnoses, Doctor Notes, or Prescription fields must be populated to complete the session.";
+    }
+
+    if (errorMessage) {
+        event.preventDefault();
+        alert(errorMessage);
+        return false;
+    }
+
+    return confirm('Are you sure you want to end this session?');
+}
+</script>
+{% endblock %}

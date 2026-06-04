@@ -1,0 +1,249 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}DOCBOT{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ================= HERO ================= */
+  .hero {
+    height: 100vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+  }
+
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:url('{% static "images/hand.jpg" %}') center/cover;
+    filter: blur(8px);
+    transform: scale(1.1);
+  }
+
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 700px;
+    text-align: center;
+  }
+
+  .hero h1 {
+    font-size: 3rem;
+    font-weight: 700;
+  }
+
+  .hero p {
+    opacity: 0.9;
+    font-size: 1.3rem;
+  }
+
+  /* ================= SECTIONS ================= */
+  .services-home {
+    padding: 80px 0;
+    background-color: #fbfcfe;
+  }
+
+  .services-header h2 {
+    font-size: 40px;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 15px;
+  }
+
+  .services-header p {
+    font-size: 18px;
+    color: #718096;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .home-service-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 20px 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .home-service-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+    border-color: #4f46e5;
+  }
+
+  .service-icon {
+    font-size: 40px;
+    color: #4f46e5;
+    margin-bottom: 25px;
+    transition: 0.3s;
+  }
+
+  .home-service-card h4 {
+    font-size: 25px;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 15px;
+  }
+
+  .home-service-card p {
+    font-size: 17px;
+    color: #4a5568;
+    line-height: 1.6;
+    margin-bottom: 50px;
+  }
+
+  .learn-more-link {
+    color: #4f46e5;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.3s;
+  }
+
+  .learn-more-link span {
+    transition: 0.3s ease;
+    font-size: 18px;
+  }
+
+  .learn-more-link:hover {
+    color: #3730a3;
+  }
+
+  .learn-more-link:hover span {
+    transform: translateX(5px);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <h1>Not feeling your best?</h1>
+    <h1>DocBot knows best</h1>
+    <p>24/7 AI-powered medical consultation and instant appointment booking with verified doctors.</p>
+    {% if user.is_authenticated %}
+    <a href="{% url 'doctor_listing' %}" class="btn-main">Find a Doctor</a>
+    {% else %}
+    <a href="{% url 'login' %}" class="btn-main">Start Your Journey</a>
+    {% endif %}
+  </div>
+</section>
+
+<!-- CONTENT -->
+<section class="services-home">
+  <div class="container">
+    <div class="services-header text-center mb-5">
+      <h2>Our Services</h2>
+      <p>Comprehensive healthcare solutions designed to make your medical journey easier, faster, and more accessible
+      </p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-3 col-md-6">
+        <div class="home-service-card">
+          <div class="service-icon">
+            <i class="bi bi-chat-dots"></i>
+          </div>
+          <h4>AI-Powered Health Assistant</h4>
+          <p>Smart, interactive health evaluation designed to analyze your symptoms using advanced AI logic.</p>
+          <a href="{% url 'services' %}" class="learn-more-link"> Learn More <span>&rarr;</span></a>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <div class="home-service-card featured-card">
+          <div class="service-icon featured-icon">
+            <i class="bi bi-calendar2-heart"></i>
+          </div>
+          <h4>Internal Medicine Booking</h4>
+          <p>Directly connect with top-rated specialists. Our system accurately maps your AI-analyzed symptoms.</p>
+          <a href="{% url 'services' %}" class="learn-more-link">Learn More <span>&rarr;</span></a>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <div class="home-service-card">
+          <div class="service-icon">
+            <i class="bi bi-clipboard-pulse"></i>
+          </div>
+          <h4>Health Documentation &amp; Alerts</h4>
+          <p>Keep your essential health data organized in one place. Log your vitals and medication schedules.</p>
+          <a href="{% url 'services' %}" class="learn-more-link">Learn More <span>&rarr;</span></a>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <div class="home-service-card">
+          <div class="service-icon">
+            <i class="bi bi-cloud-haze2"></i>
+          </div>
+          <h4>Integrated Health Records (EHR)</h4>
+          <p>Your medical history travels with you. Seamlessly share your AI-analyzed symptoms with doctors.</p>
+          <a href="{% url 'services' %}" class="learn-more-link">Learn More <span>&rarr;</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="services-home">
+  <div class="container">
+    <div class="services-header text-center mb-5">
+      <h2>Why DocBot?</h2>
+      <p>Combining cutting-edge AI technology with verified medical expertise to provide you with the best healthcare
+        experience.</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-4 col-md-6">
+        <div class="home-service-card">
+          <div class="service-icon"><i class="bi bi-shield-fill-check"></i></div>
+          <h4>Secure &amp; Private Records</h4>
+          <p>Your medical data is protected with industry-leading security, ensuring total confidentiality between you
+            and your doctor</p>
+          <a href="{% url 'why_choose_us' %}" class="learn-more-link">Learn More <span>&rarr;</span></a>
+        </div>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <div class="home-service-card">
+          <div class="service-icon"><i class="bi bi-people"></i></div>
+          <h4>Verified Consultant Network</h4>
+          <p>Direct access to a curated network of licensed internal medicine specialists in your area.</p>
+          <a href="{% url 'why_choose_us' %}" class="learn-more-link">Learn More <span>&rarr;</span></a>
+        </div>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <div class="home-service-card">
+          <div class="service-icon"><i class="bi bi-cpu"></i></div>
+          <h4>Evidence-Based Logic</h4>
+          <p>An AI engine built on established clinical protocols to provide reliable health assessments.</p>
+          <a href="{% url 'why_choose_us' %}" class="learn-more-link">Learn More <span>&rarr;</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,252 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}My Profile - DOCBOT{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+
+{% block sidebar_nav %}
+<li><a href="{% url 'doctor_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'doctor_profile' %}" class="active"><i class="bi bi-person"></i> My Profile</a></li>
+<li><a href="{% url 'doctor_schedules' %}"><i class="bi bi-calendar3"></i> My Schedules</a></li>
+<li><a href="{% url 'doctor_appointments' %}"><i class="bi bi-calendar-check"></i> Appointments</a></li>
+<li><a href="{% url 'doctor_reviews' %}"><i class="bi bi-star"></i> My Reviews</a></li>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+
+.upload-btn{
+    display:block;
+    width:100%;
+    padding:10px 14px;
+    border:2px dashed #c7d2fe;
+    border-radius:12px;
+    background:#f8faff;
+    color:#4f46e5;
+    font-weight:600;
+    text-align:center;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.upload-btn:hover{
+    background:#eef2ff;
+    border-color:#4f46e5;
+}
+
+.upload-btn{
+    display:block;
+    width:100%;
+    padding:12px 14px;
+    border:1px dashed #c7d2fe;
+    background:#f8faff;
+    color:#4f46e5;
+    font-weight:300;
+    text-align:center;
+    transition:.3s;
+}
+
+.upload-btn:hover{
+    background:#eef2ff;
+    border-color:#4f46e5;
+}
+
+.upload-btn i{
+    font-size:12px;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-card mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h5 class="mb-1 fw-bold">
+            Professional Profile
+        </h5>
+
+        <p class="text-muted mb-0">
+            Manage your information, fees and clinic locations.
+        </p>
+    </div>
+
+</div>
+    <div class="row align-items-start">
+        <div class="col-md-3 text-center">
+            <div style="width:120px;height:120px;border-radius:50%;background:#e0e7ff;display:flex;align-items:center;justify-content:center;margin:0 auto 15px 50px;overflow:hidden;">
+                {% if doctor.image %}
+                    <img src="{{ doctor.image }}" alt="" style="width:100%;height:100%;object-fit:cover;">
+                {% else %}
+                    <img src="https://cdn-icons-png.flaticon.com/512/387/387561.png" alt="" style="width:80%;height:80%;object-fit:contain;">
+                {% endif %}
+            </div>
+           <form method="post" enctype="multipart/form-data" class="d-flex flex-column gap-2 px-3">
+
+    {% csrf_token %}
+
+    <input
+        type="file"
+        id="doctorImage"
+        name="image"
+        accept="image/*"
+        required hidden>
+
+    <label for="doctorImage" class="upload-btn">
+        <i class="bi bi-cloud-arrow-up me-2"></i>
+        <span id="fileName">Choose Profile Photo</span>
+    </label>
+
+    <button type="submit" class="btn-primary-custom">
+        <i class="bi bi-camera me-1"></i>
+        Update Photo
+    </button>
+
+    {% if doctor.image %}
+    <button
+        type="submit"
+        name="remove_image"
+        value="1"
+        class="btn btn-outline-danger"
+        formnovalidate>
+
+        <i class="bi bi-trash me-1"></i>
+        Remove Photo
+
+    </button>
+    {% endif %}
+
+</form>
+
+<script>
+document.getElementById('doctorImage').addEventListener('change', function() {
+
+    const fileName = this.files.length
+        ? this.files[0].name
+        : 'Choose Profile Photo';
+
+    document.getElementById('fileName').textContent = fileName;
+
+});
+</script>
+        </div>
+
+        
+        <div class="col-md-9 pt-3">
+
+    <h3 class="fw-bold mb-1">
+        Dr. {{ doctor.user.get_full_name }}
+    </h3>
+
+    <div class="badge bg-primary-subtle text-primary px-3 py-2 mb-3">
+        {{ doctor.specialization }}
+    </div>
+
+    <p class="text-muted mb-3">
+        {{ doctor.years_of_experience }} Years of Professional Experience
+    </p>
+
+</div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="content-card h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                <h5 class="m-0">Pricing Details</h5>
+                <a href="{% url 'doctor_edit_price' %}" class="btn-outline-custom py-1 px-3">Edit</a>
+            </div>
+            <div class="p-3 rounded-4 border bg-light mb-3">
+
+    <div class="text-muted text-uppercase fw-semibold"
+         style="font-size:12px;">
+        Initial Appointment
+    </div>
+
+    <div class="fs-3 fw-bold">
+        {{ doctor.price }}
+        <span class="fs-6 text-muted">
+            EGP
+        </span>
+    </div>
+
+</div>
+            <div class="p-3 rounded-4 border bg-light">
+
+    <div class="text-muted text-uppercase fw-semibold"
+         style="font-size:12px;">
+        Follow-up Visit
+    </div>
+
+    <div class="fs-3 fw-bold">
+        {{ doctor.follow_up_price }}
+        <span class="fs-6 text-muted">
+            EGP
+        </span>
+    </div>
+
+</div>
+            <div class="alert alert-info mt-4 py-2" style="font-size:13px;">
+                <i class="bi bi-info-circle me-1"></i> Changes to pricing will only affect future bookings.
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="content-card h-100">
+            <h5 class="m-0 fw-bold">
+    <i class="bi bi-geo-alt me-2 text-primary"></i>
+    Clinic Addresses
+</h5>
+            {% if addresses %}
+            <ul class="list-group list-group-flush">
+                {% for addr in addresses %}
+                <div class="border rounded-4 p-3 mb-3 bg-light">
+                    <div class="d-flex align-items-start gap-3">
+
+    <div
+    style="
+    width:42px;
+    height:42px;
+    border-radius:12px;
+    background:#eef2ff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#4f46e5;
+    ">
+        <i class="bi bi-geo-alt-fill"></i>
+    </div>
+
+    <div>
+
+        <div class="fw-bold">
+            {{ addr.governorate }}
+        </div>
+
+        <div class="text-muted">
+            {{ addr.building_number }}
+            {{ addr.street }}
+        </div>
+
+        {% if addr.floor %}
+        <div class="text-muted small">
+            Floor {{ addr.floor }}
+        </div>
+        {% endif %}
+
+    </div>
+
+</div>
+</div>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-muted py-3">No addresses configured. Please contact the administrator.</p>
+            {% endif %}
+            <div class="text-muted mt-3" style="font-size:12px;"><i class="bi bi-shield-lock me-1"></i> Addresses are managed by System Administrators.</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

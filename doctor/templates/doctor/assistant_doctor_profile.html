@@ -1,0 +1,211 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}Doctor Profile - DOCBOT{% endblock %}
+{% block page_title %}Doctor Profile{% endblock %}
+
+{% block sidebar_nav %}
+<li><a href="{% url 'assistant_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'assistant_doctor_profile' %}" class="active"><i class="bi bi-person"></i> Doctor Profile</a></li>
+<li><a href="{% url 'assistant_schedules' %}"><i class="bi bi-calendar3"></i> Schedules</a></li>
+<li><a href="{% url 'assistant_appointments' %}"><i class="bi bi-calendar-check"></i> Appointments</a></li>
+{% endblock %}
+
+{% block content %}
+<div class="content-card mb-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h5 class="mb-1 fw-bold">
+                Doctor Profile
+            </h5>
+
+            <p class="text-muted mb-0">
+                View and manage doctor information, consultation fees and clinic locations.
+            </p>
+        </div>
+
+    </div>
+
+    <div class="row align-items-center">
+
+        <div class="col-md-3 text-center">
+
+            <div style="
+                width:120px;
+                height:120px;
+                border-radius:50%;
+                background:#e0e7ff;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                margin:0 auto 15px 50px;
+                overflow:hidden;
+                border:3px solid #4f46e5;">
+
+                {% if doctor.image %}
+                    <img src="{{ doctor.image }}"
+                         style="width:100%;height:100%;object-fit:cover;">
+                {% else %}
+                    <img src="https://cdn-icons-png.flaticon.com/512/387/387561.png"
+                         style="width:80%;height:80%;object-fit:contain;">
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        <div class="col-md-9">
+
+            <h3 class="fw-bold mb-1">
+                Dr. {{ doctor.user.get_full_name }}
+            </h3>
+
+            <div class="badge bg-primary-subtle text-primary px-3 py-2 mb-3">
+                {{ doctor.specialization }}
+            </div>
+
+            <p class="text-muted mb-3">
+                {{ doctor.years_of_experience }} Years of Professional Experience
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="row g-4">
+
+    <!-- Pricing Card -->
+    <div class="col-md-6">
+
+        <div class="content-card h-100">
+
+            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+
+                <h5 class="m-0">
+                    Pricing Details
+                </h5>
+
+                <a href="{% url 'assistant_edit_price' %}"
+                   class="btn-outline-custom py-1 px-3">
+                    Edit
+                </a>
+
+            </div>
+
+            <div class="p-3 rounded-4 border bg-light mb-3">
+
+                <div class="text-muted text-uppercase fw-semibold"
+                     style="font-size:12px;">
+                    Initial Appointment
+                </div>
+
+                <div class="fs-3 fw-bold">
+                    {{ doctor.price|floatformat:0 }}
+                    <span class="fs-6 text-muted">EGP</span>
+                </div>
+
+            </div>
+
+            <div class="p-3 rounded-4 border bg-light">
+
+                <div class="text-muted text-uppercase fw-semibold"
+                     style="font-size:12px;">
+                    Follow-up Visit
+                </div>
+
+                <div class="fs-3 fw-bold">
+                    {{ doctor.follow_up_price|floatformat:0 }}
+                    <span class="fs-6 text-muted">EGP</span>
+                </div>
+
+            </div>
+
+            <div class="alert alert-info mt-3 py-2 mb-0"
+                 style="font-size:12px;">
+                <i class="bi bi-info-circle me-1"></i>
+                Changes to pricing will only affect future bookings.
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Addresses Card -->
+    <div class="col-md-6">
+
+        <div class="content-card h-100">
+
+            <h5 class="m-0 fw-bold mb-3">
+                <i class="bi bi-geo-alt me-2 text-primary"></i>
+                Clinic Addresses
+            </h5>
+
+            {% if addresses %}
+
+                {% for addr in addresses %}
+
+                <div class="border rounded-4 p-3 mb-3 bg-light">
+
+                    <div class="d-flex align-items-start gap-3">
+
+                        <div style="
+                            width:42px;
+                            height:42px;
+                            border-radius:12px;
+                            background:#eef2ff;
+                            display:flex;
+                            align-items:center;
+                            justify-content:center;
+                            color:#4f46e5;">
+
+                            <i class="bi bi-geo-alt-fill"></i>
+
+                        </div>
+
+                        <div>
+
+                            <div class="fw-bold">
+                                {{ addr.governorate }}
+                            </div>
+
+                            <div class="text-muted">
+                                {{ addr.building_number }}
+                                {{ addr.street }}
+                            </div>
+
+                            {% if addr.floor %}
+                            <div class="text-muted small">
+                                Floor {{ addr.floor }}
+                            </div>
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <p class="text-muted py-3">
+                    No addresses configured.
+                </p>
+
+            {% endif %}
+
+            <div class="text-muted mt-3" style="font-size:12px;">
+                <i class="bi bi-shield-lock me-1"></i>
+                Addresses are managed by System Administrators.
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

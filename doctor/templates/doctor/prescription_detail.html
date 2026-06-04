@@ -1,0 +1,110 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}Prescription #{{ prescription.id }} - DOCBOT{% endblock %}
+{% block page_title %}Prescription Details{% endblock %}
+
+{% block sidebar_nav %}
+<li><a href="{% url 'doctor_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'doctor_profile' %}"><i class="bi bi-person"></i> My Profile</a></li>
+<li><a href="{% url 'doctor_schedules' %}"><i class="bi bi-calendar3"></i> My Schedules</a></li>
+<li><a href="{% url 'doctor_appointments' %}" class="active"><i class="bi bi-calendar-check"></i> Appointments</a></li>
+<li><a href="{% url 'doctor_reviews' %}"><i class="bi bi-star"></i> My Reviews</a></li>
+{% endblock %}
+
+{% block content %}
+<div class="content-card" style="max-width: 900px; margin: 0 auto;">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom flex-wrap gap-2">
+        <div>
+            <h4 class="m-0 text-primary">Prescription #{{ prescription.id }}</h4>
+            <div class="text-muted">Patient: {{ appointment.patient.get_full_name }} &bull; Date: {{ prescription.date|date:"M d, Y" }}</div>
+        </div>
+        <a href="{% url 'doctor_appointment_detail' appointment.id %}" class="btn-outline-custom"><i class="bi bi-arrow-left"></i> Back to Session</a>
+    </div>
+
+    <!-- Prescribed Medications List -->
+    <h5 class="mb-3">Medications</h5>
+    {% if medications %}
+    <div class="table-responsive mb-4">
+        <table class="table table-bordered align-middle">
+            <thead class="bg-light">
+                <tr>
+                    <th>Medication Name</th>
+                    <th>Dosage Strength</th>
+                    <th>Dose / Instructions</th>
+                    <th>Period (Days)</th>
+                    <th>Note</th>
+                    {% if appointment.status == 'In progress' %}<th>Action</th>{% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in medications %}
+                <tr>
+                    <td class="fw-bold">{{ m.medication_name }}</td>
+                    <td>{{ m.dosage_strength|default:"-" }}</td>
+                    <td>{{ m.dose|default:"-" }}</td>
+                    <td>{{ m.period }}</td>
+                    <td class="text-muted fst-italic" style="font-size:12px;">{{ m.note|default:"-" }}</td>
+                    {% if appointment.status == 'In progress' %}
+                    <td>
+                        <form method="post" action="{% url 'doctor_prescription_detail' appointment.id prescription.id %}" style="margin:0;">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="delete_medication">
+                            <input type="hidden" name="medication_name" value="{{ m.medication_name }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-light border border-dashed text-center py-4 text-muted mb-4">
+        No medications added to this prescription yet.
+    </div>
+    {% endif %}
+
+    <!-- Add Medication Form (Only if session is active) -->
+    {% if appointment.status == 'In progress' %}
+    <div class="bg-light p-4 rounded border mt-5">
+        <h5 class="mb-3 text-primary"><i class="bi bi-plus-circle me-2"></i>Add Medication</h5>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add_medication">
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Medication Name</label>
+                    <input type="text" name="medication_name" class="form-control" placeholder="e.g. Amoxicillin" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Dosage Strength</label>
+                    <input type="text" name="dosage_strength" class="form-control" placeholder="e.g. 500mg">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Period (Days)</label>
+                    <input type="number" name="period" class="form-control" min="1" required placeholder="e.g. 7">
+                </div>
+            </div>
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Dose / Instructions</label>
+                    <input type="text" name="dose" class="form-control" placeholder="e.g. 1 pill every 8 hours">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Additional Notes (Optional)</label>
+                    <input type="text" name="note" class="form-control" placeholder="e.g. Take after food">
+                </div>
+            </div>
+            <div class="text-end mt-3">
+                <button type="submit" class="btn btn-primary px-4" style="background:#4f46e5;border:none;">Add Medication</button>
+            </div>
+        </form>
+    </div>
+    {% else %}
+    <div class="alert alert-info mt-4">
+        <i class="bi bi-lock me-1"></i> This session is closed. The prescription can no longer be modified.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

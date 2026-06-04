@@ -1,0 +1,201 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}Manage Appointment - DOCBOT{% endblock %}
+{% block page_title %}Manage Appointment{% endblock %}
+
+{% block sidebar_nav %}
+<li><a href="{% url 'assistant_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'assistant_doctor_profile' %}"><i class="bi bi-person"></i> Doctor Profile</a></li>
+<li><a href="{% url 'assistant_schedules' %}"><i class="bi bi-calendar3"></i> Schedules</a></li>
+<li><a href="{% url 'assistant_appointments' %}" class="active"><i class="bi bi-calendar-check"></i> Appointments</a></li>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+
+.appointment-manage-card{
+    max-width:720px;
+    margin:auto;
+    border-radius:28px;
+    border:none;
+    overflow:hidden;
+    background:#ffffff;
+    box-shadow:0 18px 40px rgba(15,23,42,.06);
+}
+
+.manage-header{
+    padding:28px 30px;
+    border-bottom:1px solid #eef2ff;
+    background:linear-gradient(135deg,#ffffff,#f8fafc);
+}
+
+.manage-title{
+    font-size:24px;
+    font-weight:700;
+    color:#0f172a;
+}
+
+.info-section{
+    padding:30px;
+}
+
+.info-card{
+    background:#f8fafc;
+    border:1px solid #eef2ff;
+    border-radius:20px;
+    padding:20px;
+    height:100%;
+}
+
+.info-label{
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.8px;
+    text-transform:uppercase;
+    color:#94a3b8;
+    margin-bottom:10px;
+}
+
+.info-value{
+    font-size:16px;
+    font-weight:600;
+    color:#0f172a;
+}
+
+.info-sub{
+    color:#64748b;
+    margin-top:4px;
+    font-size:14px;
+}
+
+.patient-box{
+    background:#eef2ff;
+    border-radius:22px;
+    padding:22px;
+    margin-bottom:24px;
+}
+
+.patient-name{
+    font-size:24px;
+    font-weight:700;
+    color:#0f172a;
+}
+
+.patient-phone{
+    color:#64748b;
+    margin-top:6px;
+}
+
+.cancel-area{
+    border-top:1px solid #eef2ff;
+    margin-top:10px;
+    padding-top:28px;
+}
+
+.cancel-btn{
+    border-radius:14px;
+    padding:12px 22px;
+    font-weight:600;
+}
+
+.back-btn{
+    border-radius:14px;
+    padding:12px 20px;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-card appointment-manage-card">
+    <div class="manage-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <h4 class="manage-title m-0">
+    <i class="bi bi-calendar2-check me-2"></i>
+    Appointment Details
+</h4>
+        <span class="badge-status 
+            {% if appointment.status == 'Booked' %}badge-booked
+            {% elif appointment.status == 'In progress' %}badge-inprogress
+            {% elif appointment.status == 'Completed' %}badge-completed
+            {% elif appointment.status == 'Canceled' %}badge-canceled
+            {% else %}badge-noshow{% endif %} fs-6 px-3 py-2">
+            {{ appointment.status }}
+        </span>
+    </div>
+
+    <div class="info-section">
+
+    <div class="patient-box">
+        <div class="info-label">Patient</div>
+
+        <div class="patient-name">
+            {{ appointment.patient.get_full_name }}
+        </div>
+
+        {% if appointment.patient.phone %}
+        <div class="patient-phone">
+            <i class="bi bi-telephone me-1"></i>
+            {{ appointment.patient.phone }}
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-sm-6">
+            <div class="info-card">
+    <div class="info-label">Date & Time</div>
+    <div class="info-value">
+        {{ appointment.slot.slot_date|date:"l, M d, Y" }}
+    </div>
+        
+    <div class="info-sub">
+        {{ appointment.slot.start_time|time:"g:i A" }}
+    </div>
+
+</div>
+        </div>
+        <div class="col-sm-6">
+            <div class="info-card">
+    <div class="info-label">Location</div>
+
+    <div class="info-value">
+        {{ appointment.doctor_address.full_address }}
+    </div>
+
+    {% if appointment.doctor_address.floor %}
+    <div class="info-sub">
+        Floor: {{ appointment.doctor_address.floor }}
+    </div>
+    {% endif %}
+</div>
+        </div>
+        <div class="col-sm-6">
+            <div class="info-card">
+    <div class="info-label">Appointment Type</div>
+
+    <div class="info-value">
+        {% if appointment.is_follow_up %}
+            Follow-up Visit
+        {% else %}
+            Initial Appointment
+        {% endif %}
+    </div>
+</div>
+        </div>
+    </div>
+
+    {% if appointment.status == 'Booked' %}
+    <div class="cancel-area text-center">
+        <form method="post" action="{% url 'assistant_cancel_appointment' appointment.id %}" onsubmit="return confirm('Are you sure you want to cancel this appointment? The patient will be notified.');">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger cancel-btn"><i class="bi bi-x-circle me-1"></i> Cancel Appointment</button>
+        </form>
+    </div>
+    {% endif %}
+    
+    <div class="d-flex justify-content-end mt-4">
+        <a href="{% url 'assistant_appointments' %}" class="btn-outline-custom back-btn">Back to List</a>
+    </div>
+</div>
+</div>
+{% endblock %}

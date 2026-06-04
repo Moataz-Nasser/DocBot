@@ -1,0 +1,227 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}Patient Dashboard - DOCBOT{% endblock %}
+{% block page_title %}Patient Dashboard{% endblock %}
+
+{% block sidebar_nav %}
+<li><a href="{% url 'patient_dashboard' %}" class="active"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'patient_profile' %}"><i class="bi bi-person"></i> My Profile</a></li>
+<li><a href="{% url 'medical_profile' %}"><i class="bi bi-heart-pulse"></i> Medical Profile</a></li>
+<li><a href="{% url 'patient_appointments' %}"><i class="bi bi-calendar-check"></i> Appointments</a></li>
+<li><a href="{% url 'patient_prescriptions' %}"><i class="bi bi-prescription2"></i> Prescriptions</a></li>
+<li><a href="{% url 'patient_diagnoses' %}"><i class="bi bi-clipboard-pulse"></i> Diagnoses</a></li>
+<li><a href="{% url 'patient_reminders' %}"><i class="bi bi-alarm"></i> Reminders</a></li>
+<li><a href="{% url 'chatbot_chat' %}"><i class="bi bi-robot"></i> AI Chatbot</a></li>
+{% endblock %}
+
+{% block content %}
+{% if not request.user.has_initialized_profile %}
+<div class="content-card mb-4" style="border-left: 6px solid #4f46e5; background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);">
+  <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-3">
+    <div style="background: #e0e7ff; color: #4f46e5; width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;">
+      <i class="bi bi-robot"></i>
+    </div>
+    <div>
+      <h6 class="mb-1" style="font-weight: 700; color: #1e293b;">Unlock Appointment Booking</h6>
+      <p class="mb-0 text-muted" style="font-size: 14px; line-height: 1.5;">
+        To help your doctor prepare for your visit, please complete your health profile with our AI assistant first. Let's finish your quick chat, and then you can book your appointment right away!
+      </p>
+    </div>
+    <div class="mt-2 mt-md-0 ms-md-auto flex-shrink-0">
+      <a href="{% url 'chatbot_chat' %}" class="btn-primary-custom" style="padding: 10px 20px;">
+        <i class="bi bi-chat-dots-fill me-1"></i> Chat with our AI Assistant
+      </a>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <h2 class="fw-bold mb-1" style="color:#0f172a;">
+                Welcome back, {{ user.first_name }} 👋
+            </h2>
+            <p style="color:#64748b; margin:0;">
+                Here’s an overview of your health activity today.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-md-4">
+    <div class="stat-card modern-stat-card">
+      <div>
+        <div class="stat-label">Total Appointments</div>
+        <div class="stat-value">{{ total_appointments }}</div>
+      </div>
+      <div class="stat-icon blue">
+        <i class="bi bi-calendar-heart"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="stat-card modern-stat-card">
+      <div>
+        <div class="stat-label">Completed Visits</div>
+        <div class="stat-value">{{ completed_appointments }}</div>
+      </div>
+      <div class="stat-icon green">
+        <i class="bi bi-check-circle"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="stat-card modern-stat-card">
+      <div>
+        <div class="stat-label">Upcoming Appointments</div>
+        <div class="stat-value">{{ upcoming_appointments.count }}</div>
+      </div>
+      <div class="stat-icon orange">
+        <i class="bi bi-clock-history"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-8">
+    <div class="content-card">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="m-0">Upcoming Appointments</h5>
+        <a href="{% url 'patient_appointments' %}" class="btn-outline-custom">View All</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table modern-table">
+          <thead>
+            <tr>
+              <th>Doctor</th>
+              <th>Date &amp; Time</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for appt in upcoming_appointments %}
+            <tr>
+              <td>
+                <div class="fw-bold">Dr. {{ appt.doctor.user.get_full_name }}</div>
+                <div class="text-muted" style="font-size:12px;">{{ appt.doctor.specialization }}</div>
+              </td>
+              <td>
+                <div>{{ appt.scheduled_date|date:"M d, Y" }}</div>
+                <div class="text-muted" style="font-size:12px;">{{ appt.scheduled_time|time:"g:i A" }}</div>
+              </td>
+              <td><span class="badge-status badge-booked">{{ appt.status }}</span></td>
+              <td><a href="{% url 'patient_appointment_detail' appt.id %}" class="btn-outline-custom" style="padding:4px 10px;">Details</a></td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="4" class="text-center py-4 text-muted">
+                No upcoming appointments. 
+                {% if request.user.has_initialized_profile %}
+                  <a href="{% url 'doctor_listing' %}">Book one now</a>.
+                {% else %}
+                  <a href="#" data-bs-toggle="modal" data-bs-target="#bookingLockedModal" class="text-decoration-none text-primary" style="font-weight: 600;">Book one now</a>.
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="content-card mt-4">
+      <h5 class="mb-3">Recent Prescriptions</h5>
+      <div class="table-responsive">
+        <table class="table modern-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Doctor</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in recent_prescriptions %}
+            <tr>
+              <td>{{ p.date|date:"M d, Y" }}</td>
+              <td>Dr. {{ p.doctor.user.get_full_name }}</td>
+              <td><a href="{% url 'patient_prescriptions' %}" class="btn-outline-custom" style="padding:4px 10px;">View</a></td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="3" class="text-center py-4 text-muted">No recent prescriptions.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="content-card">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="m-0">Notifications</h5>
+        <a href="{% url 'notifications_list' %}" class="btn-outline-custom" style="padding:4px 10px;font-size:12px;">All</a>
+      </div>
+      <div class="notifications-wrapper">
+        {% for note in recent_notifications %}
+        <div class="modern-notification {% if not note.is_read %}unread{% endif %}">
+            <div class="notification-icon">
+                <i class="bi bi-bell-fill"></i>
+            </div>
+            <div class="flex-grow-1">
+                <div class="notification-title">
+                    {{ note.title }}
+                </div>
+                <div class="notification-message">
+                    {{ note.message }}
+                </div>
+                <div class="notification-time">
+                    {{ note.created_at|timesince }} ago
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state">
+            <i class="bi bi-bell-slash"></i>
+            <p>No notifications yet</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Booking Locked Modal -->
+<div class="modal fade" id="bookingLockedModal" tabindex="-1" aria-labelledby="bookingLockedModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+      <div class="modal-header border-0 pb-0">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center px-4 pb-4">
+        <div class="mb-3 d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 70px; height: 70px; color: #4f46e5; background-color: #eff6ff !important;">
+          <i class="bi bi-robot" style="font-size: 32px;"></i>
+        </div>
+        <h5 class="modal-title fw-bold mb-3" id="bookingLockedModalLabel" style="color: #1e293b;">Unlock Booking</h5>
+        <p class="text-muted mb-4" style="font-size: 15px; line-height: 1.6;">
+          To help your doctor prepare for your visit, please complete your health profile with our AI assistant first. Let's finish your quick chat, and then you can book your appointment right away!
+        </p>
+        <div class="d-grid gap-2">
+          <a href="{% url 'chatbot_chat' %}" class="btn py-2 fw-bold" style="background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%); color: white; border-radius: 10px; text-decoration: none;">
+            <i class="bi bi-chat-dots me-1"></i> Chat with our AI Assistant
+          </a>
+          <button type="button" class="btn btn-link text-secondary text-decoration-none btn-sm" data-bs-dismiss="modal">Maybe Later</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,247 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}My Appointments - DOCBOT{% endblock %}
+{% block page_title %}My Appointments{% endblock %}
+
+{% block sidebar_nav %}
+<li><a href="{% url 'patient_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'patient_profile' %}"><i class="bi bi-person"></i> My Profile</a></li>
+<li><a href="{% url 'medical_profile' %}"><i class="bi bi-heart-pulse"></i> Medical Profile</a></li>
+<li><a href="{% url 'patient_appointments' %}" class="active"><i class="bi bi-calendar-check"></i> Appointments</a></li>
+<li><a href="{% url 'patient_prescriptions' %}"><i class="bi bi-prescription2"></i> Prescriptions</a></li>
+<li><a href="{% url 'patient_diagnoses' %}"><i class="bi bi-clipboard-pulse"></i> Diagnoses</a></li>
+<li><a href="{% url 'patient_reminders' %}"><i class="bi bi-alarm"></i> Reminders</a></li>
+<li><a href="{% url 'chatbot_chat' %}"><i class="bi bi-robot"></i> AI Chatbot</a></li>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.doctor-cell{
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.doctor-avatar-sm{
+    width:46px;
+    height:46px;
+    border-radius:14px;
+    background:linear-gradient(135deg,#4f46e5,#6366f1);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+    flex-shrink:0;
+}
+
+.doctor-spec{
+    font-size:12px;
+    color:#64748b;
+}
+
+/* table rows */
+
+.table-clean tbody tr{
+    transition:0.25s ease;
+}
+
+.table-clean tbody tr:hover{
+    background:#fafbff;
+    transform:scale(1.005);
+}
+
+/* filters */
+
+.form-select{
+    min-width:180px;
+    border-radius:12px;
+}
+
+/* details button */
+
+.btn-outline-custom{
+    border-radius:10px;
+    padding:6px 14px !important;
+}
+
+/* appointment type */
+
+.badge{
+    border-radius:8px;
+    padding:6px 10px;
+    font-weight:600;
+}
+.empty-state{
+    text-align:center;
+    padding:70px 20px;
+    color:#94a3b8;
+}
+
+.empty-state i{
+    font-size:58px;
+    margin-bottom:16px;
+    display:block;
+    color:#cbd5e1;
+}
+.modern-table{
+    border-radius:18px;
+    overflow:hidden;
+}
+</style>
+{% endblock %}   
+
+{% block content %}
+<div class="content-card">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom flex-wrap gap-3">
+        <div>
+            <h4 class="m-0 fw-bold">Appointments History</h4>
+            <div class="text-muted small mt-1">
+                Track your consultations and upcoming visits
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <form method="get" class="d-flex gap-2">
+                <select name="status" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Statuses</option>
+                    <option value="Booked" {% if current_status == 'Booked' %}selected{% endif %}>Booked</option>
+                    <option value="In progress" {% if current_status == 'In progress' %}selected{% endif %}>In Progress</option>
+                    <option value="Completed" {% if current_status == 'Completed' %}selected{% endif %}>Completed</option>
+                    <option value="Canceled" {% if current_status == 'Canceled' %}selected{% endif %}>Canceled</option>
+                    <option value="No-show" {% if current_status == 'No-show' %}selected{% endif %}>No-show</option>
+                </select>
+            </form>
+            {% if request.user.has_initialized_profile %}
+                <a href="{% url 'doctor_listing' %}" class="btn-primary-custom"><i class="bi bi-plus-lg me-1"></i> Book New</a>
+            {% else %}
+                <button type="button" class="btn-primary-custom" data-bs-toggle="modal" data-bs-target="#bookingLockedModal">
+                    <i class="bi bi-plus-lg me-1"></i> Book New
+                </button>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if appointments %}
+    <div class="table-responsive modern-table">
+        <table class="table table-clean">
+            <thead>
+                <tr>
+                    <th>Doctor</th>
+                    <th>Date & Time</th>
+                    <th>Clinic / Location</th>
+                    <th>Status</th>
+                    <th>Type</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appt in appointments %}
+                <tr>
+                    <td>
+                        <div class="doctor-cell">
+                            <div class="doctor-avatar-sm">
+                                {{ appt.doctor.user.first_name|first }}
+                            </div>
+                            <div>
+                                <div class="fw-bold">
+                                    Dr. {{ appt.doctor.user.get_full_name }}
+                                </div>
+                                <div class="doctor-spec">
+                                    {{ appt.doctor.specialization }}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="fw-semibold">
+                            {{ appt.scheduled_date|date:"M d, Y" }}
+                        </div>
+                        <div class="text-muted small mt-1">
+                            <i class="bi bi-clock me-1"></i>
+                            {{ appt.scheduled_time|time:"g:i A" }}{% if appt.scheduled_end_time %} - {{ appt.scheduled_end_time|time:"g:i A" }}{% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div>{{ appt.doctor_address.full_address }}</div>
+                        {% if appt.doctor_address.floor %}
+                        <div class="text-muted" style="font-size:12px;">Floor: {{ appt.doctor_address.floor }}</div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge-status 
+                            {% if appt.status == 'Booked' %}badge-booked
+                            {% elif appt.status == 'In progress' %}badge-inprogress
+                            {% elif appt.status == 'Completed' %}badge-completed
+                            {% elif appt.status == 'Canceled' %}badge-canceled
+                            {% else %}badge-noshow{% endif %}">
+                            {{ appt.status }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if appt.is_follow_up %}
+                            <span class="badge bg-info text-dark">Follow-up</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Initial Appointment</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'patient_appointment_detail' appt.id %}" class="btn-outline-custom" style="padding:4px 10px;">Details</a>
+                        {% if appt.notes %}
+                        <button class="btn btn-sm btn-link text-primary p-0 mt-1 d-block" type="button" data-bs-toggle="collapse" data-bs-target="#notes-{{ appt.id }}" style="font-size: 13px; text-decoration: none;">
+                            <i class="bi bi-journal-medical"></i> View Notes
+                        </button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% if appt.notes %}
+                <tr class="collapse" id="notes-{{ appt.id }}">
+                    <td colspan="6" class="bg-light border-0">
+                        <div class="p-3 rounded-3" style="background-color: #f8fafc; border-left: 4px solid #4f46e5; margin: 5px 15px 15px;">
+                            <h6 class="fw-bold text-dark mb-2" style="font-size: 14px;"><i class="bi bi-journal-medical text-primary me-2"></i>Doctor's Notes (Read-Only)</h6>
+                            {% for n in appt.notes %}
+                                <div class="text-muted small" style="white-space: pre-line; line-height: 1.5;">{{ n.note }}</div>
+                                {% if not forloop.last %}<hr class="my-2" style="border-top: 1px dashed #cbd5e1;">{% endif %}
+                            {% endfor %}
+                        </div>
+                    </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="bi bi-calendar-x" style="font-size: 48px;"></i>
+        <h5 class="mt-3">No appointments found.</h5>
+        <p>Book a new appointment or change your filters.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Booking Locked Modal -->
+<div class="modal fade" id="bookingLockedModal" tabindex="-1" aria-labelledby="bookingLockedModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+      <div class="modal-header border-0 pb-0">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center px-4 pb-4">
+        <div class="mb-3 d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 70px; height: 70px; color: #4f46e5; background-color: #eff6ff !important;">
+          <i class="bi bi-robot" style="font-size: 32px;"></i>
+        </div>
+        <h5 class="modal-title fw-bold mb-3" id="bookingLockedModalLabel" style="color: #1e293b;">Unlock Booking</h5>
+        <p class="text-muted mb-4" style="font-size: 15px; line-height: 1.6;">
+          To help your doctor prepare for your visit, please complete your health profile with our AI assistant first. Let's finish your quick chat, and then you can book your appointment right away!
+        </p>
+        <div class="d-grid gap-2">
+          <a href="{% url 'chatbot_chat' %}" class="btn py-2 fw-bold" style="background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%); color: white; border-radius: 10px; text-decoration: none;">
+            <i class="bi bi-chat-dots me-1"></i> Chat with our AI Assistant
+          </a>
+          <button type="button" class="btn btn-link text-secondary text-decoration-none btn-sm" data-bs-dismiss="modal">Maybe Later</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

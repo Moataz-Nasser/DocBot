@@ -1,0 +1,107 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}Add Doctor Assistant - DOCBOT{% endblock %}
+{% block page_title %}Add Doctor Assistant{% endblock %}
+
+{% block sidebar_nav %}
+<li><a href="{% url 'admin_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'admin_users' %}"><i class="bi bi-people"></i> Users</a></li>
+<li><a href="{% url 'admin_doctors' %}"><i class="bi bi-heart-pulse"></i> Doctors</a></li>
+{% if user.role == 'Super_Admin' %}
+<li><a href="{% url 'admin_assistant_add' %}" class="active"><i class="bi bi-person-badge"></i> Doctor Assistants</a></li>
+<li><a href="{% url 'admin_measurement_types' %}"><i class="bi bi-rulers"></i> Measurement Types</a></li>
+<li><a href="{% url 'admin_inheritable_diseases' %}"><i class="bi bi-diagram-3"></i> Inheritable Diseases</a></li>
+{% endif %}
+<li><a href="{% url 'admin_reviews' %}"><i class="bi bi-star"></i> Reviews</a></li>
+{% endblock %}
+
+{% block content %}
+<div class="content-card" style="max-width: 800px; margin: 0 auto;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h5 class="mb-1 fw-bold">
+            Create Doctor Assistant
+        </h5>
+
+        <p class="text-muted mb-0">
+            Create and assign a new assistant to manage a doctor's schedules and appointments.
+        </p>
+    </div>
+
+</div>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="border rounded-4 p-4 bg-light mb-4">
+
+    <label class="form-label fw-semibold">
+        Assign To Doctor
+    </label>
+
+    <select name="doctor"
+            class="form-select"
+            required>
+
+        <option value="">Select Doctor...</option>
+
+        {% for d in doctors %}
+        <option value="{{ d.user.id }}">
+            Dr. {{ d.user.get_full_name }}
+            ({{ d.specialization }})
+        </option>
+        {% endfor %}
+
+    </select>
+
+    <div class="form-text mt-2">
+        The assistant will only manage this doctor's schedules and appointments.
+    </div>
+
+</div>
+
+        <h6 class="mb-3 text-primary mt-4 border-top pt-4">Assistant Account Details</h6>
+        
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label class="form-label">Username</label>
+                <input type="text" name="username" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label class="form-label">First Name</label>
+                <input type="text" name="first_name" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Last Name</label>
+                <input type="text" name="last_name" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Phone Number</label>
+                <input type="text" name="phone" class="form-control">
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+            <button type="submit"
+        class="btn-primary-custom px-4">
+
+    <i class="bi bi-person-plus me-2"></i>
+    Create Assistant
+
+</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

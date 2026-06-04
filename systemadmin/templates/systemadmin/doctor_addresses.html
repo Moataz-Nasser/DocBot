@@ -1,0 +1,163 @@
+{% extends "core/dashboard_base.html" %}
+
+{% block title %}Doctor Addresses - DOCBOT{% endblock %}
+{% block page_title %}Addresses for Dr. {{ doctor.user.last_name }}{% endblock %}
+
+{% block sidebar_nav %}
+<li><a href="{% url 'admin_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+<li><a href="{% url 'admin_users' %}"><i class="bi bi-people"></i> Users</a></li>
+<li><a href="{% url 'admin_doctors' %}" class="active"><i class="bi bi-heart-pulse"></i> Doctors</a></li>
+{% if user.role == 'Super_Admin' %}
+<li><a href="{% url 'admin_assistant_add' %}"><i class="bi bi-person-badge"></i> Doctor Assistants</a></li>
+<li><a href="{% url 'admin_measurement_types' %}"><i class="bi bi-rulers"></i> Measurement Types</a></li>
+<li><a href="{% url 'admin_inheritable_diseases' %}"><i class="bi bi-diagram-3"></i> Inheritable Diseases</a></li>
+{% endif %}
+<li><a href="{% url 'admin_reviews' %}"><i class="bi bi-star"></i> Reviews</a></li>
+{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div>
+            <h5 class="m-0">Clinic Addresses</h5>
+            <div class="text-muted mt-1" style="font-size:13px;">Manage locations where Dr. {{ doctor.user.get_full_name }} practices.</div>
+        </div>
+        <div>
+            <a href="{% url 'admin_doctors' %}"class="btn btn-light border px-3 py-2"
+   style="border-radius:12px;">
+    <i class="bi bi-arrow-left me-1"></i> Back</a>
+            <button class="btn-primary-custom" data-bs-toggle="modal" data-bs-target="#addAddressModal"><i class="bi bi-plus-lg me-1"></i> Add Address</button>
+        </div>
+    </div>
+
+    {% if addresses %}
+    <div class="row g-4">
+        {% for addr in addresses %}
+        <div class="col-md-6">
+             <div class="card h-100 border-0 shadow-sm"
+     style="border-radius:20px;background:#fbfcff;">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">{{ addr.governorate }}</h5>
+                    <div class="mb-3">
+                        <div class="fw-bold">{{ addr.street }}</div>
+                        <div class="text-muted">Building: {{ addr.building_number|default:"-" }} &bull; Floor: {{ addr.floor|default:"-" }}</div>
+                    </div>
+                    
+                     <div class="d-flex gap-2 flex-wrap">
+                         <button class="btn btn-sm btn-light border px-3"
+            style="border-radius:10px;"
+            data-bs-toggle="modal"
+            data-bs-target="#editAddressModal{{ addr.id }}">
+           <i class="bi bi-pencil me-1"></i> Edit
+    </button>
+                        <form method="post" action="{% url 'admin_doctor_address_delete' doctor.user.username addr.id %}" style="margin:0;">
+                            {% csrf_token %}
+                           <button type="submit"
+                class="btn btn-sm btn-light border px-3"
+                style="border-radius:10px;"
+                onclick="return confirm('Delete this address?');">
+            <i class="bi bi-trash text-danger me-1"></i> Delete
+               </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+       
+
+
+
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5 text-muted">
+        <i class="bi bi-geo-alt" style="font-size:48px;"></i>
+        <h5 class="mt-3">No addresses added yet.</h5>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Add Address Modal -->
+<div class="modal fade" id="addAddressModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Clinic Address</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="post" action="{% url 'admin_doctor_address_add' doctor.user.username %}">
+        {% csrf_token %}
+        <div class="modal-body">
+            <div class="mb-3">
+                <label class="form-label">Governorate / City</label>
+                <input type="text" name="governorate" class="form-control" required placeholder="e.g. Cairo">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Street</label>
+                <input type="text" name="street" class="form-control" required placeholder="e.g. 15 Ramsis St">
+            </div>
+            <div class="row g-3">
+                <div class="col-6">
+                    <label class="form-label">Building Number</label>
+                    <input type="number"  name="building_number" class="form-control">
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Floor</label>
+                    <input type="number"  name="floor" class="form-control" min="1" max="100">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary" style="background:#4f46e5;border:none;">Save Address</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% if addresses %}
+    {% for addr in addresses %}
+    <!-- Edit Address Modal -->
+    <div class="modal fade" id="editAddressModal{{ addr.id }}" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit Address</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <form method="post" action="{% url 'admin_doctor_address_edit' doctor.user.username addr.id %}" onsubmit="return confirm('Are you sure you want to update this address?');">
+            {% csrf_token %}
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Governorate / City</label>
+                    <input type="text" name="governorate" class="form-control" value="{{ addr.governorate }}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Street</label>
+                    <input type="text" name="street" class="form-control" value="{{ addr.street }}" required>
+                </div>
+                <div class="row g-3">
+                    <div class="col-6">
+                        <label class="form-label">Building Number</label>
+                        <input type="number" name="building_number" class="form-control" value="{{ addr.building_number|default:'' }}">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">Floor</label>
+                        <input type="number" name="floor" class="form-control" value="{{ addr.floor|default:'' }}" min="1" max="100">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" style="background:#4f46e5;border:none;">Update Address</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+{% endif %}
+
+{% endblock %}

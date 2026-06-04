@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login | DOCBOT</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<style>
+body{
+  font-family: 'Inter', sans-serif;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: radial-gradient(circle at top, #0f172a, #020617);
+  overflow:hidden;
+}
+
+.glow{
+  position:absolute;
+  width:400px;
+  height:400px;
+  background:#4f46e5;
+  filter:blur(140px);
+  opacity:0.3;
+  border-radius:50%;
+  top:-100px;
+  left:-100px;
+}
+
+.card-login{
+  width:380px;
+  padding:30px;
+  border-radius:20px;
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,0.1);
+  color:white;
+  z-index:2;
+  animation:fadeUp 0.8s ease;
+}
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+h2{
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.form-input{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:10px;
+  border:none;
+  outline:none;
+  background:rgba(255,255,255,0.1);
+  color:white;
+}
+
+.form-input::placeholder{
+  color: rgba(255,255,255,0.5);
+}
+
+.btn-submit{
+  width:100%;
+  margin-top:20px;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:linear-gradient(135deg,#4f46e5,#6366f1);
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.btn-submit:hover{
+  transform:scale(1.05);
+}
+
+.error-msg{
+  color:#f87171;
+  font-size:13px;
+  margin-top:5px;
+}
+
+.back-home{
+  text-align:center;
+  margin-top:12px;
+}
+
+.btn-back{
+  display:inline-block;
+  padding:10px 20px;
+  border-radius:50px;
+  text-decoration:none;
+  color:#a5b4fc;
+  border:1px solid rgba(255,255,255,0.2);
+  transition:0.3s;
+  font-size:14px;
+}
+
+.btn-back:hover{
+  background:linear-gradient(135deg,#4f46e5,#6366f1);
+  color:#fff;
+  transform:translateY(-2px) scale(1.05);
+  box-shadow:0 8px 20px rgba(79,70,229,0.4);
+}
+
+.forgot-link{
+  color:#a5b4fc;
+  text-decoration:none;
+  font-size:13px;
+}
+
+.forgot-link:hover{
+  color:#c7d2fe;
+}
+</style>
+</head>
+
+<body>
+
+<div class="glow"></div>
+
+<div class="card-login">
+  <h2>Login</h2>
+
+  <form method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+    {% if request.GET.next %}
+      <input type="hidden" name="next" value="{{ request.GET.next }}">
+    {% endif %}
+
+    {% if error %}
+      <div class="error-msg" style="text-align:center; margin-bottom:10px;">{{ error }}</div>
+    {% endif %}
+
+    <!-- Username -->
+    <input type="text" name="username" class="form-input" placeholder="Username"
+           value="{{ username|default:'' }}" autofocus>
+
+    <!-- Password + Eye Icon -->
+    <div style="position:relative;">
+      <input type="password" name="password" id="password" class="form-input" placeholder="Password">
+      <i id="eyeIcon" onclick="togglePassword()" class="bi bi-eye" style="
+        position:absolute;
+        right:15px;
+        top:50%;
+        transform:translateY(-50%);
+        cursor:pointer;
+        color:#a5b4fc;
+        font-size:18px;">
+      </i>
+    </div>
+
+    <!-- Forgot Password -->
+    <div style="text-align:right; margin-top:8px;">
+      <a href="{% url 'password_reset' %}" class="forgot-link">Forgot Password?</a>
+    </div>
+
+    <!-- Login -->
+    <button type="submit" class="btn-submit">Login</button>
+  </form>
+
+  <!-- Sign up -->
+  <div style="text-align:center; margin-top:15px; font-size:14px;">
+    Don't have an account?
+    <a href="{% url 'register' %}" style="color:#a5b4fc; text-decoration:none;">
+      Sign up
+    </a>
+  </div>
+
+  <!-- Back to Home -->
+  <div class="back-home">
+    <a href="{% url 'home' %}" class="btn-back">
+      &larr; Back to Home
+    </a>
+  </div>
+</div>
+
+<script>
+function togglePassword(){
+  let pass = document.getElementById("password");
+  let icon = document.getElementById("eyeIcon");
+  if(pass.type === "password"){
+    pass.type = "text";
+    icon.classList.remove("bi-eye");
+    icon.classList.add("bi-eye-slash");
+  } else {
+    pass.type = "password";
+    icon.classList.remove("bi-eye-slash");
+    icon.classList.add("bi-eye");
+  }
+}
+</script>
+
+</body>
+</html>

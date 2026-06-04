@@ -1,0 +1,606 @@
+{% extends "core/base.html" %}
+{% block title %}Services - DOCBOT{% endblock %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+{% block extra_css %}
+<style>
+  body {
+    margin: 0;
+    font-family: Inter, sans-serif;
+    background: #f7f9fc;
+    transition: 0.25s ease;
+  }
+
+  /* ================= SPLASH ================= */
+  #splash {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle, #1f2937, #0b1220);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 99999;
+  }
+
+  #splash.hide {
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.6s ease;
+  }
+
+  .splash-title {
+    color: #fff;
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+  }
+
+  /* LOADER BAR */
+  .loader-bar {
+    width: 200px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50px;
+    overflow: hidden;
+  }
+
+  .loader-bar span {
+    display: block;
+    height: 100%;
+    width: 40%;
+    background: linear-gradient(90deg, #4f46e5, #6366f1);
+    animation: load 1s infinite;
+  }
+
+  @keyframes load {
+    0% {
+      transform: translateX(-120%)
+    }
+
+    100% {
+      transform: translateX(300%)
+    }
+  }
+
+  /* ================= NAVBAR ================= */
+  .navbar {
+    background: rgba(255, 255, 255, 0.9) !important;
+    padding: 15px 0;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  }
+
+  .logo-img {
+    height: 30px;
+  }
+
+  .nav-link {
+    font-size: 16px !important;
+    /* تكبير حجم الخط */
+    font-weight: 500 !important;
+    /* جعل الخط عريض (اختياري) */
+    padding-left: 25px !important;
+    /* توسيع المسافة من جهة اليسار */
+    padding-right: 25px !important;
+    /* توسيع المسافة من جهة اليمين */
+    transition: 0.3s ease;
+    position: relative;
+  }
+
+  /* active page */
+  .nav-link.active {
+    color: #4f46e5 !important;
+    font-weight: 700;
+  }
+
+  .nav-link.active::after {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #4f46e5;
+    border-radius: 10px;
+  }
+
+
+  /* ده هيخلي الزرار وكل اللينكات اللي جنبه في نص النيف بار بالظبط */
+  .navbar-nav {
+    display: flex;
+    align-items: center;
+    /* سنترة رأسية */
+  }
+
+  .login-btn {
+    /* شيلنا الـ translateY واستبدلناه بسنترة تلقائية */
+    transform: none !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    display: flex !important;
+    align-items: center;
+    height: fit-content;
+  }
+
+  /* تأكد إن الـ Navbar نفسه بيسنتر العناصر */
+  .navbar .container {
+    display: flex;
+    align-items: center;
+  }
+
+  /* HERO */
+
+  /* SECTION */
+  /* 1. السكشن الرئيسي والهيدر */
+  .services-section {
+    padding: 100px 0;
+    background-color: #ffffff;
+    text-align: center;
+  }
+
+  .services-header h2 {
+    font-size: 36px;
+    font-weight: 700;
+    color: #0b1220;
+    margin-bottom: 15px;
+  }
+
+  .row>div {
+    display: flex;
+  }
+
+  .services-header p {
+    color: #64748b;
+    max-width: 600px;
+    margin: 0 auto 60px;
+    line-height: 1.6;
+  }
+
+  /* 2. ستايل الكروت (Service Cards) */
+  .service-card {
+    background: #fff;
+    border: 2px solid #f1f5f9;
+    /* حدود خفيفة جداً مريحة للعين */
+    border-radius: 30px;
+    transition: all 0.3s ease;
+    height: 100%;
+    text-align: center;
+    /* المحاذاة لليسار عشان القوائم تظبط */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px 25px;
+
+  }
+
+  /* تميز كارت الحجز (Featured) */
+  .service-card.featured {
+    border: 2px solid #e0e7ff;
+    box-shadow: 0 10px 30px rgba(79, 70, 229, 0.05);
+  }
+
+  .service-card:hover {
+    transform: translateY(-8px);
+    border-color: #4f46e5;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.03);
+  }
+
+  /* 3. الأيقونات والبادج */
+  .icon-box {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    margin-bottom: 25px;
+    margin: 0 auto 25px;
+  }
+
+  .bg-blue-light {
+    background: #eff6ff;
+    color: #3b82f6;
+  }
+
+  .bg-cyan-light {
+    background: #ecfeff;
+    color: #0891b2;
+  }
+
+  .bg-green-light {
+    background: #f0fdf4;
+    color: #22c55e;
+  }
+
+  .bg-purple-light {
+    background: #f5f3ff;
+    color: #7c3aed;
+  }
+
+  .ehr-badge {
+    display: inline-block;
+    background: #fdf2f8;
+    color: #db2777;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 8px 12px;
+    border-radius: 50px;
+    margin-bottom: 15px;
+  }
+
+  /* 4. النصوص والقوائم داخل الكارت */
+  .service-card h4 {
+    font-size: 25px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 15px;
+  }
+
+  .service-card p {
+    color: #64748b;
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  .service-list {
+    list-style: none;
+    padding: 0;
+    text-align: center;
+    margin-top: auto;
+  }
+
+  .service-list li {
+    font-size: 16px;
+    color: #475569;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .service-list li i {
+    color: #10b981;
+    /* لون أخضر هادي لعلامات الصح */
+    font-size: 16px;
+  }
+
+  /* 5. سيكشن Why DocBot Stands Out */
+  .standout-item {
+    background: #ffffff;
+    border: 2px solid #f1f5f9;
+    /* حدود خفيفة زي كروت الخدمات */
+    border-radius: 20px;
+    padding: 40px 30px;
+    text-align: center;
+    transition: all 0.3s ease;
+    height: 100%;
+    /* عشان كلهم يبقوا طول واحد */
+    box-shadow: 2 10px 10px rgba(0, 0, 0, 0.02);
+    /* ظل خفيف جداً */
+  }
+
+  /* تأثير الـ Hover عشان تحسي بفرق لما الماوس ييجي عليها */
+  .standout-item:hover {
+    transform: translateY(-7px);
+    background: #fbfcfe;
+    border-color: #e2e8f0;
+    box-shadow: 20 30px 30px rgba(0, 0, 0, 0.05);
+  }
+
+  /* تنسيق الأيقونات داخل الكروت */
+  .standout-item i {
+    font-size: 45px;
+    color: #4f46e5;
+    /* نفس اللون الأزرق الموحد */
+    margin-bottom: 25px;
+    display: inline-block;
+    transition: 0.3s;
+  }
+
+  /* حركة بسيطة للأيقونة عند الـ Hover */
+  .standout-item:hover i {
+    transform: scale(1.1);
+  }
+
+  /* تنسيق العناوين والنصوص */
+  .standout-item h5 {
+    font-size: 25px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 15px;
+  }
+
+  .standout-item p {
+    font-size: 18px;
+    color: #64748b;
+    line-height: 1.7;
+    margin: 0;
+  }
+
+
+
+  /* 2. تكبير عرض الكونتينر بتاع الصفحة كلها (اختياري) */
+  @media (min-width: 1200px) {
+    .container {
+      max-width: 1300px;
+      /* ده بيخلي الصفحة كلها تفرش أكتر على الشاشة */
+    }
+  }
+
+  footer {
+    background: #0f172a;
+    color: #fff;
+    padding: 180px 5px;
+  }
+
+
+  .footer-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* LEFT */
+  .footer-left {
+    max-width: 300px;
+  }
+
+  .footer-left img {
+    height: 40px;
+    margin-bottom: 10px;
+    transform: translateY(-100px);
+  }
+
+  .footer-left p {
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+    transform: translateY(-50px);
+
+  }
+
+  /* CENTER */
+  .footer-center {
+    text-align: center;
+    margin-top: 1px;
+  }
+
+  .footer-center p {
+    color: rgba(255, 255, 255, 0.7);
+    margin: 1px 0;
+  }
+
+  /* SOCIAL */
+  .footer-social {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .social-icons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 30px;
+  }
+
+  .social-icons a {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    font-size: 18px;
+    transition: 0.3s;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .social-icons a:hover {
+    background: #4f46e5;
+    transform: translateY(-5px) scale(1.1);
+    box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+  }
+
+  /* BOTTOM */
+  .footer-bottom {
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.5);
+    padding: 30px 0;
+    font-size: 13px;
+    transform: translateY(-4px);
+    line-height: 1.2;
+
+  }
+
+  /* ================= PROGRESS BAR ================= */
+  #scrollBar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 4px;
+    width: 0%;
+    background: linear-gradient(90deg, #4f46e5, #6366f1);
+    z-index: 99999;
+  }
+
+  /* ================= SCROLL TO TOP ================= */
+  #scrollTopBtn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    transition: 0.3s;
+  }
+
+  #scrollTopBtn:hover {
+    transform: translateY(-4px) scale(1.1);
+    box-shadow: 0 15px 30px rgba(79, 70, 229, 0.4);
+  }
+
+  /* ================= HIDE DEFAULT SCROLLBAR ================= */
+  html,
+  body {
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+
+
+
+  .btn-main {
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    color: #fff;
+    padding: 12px 26px;
+    border-radius: 50px;
+    border: none;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: 0.3s;
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25);
+  }
+
+  .btn-main:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 15px 30px rgba(79, 70, 229, 0.4);
+  }
+</style>
+{% endblock %}
+{% block content %}
+<section class="services-section">
+  <div class="container">
+    <div class="services-header">
+      <h2>Our Services</h2>
+      <p>Comprehensive healthcare solutions designed to make your medical journey easier, faster, and more accessible
+      </p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+      <div class="col-lg-6">
+        <div class="service-card">
+          <div class="icon-box bg-blue-light"><i class="bi bi-robot"></i></div>
+          <h4>AI-Powered Health Assistant</h4>
+          <p>Smart, interactive health evaluation designed to analyze your symptoms using advanced AI logic,, providing
+            you with clear insights and guiding you toward the right medical next steps
+            Natural Language Interaction
+
+          </p>
+          <ul class="service-list">
+            <li><i class="bi bi-check2-circle"></i> Intelligent Symptom Mapping</li>
+            <li><i class="bi bi-check2-circle"></i> Smart Triage & Guidance</li>
+            <li><i class="bi bi-check2-circle"></i> Actionable Health Insights</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="service-card featured">
+          <div class="ehr-badge"><i class="bi bi-star-fill"></i> Best Match</div>
+          <div class="icon-box bg-cyan-light"><i class="bi bi-calendar2-check"></i></div>
+          <h4>Internal Medicine Booking</h4>
+          <p>Directly connect with top-rated internal medicine specialists. Our system accurately maps your AI-analyzed
+            symptoms
+            to the most suitable sub-specialty, ensuring you get the expert care you need</p>
+          <ul class="service-list">
+            <li><i class="bi bi-check2-circle"></i> Sub-Specialty Matching</li>
+            <li><i class="bi bi-check2-circle"></i> Integrated EHR Sharing</li>
+            <li><i class="bi bi-check2-circle"></i> Instant Clinic Scheduling</li>
+            <li><i class="bi bi-check2-circle"></i> Automated Follow-ups</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="service-card">
+          <div class="icon-box bg-green-light"><i class="bi bi-clipboard2-pulse"></i></div>
+          <h4>Health Documentation & Alerts</h4>
+          <p>Keep your essential health data organized in one place. Log your vitals and medication schedules to receive
+            smart reminders
+            and maintain a clear digital record for your next doctor’s visit.</p>
+          <ul class="service-list">
+            <li><i class="bi bi-check2-circle"></i> Medication Scheduling</li>
+            <li><i class="bi bi-check2-circle"></i> Vital Signs Logging</li>
+            <li><i class="bi bi-check2-circle"></i> Smart Health Alerts</li>
+            <li><i class="bi bi-check2-circle"></i> Digital Health Record</li>
+            <li><i class="bi bi-check2-circle"></i> Follow-up care</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="service-card">
+          <div class="icon-box bg-purple-light"><i class="bi bi-cloud-arrow-up"></i></div>
+          <h4>Integrated Digital Health Records (EHR)</h4>
+          <p>Your medical history travels with you. Seamlessly share your AI-analyzed symptoms and vitals with your
+            doctor for a faster,
+            more accurate diagnosis and a more efficient consultation.</p>
+          <ul class="service-list">
+            <li><i class="bi bi-check2-circle"></i> Integrated EHR Sharing</li>
+            <li><i class="bi bi-check2-circle"></i> Digital Health Record</li>
+            <li><i class="bi bi-check2-circle"></i> Centralized Medical History</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="standout-section mt-5 pt-5">
+      <h3 class="mb-5 fw-bold">Why DocBot Stands Out</h3>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="standout-item">
+            <i class="bi bi-shield-lock-fill"></i>
+            <h5>Secure & Private</h5>
+            <p>Advanced encryption protocols ensure your medical data remains completely confidential and accessible
+              only to you and your doctor</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="standout-item">
+            <i class="bi bi-lightning-charge-fill"></i>
+            <h5>24/7 Smart Guidance</h5>
+            <p>Instant health evaluation anytime, anywhere. Get immediate clarity on your symptoms without the long wait
+            </p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="standout-item">
+            <i class="bi bi-person-badge-fill"></i>
+            <h5>Specialized Expertise</h5>
+            <p>Connecting you to the right internal medicine sub-specialists based on your unique AI-driven health
+              profile</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
