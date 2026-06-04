@@ -191,7 +191,7 @@
         try {
             // Send to local n8n Webhook
             // Production URL (requires the workflow to be toggled to "Active" in n8n)
-            const n8nUrl = "http://127.0.0.1:5678/webhook/106e3896-b6d5-440b-bbd5-f1abc7edea8c/chat";
+            const n8nUrl = "https://n8n-production-0fca5.up.railway.app/webhook/106e3896-b6d5-440b-bbd5-f1abc7edea8c/chat";
             const sessionId = "user_{{ request.user.id }}";
             
             const response = await fetch(n8nUrl, {
