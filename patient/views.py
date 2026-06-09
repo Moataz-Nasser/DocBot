@@ -768,17 +768,17 @@ def book_appointment(request, doctor_id):
     available_slots = None
 
     if selected_address:
-        now_local = timezone.localtime(timezone.now())
-        current_date = now_local.date()
-        current_time = now_local.time()
+        limit_datetime = timezone.localtime(timezone.now()) + timedelta(hours=1)
+        limit_date = limit_datetime.date()
+        limit_time = limit_datetime.time()
         available_slots = Doctortimeslot.objects.filter(
             schedule__doctor=doctor,
             schedule__doctor_address_id=selected_address,
             is_booked=0,
             is_available=1,
         ).filter(
-            Q(slot_date__gt=current_date) |
-            Q(slot_date=current_date, start_time__gt=current_time)
+            Q(slot_date__gt=limit_date) |
+            Q(slot_date=limit_date, start_time__gt=limit_time)
         ).select_related('schedule__doctor_address').order_by('slot_date', 'start_time')
 
     if request.method == 'POST':
@@ -843,17 +843,17 @@ def book_followup(request, doctor_id, appointment_id):
     available_slots = None
 
     if selected_address:
-        now_local = timezone.localtime(timezone.now())
-        current_date = now_local.date()
-        current_time = now_local.time()
+        limit_datetime = timezone.localtime(timezone.now()) + timedelta(hours=1)
+        limit_date = limit_datetime.date()
+        limit_time = limit_datetime.time()
         available_slots = Doctortimeslot.objects.filter(
             schedule__doctor=doctor,
             schedule__doctor_address_id=selected_address,
             is_booked=0,
             is_available=1,
         ).filter(
-            Q(slot_date__gt=current_date) |
-            Q(slot_date=current_date, start_time__gt=current_time)
+            Q(slot_date__gt=limit_date) |
+            Q(slot_date=limit_date, start_time__gt=limit_time)
         ).select_related('schedule__doctor_address').order_by('slot_date', 'start_time')
 
     if request.method == 'POST':

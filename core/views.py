@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Avg, Count, Q
 from doctor.models import Doctor, Doctoraddress, Doctorschedule, Doctortimeslot
 from appointment.models import Doctorreview
-from datetime import date
+from datetime import date, timedelta
 
 
 def home(request):
@@ -139,19 +139,19 @@ def doctor_public_profile(request, doctor_id):
     reviews = Doctorreview.objects.filter(doctor=doctor).select_related('patient')
     avg_rating = reviews.aggregate(avg=Avg('rating'))['avg']
 
-    # Available time slots (future, not booked, available)
+    # Available time slots (future, not booked, available, with 1-hour buffer)
     from django.utils import timezone
-    now_local = timezone.localtime(timezone.now())
-    current_date = now_local.date()
-    current_time = now_local.time()
+    limit_datetime = timezone.localtime(timezone.now()) + timedelta(hours=1)
+    limit_date = limit_datetime.date()
+    limit_time = limit_datetime.time()
 
     available_slots = Doctortimeslot.objects.filter(
         schedule__doctor=doctor,
         is_booked=0,
         is_available=1,
     ).filter(
-        Q(slot_date__gt=current_date) |
-        Q(slot_date=current_date, start_time__gt=current_time)
+        Q(slot_date__gt=limit_date) |
+        Q(slot_date=limit_date, start_time__gt=limit_time)
     ).select_related('schedule', 'schedule__doctor_address').order_by('slot_date', 'start_time')[:20]
 
     context = {
