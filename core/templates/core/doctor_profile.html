@@ -19,7 +19,7 @@
 .profile-avatar{
     width:110px;
     height:110px;
-    border-radius:20px;
+    border-radius:50%;
     background:linear-gradient(135deg,#4f46e5,#6366f1);
     display:flex;
     align-items:center;
@@ -29,6 +29,11 @@
     font-weight:700;
     flex-shrink:0;
     overflow:hidden;
+}
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 .profile-info h2{font-weight:700;color:#1a202c;margin-bottom:5px;}
 .profile-info .spec{color:#4f46e5;font-weight:600;font-size:16px;margin-bottom:5px;}
