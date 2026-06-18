@@ -25,7 +25,8 @@
 .doctor-avatar-sm{
     width:46px;
     height:46px;
-    border-radius:14px;
+    border-radius:50%;
+    overflow:hidden;
     background:linear-gradient(135deg,#4f46e5,#6366f1);
     color:#fff;
     display:flex;
@@ -140,7 +141,11 @@
                     <td>
                         <div class="doctor-cell">
                             <div class="doctor-avatar-sm">
-                                {{ appt.doctor.user.first_name|first }}
+                                {% if appt.doctor.image %}
+                                    <img src="{{ appt.doctor.image }}" alt="" style="width:100%;height:100%;object-fit:cover;">
+                                {% else %}
+                                    {{ appt.doctor.user.first_name|first }}
+                                {% endif %}
                             </div>
                             <div>
                                 <div class="fw-bold">
